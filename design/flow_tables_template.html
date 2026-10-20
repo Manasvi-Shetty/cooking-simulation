@@ -1,0 +1,248 @@
+<meta charset="utf-8">
+<title>Carbonara Lab Flow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Layout: a script-supervisor's binder. Title block, tab strip, then one wide table per sheet,
+     grouped by step or substep with band rows; IDs set in mono like a production sheet. */
+  :root {
+    --bg: #f5f4f1;
+    --surface: #ffffff;
+    --band: #efe9df;
+    --ink: #1e1a16;
+    --muted: #6a625a;
+    --line: #e0d9cf;
+    --accent: #a8640f;          /* yolk, dark enough to read as text */
+    --accent-soft: #f6e7cc;
+    --c-perfect: #2f7a3a; --b-perfect: #e0f0dc;
+    --c-ok: #3f7a5e;      --b-ok: #e3f1ea;
+    --c-recover: #8a6200; --b-recover: #fbefc8;
+    --c-degrade: #a5480f; --b-degrade: #fbe0cc;
+    --c-fatal: #a3261c;   --b-fatal: #f8d8d3;
+    --font-display: 'Bodoni Moda', 'Didot', Georgia, serif;
+    --font-body: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #151311; --surface: #1d1a17; --band: #29241f; --ink: #f1ebe3; --muted: #aa9f92; --line: #3a332c;
+    --accent: #f0b14a; --accent-soft: #3b2c14;
+    --c-perfect: #9fd49a; --b-perfect: #1f3320; --c-ok: #9ccfb6; --b-ok: #1c3029;
+    --c-recover: #f2cf6b; --b-recover: #3a3014; --c-degrade: #f3a970; --b-degrade: #3f2615;
+    --c-fatal: #f2928a; --b-fatal: #44201c; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #151311; --surface: #1d1a17; --band: #29241f; --ink: #f1ebe3; --muted: #aa9f92; --line: #3a332c;
+    --accent: #f0b14a; --accent-soft: #3b2c14;
+    --c-perfect: #9fd49a; --b-perfect: #1f3320; --c-ok: #9ccfb6; --b-ok: #1c3029;
+    --c-recover: #f2cf6b; --b-recover: #3a3014; --c-degrade: #f3a970; --b-degrade: #3f2615;
+    --c-fatal: #f2928a; --b-fatal: #44201c; color-scheme: dark; }
+
+  body {
+    background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font-body);
+    padding-block: 28px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1500px; margin: 0 auto; display: grid; gap: 18px; }
+  header { display: grid; gap: 4px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 500 clamp(30px, 4.5vw, 44px)/1.05 var(--font-display); margin: 0; text-wrap: balance; }
+  .counts { color: var(--muted); margin: 4px 0 0; font-variant-numeric: tabular-nums; }
+
+  nav { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); }
+  nav button {
+    font: 500 14px var(--font-body); color: var(--muted); background: none; border: 0;
+    padding: 9px 12px; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer;
+  }
+  nav button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  nav button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .controls label { font-size: 12px; color: var(--muted); display: grid; gap: 3px; }
+  select, input[type="search"] {
+    font: 14px var(--font-body); color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; min-width: 0;
+  }
+  input[type="search"] { width: min(320px, 100%); }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 0; flex: 1 1 260px; min-width: 0; align-self: end; }
+  .controls label { min-width: 0; max-width: 100%; }
+  select { max-width: 100%; }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); max-height: 78vh; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  thead th {
+    position: sticky; top: 0; z-index: 1; background: var(--ink); color: var(--bg);
+    text-align: left; font-weight: 600; font-size: 12px; padding: 8px 10px; white-space: nowrap;
+  }
+  td { padding: 8px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+  td.long { min-width: 260px; max-width: 460px; }
+  td.mid { min-width: 150px; max-width: 260px; }
+  td.id { font: 500 12px var(--font-mono); white-space: nowrap; color: var(--accent); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.band td { background: var(--band); font-weight: 600; border-top: 1px solid var(--line); }
+  tr.band .band-meta { font-weight: 400; color: var(--muted); margin-left: 8px; }
+  mark { background: var(--accent-soft); color: inherit; border-radius: 2px; }
+
+  .chip { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .chip.Perfect, .chip.Correct { color: var(--c-perfect); background: var(--b-perfect); }
+  .chip.Acceptable { color: var(--c-ok); background: var(--b-ok); }
+  .chip.Recoverable { color: var(--c-recover); background: var(--b-recover); }
+  .chip.Degraded { color: var(--c-degrade); background: var(--b-degrade); }
+  .chip.Fatal, .chip.Incorrect { color: var(--c-fatal); background: var(--b-fatal); }
+  .chip.type { color: var(--ink); background: var(--band); font-weight: 500; }
+
+  dl.sheet { display: grid; grid-template-columns: minmax(140px, 220px) minmax(0, 1fr); margin: 0;
+             background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  dl.sheet dt, dl.sheet dd { margin: 0; padding: 9px 14px; border-top: 1px solid var(--line); }
+  dl.sheet dt { font-weight: 600; color: var(--muted); }
+  dl.sheet dt.section, dl.sheet dd.section { background: var(--band); color: var(--ink); }
+  dl.sheet > :nth-child(-n+2) { border-top: 0; }
+  pre.ticket { font: 500 13px/1.5 var(--font-mono); margin: 0; white-space: pre-wrap; }
+  .empty { padding: 18px; color: var(--muted); }
+  @media (max-width: 560px) { dl.sheet { grid-template-columns: minmax(0, 1fr); } dl.sheet dd { border-top: 0; padding-top: 0; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Carbonara Lab · simulation content</span>
+    <h1>Tofu carbonara for Table 6</h1>
+    <p class="counts" id="counts"></p>
+  </header>
+  <nav role="tablist" aria-label="Sheets" id="tabs"></nav>
+  <div class="controls" id="controls">
+    <label for="f-sub">Substep
+      <select id="f-sub"><option value="">All substeps</option></select>
+    </label>
+    <label for="f-q">Search
+      <input type="search" id="f-q" placeholder="cream, S7.4, tongs…">
+    </label>
+    <p class="hint" id="hint"></p>
+  </div>
+  <section id="view" aria-live="polite"></section>
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+const TABS = ['Guide', 'Order', 'Flow', 'MCQ Options', 'Procedure Actions', 'Chef Tips', 'Scene & Items', 'Outcomes'];
+const SLUG = (t) => t.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
+const CHIP_COLS = new Set(['Correctness', 'Outcome', 'Type']);
+const ID_COLS = new Set(['Substep ID', 'Option ID', 'Action ID', 'Tip ID', 'Element / item ID', 'Ending ID',
+  'Item ID', 'Chef tip at start (ID)', 'On pass →', 'Branch to', 'Source element / item', 'Target element']);
+const LONG = /instruction|feedback|text|learning|reaction|description|parameter|pass rule|nonna|notes|label|scene state|right panel|trigger|effect|interactions/i;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const flow = DATA['Flow'];
+const fi = (h) => flow.head.indexOf(h);
+const substeps = flow.rows.map((r) => ({ id: r[fi('Substep ID')], title: r[fi('Substep title')], type: r[fi('Type')],
+  step: r[fi('Step')], stepTitle: r[fi('Step title')] }));
+const subById = Object.fromEntries(substeps.map((s) => [s.id, s]));
+
+document.getElementById('counts').textContent =
+  `${new Set(substeps.map((s) => s.step)).size} steps · ${substeps.length} substeps · ` +
+  `${DATA['MCQ Options'].rows.length} MCQ options · ${DATA['Procedure Actions'].rows.length} procedure actions · ` +
+  `${DATA['Chef Tips'].rows.length} chef tips`;
+
+const sel = document.getElementById('f-sub');
+substeps.forEach((s) => sel.insertAdjacentHTML('beforeend', `<option value="${esc(s.id)}">${esc(s.id)} · ${esc(s.title)}</option>`));
+
+const tabsEl = document.getElementById('tabs');
+TABS.forEach((t) => tabsEl.insertAdjacentHTML('beforeend',
+  `<button role="tab" id="tab-${SLUG(t)}" aria-selected="false" data-tab="${esc(t)}">${esc(t)}</button>`));
+
+let current = 'Flow';
+try { current = localStorage.getItem('flow-tab') || current; } catch (e) { /* storage unavailable */ }
+const fromHash = TABS.find((t) => SLUG(t) === location.hash.slice(1));
+if (fromHash) current = fromHash;
+if (!TABS.includes(current)) current = 'Flow';
+
+function highlight(text, q) {
+  const safe = esc(text);
+  if (!q) return safe;
+  const i = text.toLowerCase().indexOf(q);
+  if (i < 0) return safe;
+  return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+}
+
+function cell(h, v, q) {
+  if (v === '') return '<td></td>';
+  if (CHIP_COLS.has(h)) return `<td><span class="chip ${h === 'Type' ? 'type' : esc(v)}">${esc(v)}</span></td>`;
+  if (ID_COLS.has(h)) return `<td class="id">${highlight(v, q)}</td>`;
+  if (/^-?\d+$/.test(v) && h.length < 14) return `<td class="num">${esc(v)}</td>`;
+  const cls = LONG.test(h) ? 'long' : (v.length > 40 ? 'mid' : '');
+  return `<td class="${cls}">${highlight(v, q).replace(/\n/g, '<br>')}</td>`;
+}
+
+function renderTable(name, q, sub) {
+  const t = DATA[name];
+  const subCol = t.head.indexOf('Substep ID');
+  const isFlow = name === 'Flow';
+  const hideCols = new Set(isFlow ? [t.head.indexOf('Step'), t.head.indexOf('Step title')] : []);
+  const cols = t.head.map((h, i) => i).filter((i) => !hideCols.has(i));
+  let rows = t.rows;
+  if (sub && subCol >= 0) rows = rows.filter((r) => r[subCol] === sub);
+  if (q) rows = rows.filter((r) => r.some((v) => v.toLowerCase().includes(q)));
+  if (!rows.length) return '<div class="scroll"><p class="empty">No rows match. Clear the search or pick another substep.</p></div>';
+
+  let html = '<div class="scroll"><table><thead><tr>' + cols.map((i) => `<th scope="col">${esc(t.head[i])}</th>`).join('') + '</tr></thead><tbody>';
+  let lastGroup = null;
+  rows.forEach((r) => {
+    let group = null, label = '';
+    if (isFlow) {
+      group = r[t.head.indexOf('Step')];
+      label = `Step ${esc(group)} · ${esc(r[t.head.indexOf('Step title')])}`;
+    } else if (subCol >= 0) {
+      group = r[subCol];
+      const s = subById[group];
+      label = s ? `${esc(group)} · ${esc(s.title)}<span class="band-meta">${esc(s.type)} · Step ${esc(s.step)}</span>` : esc(group);
+    }
+    if (group !== null && group !== lastGroup) {
+      html += `<tr class="band"><td colspan="${cols.length}">${label}</td></tr>`;
+      lastGroup = group;
+    }
+    html += '<tr>' + cols.map((i) => cell(t.head[i], r[i], q)).join('') + '</tr>';
+  });
+  return html + '</tbody></table></div>';
+}
+
+function renderPairs(pairs, q, sectionTest) {
+  const list = q ? pairs.filter((p) => (p[0] + ' ' + p[1]).toLowerCase().includes(q)) : pairs;
+  if (!list.length) return '<p class="empty">No rows match.</p>';
+  return '<dl class="sheet">' + list.map(([k, v]) => {
+    if (sectionTest(k, v)) return `<dt class="section">${esc(k)}</dt><dd class="section"></dd>`;
+    const body = k === 'Printed ticket text' ? `<pre class="ticket">${esc(v)}</pre>` : highlight(v, q);
+    return `<dt>${esc(k)}</dt><dd>${body}</dd>`;
+  }).join('') + '</dl>';
+}
+
+function render() {
+  const q = document.getElementById('f-q').value.trim().toLowerCase();
+  const sub = sel.value;
+  const hasSub = ['Flow', 'MCQ Options', 'Procedure Actions', 'Chef Tips'].includes(current);
+  document.querySelector('label[for="f-sub"]').hidden = !hasSub;
+  document.querySelectorAll('[role="tab"]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === current)));
+  const hints = {
+    'Procedure Actions': 'Order: 1, 2, 3… is the correct sequence; ‘-’ is a wrong action; ‘opt’ is an optional helper.',
+    'MCQ Options': 'Multi-select substeps pass when every Correct option is picked and no Incorrect one is.',
+    'Flow': 'Left panel = instruction or question. Right panel = options or items. Chef tip opens as a modal before the substep.',
+  };
+  document.getElementById('hint').textContent = hints[current] || '';
+  const view = document.getElementById('view');
+  if (current === 'Order') view.innerHTML = renderPairs(DATA['Order'], q, (k, v) => v === '');
+  else if (current === 'Guide') view.innerHTML = renderPairs(DATA['Guide'], q, (k, v) => v === '');
+  else view.innerHTML = renderTable(current, q, hasSub ? sub : '') +
+    (current === 'Outcomes' && DATA['Thresholds'].length
+      ? '<h2 class="eyebrow" style="margin:18px 0 8px">Score thresholds</h2>' + renderPairs(DATA['Thresholds'], '', () => false) : '');
+}
+
+tabsEl.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-tab]');
+  if (!b) return;
+  current = b.dataset.tab;
+  try { localStorage.setItem('flow-tab', current); } catch (err) { /* ignore */ }
+  render();
+});
+sel.addEventListener('change', render);
+document.getElementById('f-q').addEventListener('input', render);
+render();
+</script>

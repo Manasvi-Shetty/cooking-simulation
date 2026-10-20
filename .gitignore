@@ -1,0 +1,10 @@
+# Rebuildable Blender output and downloaded sources
+renders/
+downloads/
+*.hdr
+# Blender autosaves
+*.blend1
+__pycache__/
+# Stray scratch files
+/0
+/01
