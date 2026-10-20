@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { Food } from './food.js';
-import { Props, SPOTS } from './props.js';
+import { Props, SPOTS, SINK_HOLE, slab } from './props.js';
 import { FlowEngine } from './flow-engine.js';
 import * as Sim from './sim.js';
 
@@ -153,12 +153,32 @@ gltf.scene.traverse((o) => {
     if (o.material.map) o.material.map.anisotropy = t.anisotropy;
     o.material.needsUpdate = true;
   }
+  if (o.material?.name === 'BrushedSteel') o.material.roughness = 0.42;   // brushed, not mirror: blurs the room
   if (o.material?.name === 'CastIron') {
     o.material.clearcoat = 0.25;
     o.material.color.set('#2a2826');
   }
 });
 scene.add(gltf.scene);
+// Cut the sink's opening into the counter: rebuild it as a slab with a hole, keeping its UVs
+// (fitted from the original plane) so the wood texture and normal map land where they did.
+{
+  const counter = gltf.scene.getObjectByName('Counter');
+  if (counter?.isMesh) {
+    counter.updateWorldMatrix(true, false);
+    const pos = counter.geometry.attributes.position, uv = counter.geometry.attributes.uv;
+    const pts = Array.from({ length: pos.count }, (_, i) => ({
+      p: new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(counter.matrixWorld), u: uv.getX(i), v: uv.getY(i) }));
+    const xs = pts.map((q) => q.p.x), zs = pts.map((q) => q.p.z);
+    const [x0, x1, z0, z1] = [Math.min(...xs), Math.max(...xs), Math.min(...zs), Math.max(...zs)];
+    const a = pts.find((q) => q.p.x === x0 && q.p.z === z0), b = pts.find((q) => q.p.x === x1 && q.p.z === z1);
+    const uvOf = (x, z) => [a.u + (b.u - a.u) * (x - x0) / (x1 - x0), a.v + (b.v - a.v) * (z - z0) / (z1 - z0)];
+    const g = slab(x0, x1, z0, z1, SINK_HOLE, uvOf).translate(0, pts[0].p.y, 0);
+    counter.geometry.dispose();
+    counter.geometry = g;
+    counter.position.set(0, 0, 0); counter.quaternion.identity(); counter.scale.set(1, 1, 1);   // geometry is in world space (its parent is the untransformed glTF root)
+  }
+}
 // Rearrange the Blender set for the flow: egg bowl on the prep side, eggs by the board.
 const bowlObj = gltf.scene.getObjectByName('Bowl');
 if (bowlObj) bowlObj.position.set(SPOTS.eggBowl.x, bowlObj.position.y, SPOTS.eggBowl.z);
@@ -171,6 +191,7 @@ if (knob && grip) knob.attach(grip);
 const food = new Food(scene, { bundles: small ? 60 : 95 });
 const props = new Props(scene, { pastaMaterial: food.pastaMat, tofuMaterial: food.tofuMaterial });
 if (propsGltf) props.useModels(propsGltf.scene);
+['Bowl', 'Egg0', 'Egg1', 'Cooktop'].forEach((n) => { const o = gltf.scene.getObjectByName(n); if (o) props.addContact(o, { opacity: 0.5 }); });
 // Kitchen pieces from the Blender set that also only appear once brought to the counter.
 const named = (...names) => names.map((n) => gltf.scene.getObjectByName(n)).filter(Boolean);
 props.items['T-SKILLET'] = named('Skillet', 'Handle', 'HelperHandle');

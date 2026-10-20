@@ -17,12 +17,43 @@ export const SPOTS = {
   eggBowl: new THREE.Vector3(0.5, 0, -0.18),
   whitesCup: new THREE.Vector3(0.64, 0, -0.1),
   hob: new THREE.Vector3(-0.62, 0, -0.08),
-  sink: new THREE.Vector3(-1.0, 0, 0.02),
+  sink: new THREE.Vector3(-0.98, 0, 0.02),
   plate: new THREE.Vector3(-0.42, 0, 0.3),
   mug: new THREE.Vector3(0.42, 0, 0.3),
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
   bell: new THREE.Vector3(0.62, 0, 0.45),
   eggs: [new THREE.Vector3(0.76, 0, -0.24), new THREE.Vector3(0.82, 0, -0.16)],
+};
+
+// The sink's opening (matches blender/export_props.py p_sink): centre, half-size, corner radius.
+export const SINK_HOLE = { x: SPOTS.sink.x, z: SPOTS.sink.z, hx: 0.2, hz: 0.17, r: 0.035 };
+
+// A flat horizontal slab (y = 0) spanning x0..x1, z0..z1, with a rounded-rectangle hole.
+// uvOf(x, z) maps world position to texture coordinates (defaults to 1 m = 1 unit).
+export function slab(x0, x1, z0, z1, hole, uvOf = (x, z) => [x, -z]) {
+  const shape = new THREE.Shape();
+  shape.moveTo(x0, -z0); shape.lineTo(x1, -z0); shape.lineTo(x1, -z1); shape.lineTo(x0, -z1); shape.lineTo(x0, -z0);
+  if (hole) {
+    const { x, z, hx, hz, r } = hole, h = new THREE.Path();
+    const L = x - hx, R = x + hx, T = -z + hz, B = -z - hz;
+    h.moveTo(L + r, B); h.lineTo(R - r, B); h.absarc(R - r, B + r, r, -Math.PI / 2, 0, false);
+    h.lineTo(R, T - r); h.absarc(R - r, T - r, r, 0, Math.PI / 2, false);
+    h.lineTo(L + r, T); h.absarc(L + r, T - r, r, Math.PI / 2, Math.PI, false);
+    h.lineTo(L, B + r); h.absarc(L + r, B + r, r, Math.PI, Math.PI * 1.5, false);
+    shape.holes.push(h);
+  }
+  const g = new THREE.ShapeGeometry(shape, 12).rotateX(-Math.PI / 2);   // shape y = -z
+  const pos = g.attributes.position, uv = g.attributes.uv;
+  for (let i = 0; i < pos.count; i++) uv.setXY(i, ...uvOf(pos.getX(i), pos.getZ(i)));
+  return g;
+}
+
+// Per-material touch-ups so the models read in the real-time kitchen as they do on their cards
+// (a heavy clear coat that's right under Cycles' soft lights turns pale under the room HDRI).
+const MODEL_TUNING = {
+  MugGlaze: { clearcoat: 0.25, clearcoatRoughness: 0.2 },
+  HobGlass: { clearcoat: 0.6 },
+  BellChrome: { roughness: 0.18 },
 };
 
 export class Props {
@@ -65,8 +96,8 @@ export class Props {
     lip.position.set(0, -0.02, 0.715);
     const cabinet = this._add(new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.9, 0.02), std('#2c2723', 0.6)), false);
     cabinet.position.set(0, -0.49, 0.69);
-    const worktop = this._add(new THREE.Mesh(new THREE.PlaneGeometry(4.6, 1.8).rotateX(-Math.PI / 2), std('#8a5a37', 0.5)), false);
-    worktop.position.set(0, -0.0008, -0.2);
+    const worktop = this.worktop = this._add(new THREE.Mesh(slab(-2.3, 2.3, -1.1, 0.7, SINK_HOLE), std('#8a5a37', 0.5)), false);
+    worktop.position.set(0, -0.0008, 0);
     worktop.receiveShadow = true;
     const wall = this._add(new THREE.Mesh(new THREE.PlaneGeometry(4.6, 1.4), std('#e9e6df', 0.4)), false);
     wall.position.set(0, 0.7, -0.551);
@@ -118,7 +149,7 @@ export class Props {
 
   _hobAndPot() {
     const h = SPOTS.hob;
-    const pad = this._add(new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.012, 0.3), std('#121212', 0.15, 0, { clearcoat: 1 })));
+    const pad = this.hobPad = this._add(new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.012, 0.3), std('#121212', 0.15, 0, { clearcoat: 1 })));
     pad.position.set(h.x, 0.006, h.z);
     this.hobRing = this._add(new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.003, 8, 64), new THREE.MeshBasicMaterial({ color: C('#5a5a5a') })), false);
     this.hobRing.rotation.x = -Math.PI / 2;
@@ -179,18 +210,18 @@ export class Props {
 
   _sink() {
     const s = SPOTS.sink;
-    const rim = this._add(new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.006, 0.38), this.steel));
+    const rim = this.sinkRim = this._add(new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.006, 0.38), this.steel));
     rim.position.set(s.x, 0.003, s.z);
-    const basin = this._add(new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.0065, 0.32), std('#55595d', 0.3, 1)));
+    const basin = this.sinkBasin = this._add(new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.0065, 0.32), std('#55595d', 0.3, 1)));
     basin.position.set(s.x, 0.0035, s.z);
-    const drain = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.0068, 24), std('#2a2c2e', 0.3, 1)));
+    const drain = this.sinkDrain = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.0068, 24), std('#2a2c2e', 0.3, 1)));
     drain.position.set(s.x, 0.0036, s.z);
-    const tapBase = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.018, 0.24, 24), this.steel));
+    const tapBase = this.tapBase = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.018, 0.24, 24), this.steel));
     tapBase.position.set(s.x, 0.12, s.z - 0.2);
     const arc = new THREE.CatmullRomCurve3([
       new THREE.Vector3(s.x, 0.24, s.z - 0.2), new THREE.Vector3(s.x, 0.3, s.z - 0.16),
       new THREE.Vector3(s.x, 0.29, s.z - 0.08), new THREE.Vector3(s.x, 0.25, s.z - 0.04)]);
-    this._add(new THREE.Mesh(new THREE.TubeGeometry(arc, 24, 0.011, 12, false), this.steel));
+    this.tapNeck = this._add(new THREE.Mesh(new THREE.TubeGeometry(arc, 24, 0.011, 12, false), this.steel));
     this.stream = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.006, 0.2, 12),
       std('#d6e6ee', 0.02, 0, { transmission: 0.8, transparent: true, opacity: 0.7 })), false);
     this.stream.position.set(s.x, 0.15, s.z - 0.04);
@@ -307,6 +338,43 @@ export class Props {
     });
   }
 
+  // Contact shadow: a soft dark ellipse on the counter under an object, the "ambient
+  // occlusion" that grounds it (the renders get this from path tracing). Follows the object
+  // around and shows only while the object does and is sitting at counter height.
+  addContact(obj, { spread = 1.25, opacity = 0.55 } = {}) {
+    if (!Props.contactTex) {
+      const c = document.createElement('canvas');
+      c.width = c.height = 128;
+      const g = c.getContext('2d');
+      const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grd.addColorStop(0, 'rgba(0,0,0,1)'); grd.addColorStop(0.45, 'rgba(0,0,0,0.75)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grd;
+      g.fillRect(0, 0, 128, 128);
+      Props.contactTex = new THREE.CanvasTexture(c);
+    }
+    obj.updateWorldMatrix(true, true);
+    const size = new THREE.Box3().setFromObject(obj).getSize(new THREE.Vector3());
+    const mat = new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: Props.contactTex, transparent: true, opacity,
+      depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, toneMapped: false });
+    const quad = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), mat);
+    quad.scale.set(size.x * spread, 1, size.z * spread);
+    quad.renderOrder = -1;
+    this.root.add(quad);
+    (this.contacts = this.contacts || []).push({ obj, quad, base: new THREE.Box3() });
+    return quad;
+  }
+
+  _updateContacts() {
+    const shown = (o) => { for (; o; o = o.parent) if (!o.visible) return false; return true; };
+    const tmp = new THREE.Box3();
+    for (const c of this.contacts || []) {
+      tmp.setFromObject(c.obj, false);
+      const onCounter = shown(c.obj) && !tmp.isEmpty() && Math.abs(tmp.min.y) < 0.03;
+      c.quad.visible = onCounter;
+      if (onCounter) c.quad.position.set((tmp.min.x + tmp.max.x) / 2, 0.0006, (tmp.min.z + tmp.max.z) / 2);
+    }
+  }
+
   // Swap the simple shapes for the Blender models (blender/export_props.py), the same ones the
   // item cards are rendered from. The shapes stay as invisible stand-ins: their visibility and
   // movement still drive everything, and each model follows its stand-in.
@@ -314,7 +382,12 @@ export class Props {
     const hidden = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
     const model = (name) => {
       const m = gltfScene.getObjectByName(`P-${name}`).clone(true);
-      m.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
+      m.traverse((o) => {
+        if (!o.isMesh) return;
+        o.castShadow = o.receiveShadow = true;
+        const tune = MODEL_TUNING[o.material.name];
+        if (tune) Object.assign(o.material, tune);
+      });
       return m;
     };
     const hide = (meshes) => meshes.forEach((o) => { o.material = hidden; o.castShadow = false; });
@@ -351,6 +424,15 @@ export class Props {
     this.root.add(pec);
     hide([cheese]);
     this.followers = [[pec, cheese]];
+    // Sink (sunken through the opening cut in the counter) and the induction hob.
+    const sink = model('sink');
+    sink.position.copy(SPOTS.sink);
+    this.root.add(sink);
+    hide([this.sinkRim, this.sinkBasin, this.sinkDrain, this.tapBase, this.tapNeck]);
+    const hob = model('hob');
+    hob.position.set(SPOTS.hob.x, 0, SPOTS.hob.z);
+    this.root.add(hob);
+    hide([this.hobPad]);
     // Pot and lid: the models share the stand-ins' origin (pot base; lid sits 0.155 up).
     this.pot.add(model('pot'));
     hide(this.potShell);
@@ -358,6 +440,11 @@ export class Props {
     lid.position.y = -0.155;
     this.lid.add(lid);
     hide(this.lidShell);
+    for (const o of [this.items['T-KNIFE'][0], this.items['T-GRATER'][0], this.items['I-PEPPER'][0], this.items['T-BOWL'][0],
+      this.items['T-MUG'][0], this.bellBase, pec, this.pot, this.lid, ...this.items['PLATE'].slice(0, 1), ...(this.items['SERVING'] || [])]) {
+      this.addContact(o);
+    }
+    this.addContact(hob, { spread: 1.08, opacity: 0.4 });
   }
 
   _anchors() {
@@ -396,6 +483,7 @@ export class Props {
 
   update(w, dt, t) {
     this.followers?.forEach(([m, stand]) => { m.visible = stand.visible; });
+    this._updateContacts();
     this.pastaMaterial.color.copy(this.sourcePasta.color);
     this.pastaMaterial.roughness = this.sourcePasta.roughness;
     this.pastaMaterial.clearcoat = this.sourcePasta.clearcoat;
@@ -426,8 +514,13 @@ export class Props {
     this.potPos.x = approach(this.potPos.x, target.x, 5, dt);
     this.potPos.z = approach(this.potPos.z, target.z, 5, dt);
     const lift = Math.min(Math.abs(this.potPos.x - target.x) * 2, 0.08);
-    this.pot.position.set(this.potPos.x, (w.potOnHob ? 0.012 : 0.004) + lift, this.potPos.z);
-    this.anchors['T-POT'].set(this.potPos.x, 0.19, this.potPos.z);
+    const SINK_FLOOR = -0.168;                            // the basin floor, 17 cm below the counter
+    this.pot.position.set(this.potPos.x, (w.potOnHob ? 0.012 : SINK_FLOOR) + lift, this.potPos.z);
+    this.anchors['T-POT'].set(this.potPos.x, this.pot.position.y + 0.19, this.potPos.z);
+    // The tap's stream runs from the aerator down to the water in the pot (or the basin floor).
+    const top = 0.245, bottom = w.potOnHob ? SINK_FLOOR : this.pot.position.y + Math.max(w.waterLevel, 0.008);
+    this.stream.scale.y = (top - bottom) / 0.2;
+    this.stream.position.y = (top + bottom) / 2;
     w.waterLevel = approach(w.waterLevel, w.potFilled ? 0.11 : (w.tapOn ? 0.11 : 0), w.tapOn ? 0.8 : 3, dt);
     this.water.visible = w.waterLevel > 0.004;
     this.water.position.y = Math.max(0.007, w.waterLevel);

@@ -156,14 +156,15 @@ export class Food {
 
   // ---------- tofu cubes, browned by a shader (the texture's G channel gives uneven browning) ----------
   _buildGuanciale() {
-    const N = 128, data = new Uint8Array(N * N * 4);
+    // R = tofu surface (255 smooth, low in the little pits pressed tofu has), G = broad noise
+    // so the browning comes out patchy like a real sear.
+    const N = 256, data = new Uint8Array(N * N * 4);
     for (let v = 0; v < N; v++) {
       for (let u = 0; u < N; u++) {
-        // R = fat mask (wavy layers of fat and meat), G = noise for uneven browning.
-        const w = Math.sin((v / N) * Math.PI * 2 * 2.3 + 1.6 * this.noise.noise(u / 18, v / 18));
         const i = (v * N + u) * 4;
-        data[i] = w > 0.15 ? 255 : 0;
-        data[i + 1] = 128 + 127 * this.noise.noise(u / 22 + 40, v / 22);   // broad patches, not speckle
+        const grain = this.noise.noise(u / 14, v / 14), pore = this.noise.noise(u / 7 + 70, v / 7 - 30);
+        data[i] = pore < -0.62 ? 90 : Math.round(225 + 30 * grain);
+        data[i + 1] = 128 + 127 * this.noise.noise(u / 40 + 40, v / 40);
         data[i + 2] = 0;
         data[i + 3] = 255;
       }
@@ -180,7 +181,8 @@ export class Food {
       cFatRaw: { value: C('#f1e9d6') }, cFatCooked: { value: C('#e2bd72') },
       cBrown: { value: C('#b06a2a') }, cBurnt: { value: C('#1b120c') },
     };
-    const mat = new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.5, clearcoat: 0.2 });
+    const mat = new THREE.MeshPhysicalMaterial({ map: tex, bumpMap: tex, bumpScale: 0.5, roughness: 0.6, clearcoat: 0.15,
+      sheen: 0.35, sheenColor: C('#fff4dc'), sheenRoughness: 0.6 });
     mat.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, this.gU);
       shader.fragmentShader = shader.fragmentShader
@@ -189,15 +191,17 @@ export class Food {
           uniform vec3 cMeatRaw, cMeatCooked, cFatRaw, cFatCooked, cBrown, cBurnt;`)
         .replace('#include <map_fragment>', `
           vec4 gTex = texture2D( map, vMapUv );
-          float fat = smoothstep( 0.4, 0.6, gTex.r );
+          float fat = 0.0;                                  // tofu has no fat layers
+          float pit = 1.0 - smoothstep( 0.2, 0.7, gTex.r );
           float edge = gTex.g;
           vec3 gcol = mix( mix( cMeatRaw, cMeatCooked, uRender ), mix( cFatRaw, cFatCooked, uRender ), fat );
           float b = clamp( uBrown * ( 0.55 + 0.9 * edge ), 0.0, 1.0 );
           gcol = mix( gcol, cBrown * ( 0.6 + 0.4 * fat ), b * 0.85 );
           gcol = mix( gcol, cBurnt, clamp( uBurn * ( 0.6 + 0.8 * edge ), 0.0, 1.0 ) );
+          gcol *= 1.0 - 0.18 * pit;                         // pores sit a little darker
           diffuseColor.rgb = gcol;`)
         .replace('#include <roughnessmap_fragment>', `
-          float roughnessFactor = mix( 0.6, 0.22, fat * uRender ) + 0.2 * b * ( 1.0 - fat ) + 0.3 * uBurn;`);
+          float roughnessFactor = mix( 0.62, 0.38, b ) + 0.15 * pit + 0.3 * uBurn;   // a sear is glossier`);
     };
 
     this.tofuMaterial = mat;

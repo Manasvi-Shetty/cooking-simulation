@@ -65,6 +65,71 @@ def p_tofu():
     tofu_block("Block", (0.1, 0.065, 0.03), (0, 0, 0.015), (0, 0, 0), tofu_material())
 
 
+def p_sink():
+    """Undermount stainless sink: rounded basin 17 cm deep, a thin flange, drain, gooseneck tap.
+    Origin is the centre of the opening at counter height; the page cuts the counter to match."""
+    steel = material("SinkSteel", (0.62, 0.63, 0.64), 0.3, 1.0)
+    W, D, H, R = 0.40, 0.34, 0.17, 0.035
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1)
+    for v in bm.verts:
+        v.co = Vector((v.co.x * W, v.co.y * D, v.co.z * H - H / 2))
+    top = [f for f in bm.faces if f.normal.z > 0.9]
+    bmesh.ops.delete(bm, geom=top, context="FACES")
+    vertical = [e for e in bm.edges if abs(e.verts[0].co.z - e.verts[1].co.z) > H * 0.9]
+    bmesh.ops.bevel(bm, geom=vertical, offset=R, segments=8, affect="EDGES", profile=0.5)
+    bottom = [e for e in bm.edges if e.verts[0].co.z < -H + 1e-4 and e.verts[1].co.z < -H + 1e-4 and len(e.link_faces) == 2]
+    bmesh.ops.bevel(bm, geom=bottom, offset=0.015, segments=4, affect="EDGES", profile=0.5)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    basin = from_bm("Basin", bm, steel)
+    m = basin.modifiers.new("Wall", "SOLIDIFY")
+    m.thickness, m.offset = 0.0015, 1
+    # Flange: a thin rounded ring around the opening, just proud of the counter.
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1)
+    for v in bm.verts:
+        v.co = Vector((v.co.x * (W + 0.04), v.co.y * (D + 0.04), v.co.z * 0.003 + 0.0015))
+    vertical = [e for e in bm.edges if abs(e.verts[0].co.z - e.verts[1].co.z) > 0.002]
+    bmesh.ops.bevel(bm, geom=vertical, offset=R + 0.02, segments=8, affect="EDGES", profile=0.5)
+    flange = from_bm("Flange", bm, steel)
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1)
+    for v in bm.verts:
+        v.co = Vector((v.co.x * W, v.co.y * D, v.co.z * 0.02))
+    vertical = [e for e in bm.edges if abs(e.verts[0].co.z - e.verts[1].co.z) > 0.01]
+    bmesh.ops.bevel(bm, geom=vertical, offset=R, segments=8, affect="EDGES", profile=0.5)
+    me = bpy.data.meshes.new("CutMesh")
+    bm.to_mesh(me)
+    cutter = bpy.data.objects.new("Cutter", me)
+    scene.collection.objects.link(cutter)
+    b = flange.modifiers.new("Hole", "BOOLEAN")
+    b.object, b.operation, b.solver = cutter, "DIFFERENCE", "EXACT"
+    bpy.context.view_layer.objects.active = flange
+    bpy.ops.object.modifier_apply(modifier="Hole")
+    bpy.data.objects.remove(cutter, do_unlink=True)
+    dark = material("DrainSteel", (0.2, 0.2, 0.21), 0.35, 1.0)
+    cyl("Drain", 0.024, 0.003, (0, 0, -H + 0.0015), dark)
+    cyl("DrainCap", 0.016, 0.002, (0, 0, -H + 0.003), steel)
+    # Gooseneck tap behind the basin (matches the water stream in the page).
+    chrome = material("TapChrome", (0.9, 0.9, 0.92), 0.08, 1.0)
+    cyl("TapBase", 0.021, 0.02, (0, 0.2, 0.01), chrome)
+    tube("TapNeck", [(0, 0.2, 0.015), (0, 0.2, 0.2), (0, 0.19, 0.28), (0, 0.13, 0.31), (0, 0.07, 0.295), (0, 0.045, 0.27), (0, 0.04, 0.255)], 0.0105, chrome)
+    cyl("Aerator", 0.0115, 0.01, (0, 0.04, 0.25), chrome)
+    box("Lever", (0.006, 0.05, 0.006), (0.024, 0.2, 0.05), chrome, bevel=0.002, rot=(radians(-25), 0, 0))
+
+
+def p_hob():
+    """Black glass-ceramic induction plate with a printed cooking zone."""
+    glass = material("HobGlass", (0.012, 0.012, 0.013), 0.06, Coat_Weight=1.0, Coat_Roughness=0.02)
+    box("HobPlate", (0.3, 0.3, 0.008), (0, 0, 0.008), glass, bevel=0.0025)
+    ink = material("HobInk", (0.55, 0.55, 0.55), 0.4)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.1, minor_radius=0.0008, location=(0, 0, 0.0121))
+    finish(bpy.context.active_object, ink)
+    for k in range(4):
+        box(f"Mark{k}", (0.012, 0.0016, 0.0003), (0.1 * cos(k * pi / 2 + pi / 4), 0.1 * sin(k * pi / 2 + pi / 4), 0.0121), ink,
+            rot=(0, 0, k * pi / 2 + pi / 4))
+
+
 def only(names):
     """Keep just these objects of a builder (e.g. the pot without its lid)."""
     def keep_some():
@@ -88,6 +153,8 @@ PROPS = {
     "cup": [p_cup],
     "tofu": [p_tofu],
     "bowl": [t_bowl],
+    "sink": [p_sink],
+    "hob": [p_hob],
 }
 
 
