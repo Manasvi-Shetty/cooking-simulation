@@ -135,11 +135,13 @@ export class Props {
     const body = new THREE.Mesh(new THREE.LatheGeometry(prof, 64), this.steel);
     body.castShadow = body.receiveShadow = true;
     this.pot.add(body);
+    this.potShell = [body];
     for (const s of [-1, 1]) {
       const handle = new THREE.Mesh(new THREE.TorusGeometry(0.018, 0.004, 8, 16, Math.PI), this.steel);
       handle.position.set(s * 0.118, 0.13, 0);
       handle.rotation.set(0, s > 0 ? Math.PI / 2 : -Math.PI / 2, 0);
       this.pot.add(handle);
+      this.potShell.push(handle);
     }
     this.water = new THREE.Mesh(new THREE.CircleGeometry(0.103, 48).rotateX(-Math.PI / 2),
       std('#a9bcc4', 0.05, 0, { transmission: 0.6, transparent: true, opacity: 0.85 }));
@@ -169,6 +171,7 @@ export class Props {
     const knob = new THREE.Mesh(new THREE.SphereGeometry(0.012, 16, 12), std('#1b1b1b', 0.4));
     knob.position.y = 0.01;
     this.lid.add(disc, knob);
+    this.lidShell = [disc, knob];
     this.lid.traverse((o) => { o.castShadow = true; });
     this.root.add(this.lid);
     this.items['T-POT'] = [this.pot, this.lid];
@@ -239,7 +242,7 @@ export class Props {
     this.mugWater.position.set(m.x, 0.06, m.z);
 
     const bell = SPOTS.bell;
-    const base = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.038, 0.01, 32), std('#2a2522', 0.4)));
+    const base = this.bellBase = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.038, 0.01, 32), std('#2a2522', 0.4)));
     base.position.set(bell.x, 0.005, bell.z);
     this.bellDome = this._add(new THREE.Mesh(new THREE.SphereGeometry(0.03, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), std('#c9a24a', 0.2, 1)));
     this.bellDome.position.set(bell.x, 0.01, bell.z);
@@ -304,6 +307,59 @@ export class Props {
     });
   }
 
+  // Swap the simple shapes for the Blender models (blender/export_props.py), the same ones the
+  // item cards are rendered from. The shapes stay as invisible stand-ins: their visibility and
+  // movement still drive everything, and each model follows its stand-in.
+  useModels(gltfScene) {
+    const hidden = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+    const model = (name) => {
+      const m = gltfScene.getObjectByName(`P-${name}`).clone(true);
+      m.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
+      return m;
+    };
+    const hide = (meshes) => meshes.forEach((o) => { o.material = hidden; o.castShadow = false; });
+    // Model as a child of a stand-in mesh, sitting on the stand-in's base, fitted to its footprint.
+    const onto = (stand, name, { fit = true, extra = [] } = {}) => {
+      const m = model(name);
+      stand.geometry.computeBoundingBox();
+      const sb = stand.geometry.boundingBox, mb = new THREE.Box3().setFromObject(m);
+      const ss = sb.getSize(new THREE.Vector3()), ms = mb.getSize(new THREE.Vector3());
+      const k = fit ? Math.min(ss.x / ms.x, ss.z / ms.z) : 1;
+      m.scale.setScalar(k);
+      const c = mb.getCenter(new THREE.Vector3());
+      m.position.set(-c.x * k, sb.min.y - mb.min.y * k, -c.z * k);
+      stand.add(m);
+      hide([stand, ...extra]);
+      return m;
+    };
+    onto(this.items['T-KNIFE'][0], 'board');
+    onto(this.items['T-GRATER'][0], 'grater');
+    onto(this.items['I-PEPPER'][0], 'mill', { fit: false });
+    onto(this.items['T-BOWL'][0], 'cup', { fit: false });
+    onto(this.items['T-MUG'][0], 'mug', { fit: false, extra: this.items['T-MUG'].slice(1) });
+    onto(this.bellBase, 'bell', { fit: false, extra: [this.bellDome, ...this.bellDome.children] });
+    onto(this.block, 'tofu', { fit: false });
+    onto(this.towelBottom, 'towel');
+    onto(this.towelTop, 'towel');
+    onto(this.weight, 'weight', { fit: false });
+    // The cheese stand-in is an extruded wedge lying on its side: place the model in world space.
+    const cheese = this.items['I-PECORINO'][0];
+    const pec = model('pecorino');
+    pec.scale.setScalar(0.6);
+    pec.position.set(0.86, 0, -0.16);
+    pec.rotation.y = -0.5;
+    this.root.add(pec);
+    hide([cheese]);
+    this.followers = [[pec, cheese]];
+    // Pot and lid: the models share the stand-ins' origin (pot base; lid sits 0.155 up).
+    this.pot.add(model('pot'));
+    hide(this.potShell);
+    const lid = model('lid');
+    lid.position.y = -0.155;
+    this.lid.add(lid);
+    hide(this.lidShell);
+  }
+
   _anchors() {
     const v = (x, y, z) => new THREE.Vector3(x, y, z);
     const t = SPOTS.tofuBlock, h = SPOTS.hob, s = SPOTS.sink, b = SPOTS.eggBowl;
@@ -339,6 +395,7 @@ export class Props {
   }
 
   update(w, dt, t) {
+    this.followers?.forEach(([m, stand]) => { m.visible = stand.visible; });
     this.pastaMaterial.color.copy(this.sourcePasta.color);
     this.pastaMaterial.roughness = this.sourcePasta.roughness;
     this.pastaMaterial.clearcoat = this.sourcePasta.clearcoat;

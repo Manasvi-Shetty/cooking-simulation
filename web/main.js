@@ -94,12 +94,25 @@ async function loadKitchen() {
   $('#load-bar').style.width = '70%';
   return new GLTFLoader().parseAsync(bytes.buffer, 'assets/');
 }
+// The props (blender/export_props.py) carry their textures inside the file. If they fail to
+// load, the kitchen keeps its simple stand-in shapes.
+async function loadProps() {
+  try {
+    const res = await fetch('assets/props.glb.b64.txt');
+    if (!res.ok) return null;
+    const bytes = Uint8Array.from(atob((await res.text()).trim()), (c) => c.charCodeAt(0));
+    return await new GLTFLoader().parseAsync(bytes.buffer, 'assets/');
+  } catch (err) {
+    console.warn('props failed to load', err);
+    return null;
+  }
+}
 async function loadFlow() {
   const res = await fetch('flow.json');
   if (!res.ok) throw new Error(`flow.json: HTTP ${res.status}`);
   return res.json();
 }
-const [gltf, FLOW] = await Promise.all([loadKitchen(), loadFlow()]).catch((err) => {
+const [gltf, FLOW, propsGltf] = await Promise.all([loadKitchen(), loadFlow(), loadProps()]).catch((err) => {
   $('#load-msg').textContent = `The kitchen couldn’t load. Refresh to try again. (${err?.message || err})`;
   throw err;
 });
@@ -144,6 +157,7 @@ if (knob && grip) knob.attach(grip);
 
 const food = new Food(scene, { bundles: small ? 60 : 95 });
 const props = new Props(scene, { pastaMaterial: food.pastaMat, tofuMaterial: food.tofuMaterial });
+if (propsGltf) props.useModels(propsGltf.scene);
 // Kitchen pieces from the Blender set that also only appear once brought to the counter.
 const named = (...names) => names.map((n) => gltf.scene.getObjectByName(n)).filter(Boolean);
 props.items['T-SKILLET'] = named('Skillet', 'Handle', 'HelperHandle');
