@@ -137,9 +137,22 @@ try {
   scene.environmentIntensity = 0.7;
 }
 
+// Wood grain, glue seams and tile grout relief, baked from the Blender bump (blender/bake_normals.py).
+const NORMALS = { ButcherBlock: ['assets/Counter_normal.jpg', 1.0], SubwayTile: ['assets/Backsplash_normal.jpg', 1.4] };
+const texLoader = new THREE.TextureLoader();
 gltf.scene.traverse((o) => {
   if (!o.isMesh) return;
   o.castShadow = o.receiveShadow = true;
+  const nm = NORMALS[o.material?.name];
+  if (nm && !o.material.normalMap) {
+    const t = texLoader.load(nm[0]);
+    t.flipY = false;                         // glTF texture convention, same as the colour map
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    o.material.normalMap = t;
+    o.material.normalScale.setScalar(nm[1]);
+    if (o.material.map) o.material.map.anisotropy = t.anisotropy;
+    o.material.needsUpdate = true;
+  }
   if (o.material?.name === 'CastIron') {
     o.material.clearcoat = 0.25;
     o.material.color.set('#2a2826');
