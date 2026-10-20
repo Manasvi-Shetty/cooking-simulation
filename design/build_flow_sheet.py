@@ -134,7 +134,7 @@ FLOW = [
     (2, "Prep the tofu", "S2.3", "Cut the tofu into cubes", "Procedure", "Yes",
      "Cut the pressed tofu into 1 cm cubes, the same size as classic guanciale pieces.",
      "Chef's knife; cutting guides appear on the tofu", "T-2.3", "Cutting board",
-     "Actions A-2.3-01 to 04 in order.", "", 3, "S2.4",
+     "Knife: tick A-2.3-01 to 03 (multi-select), then Check; they animate in order.", "", 3, "S2.4",
      "Even 1 cm cubes cook at the same rate and give the most crisp surface per bite.",
      "Pressed tofu block on the board.", "Cutting pattern: slabs, then strips, then cubes."),
     (2, "Prep the tofu", "S2.4", "Season the tofu", "MCQ - Single select", "No",
@@ -415,15 +415,14 @@ act("S2.1", 4, "Drag", "E-WEIGHT", RP, "I-TOFU", "Heavy pan on top as a weight",
 act("S2.1", "-", "Hold", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
     "", "Gently! You've cracked it. We'll still get cubes, but some will crumble.", "NEXT", -5, "tofu_cracked = true")
 
-act("S2.3", 1, "Drag", "I-TOFU", S, "E-BOARD", "Pressed tofu onto the board", "Correct", "Perfect",
-    "", "Get the tofu onto the board first.", "NEXT", 0)
-act("S2.3", 2, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "Cut lengthways into 1 cm slabs (guide set A)", "Correct", "Perfect",
+# Knife → tick the cuts (multi-select) → Check: the three 1 cm cuts animate in order.
+act("S2.3", 1, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm slabs, cut lengthways", "Correct", "Perfect",
     "Nice even slabs.", "Slabs first, so every piece ends up the same height.", "NEXT", 0)
-act("S2.3", 3, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "Cut the slabs into 1 cm strips (guide set B)", "Correct", "Perfect",
+act("S2.3", 2, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm strips", "Correct", "Perfect",
     "", "Slabs, then strips, then cubes.", "NEXT", 0)
-act("S2.3", 4, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "Cut across into 1 cm cubes (guide set C)", "Correct", "Perfect",
+act("S2.3", 3, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm cubes, cut across", "Correct", "Perfect",
     "Neat little cubes, just like guanciale.", "Cut the strips first.", "NEXT", 0, "tofu_cut = cubes_1cm")
-act("S2.3", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "Cut into 3 cm chunks (guide set X)", "Incorrect", "Degraded",
+act("S2.3", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "3 cm chunks", "Incorrect", "Degraded",
     "", "Too big. The outside will crisp but the middle stays soft, and they won't sit nicely on a fork.", "NEXT", -5, "tofu_cut = chunks")
 act("S2.3", "-", "Hold", "I-TOFU", S, "", "Crumble it by hand", "Incorrect", "Degraded",
     "", "Crumbles burn quickly and vanish into the pasta. Cubes give you a crisp bite.", "NEXT", -5, "tofu_cut = crumbled")
@@ -817,10 +816,9 @@ TASKS = {
     "A-2.1-02": "Select the kitchen towels, then the cutting board, to lay the first towel under the tofu.",
     "A-2.1-03": "Select the towels again, then the tofu, to cover it with the second towel.",
     "A-2.1-04": "Select the heavy pan, then the tofu, to weigh it down.",
-    "A-2.3-01": "Move the pressed tofu onto the cutting board.",
-    "A-2.3-02": "With the chef's knife, cut the block lengthways into 1 cm slabs.",
-    "A-2.3-03": "Cut the slabs into 1 cm strips.",
-    "A-2.3-04": "Cut across the strips to make 1 cm cubes.",
+    "A-2.3-01": "Select the knife, tick the cuts that turn the block into 1 cm cubes, then press Check.",
+    "A-2.3-02": "Cut the slabs into 1 cm strips.",
+    "A-2.3-03": "Cut across the strips to make 1 cm cubes.",
     "A-3.1-01": "Pick the large pot and put it under the tap in the sink.",
     "A-3.1-02": "Hold the tap until the water reaches the fill line (about 3 litres).",
     "A-3.1-03": "Move the pot onto the back burner.",

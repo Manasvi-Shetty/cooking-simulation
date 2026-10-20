@@ -177,11 +177,10 @@ const VISUALS = {
   'A-2.1-02': () => { w.towelBottom = true; },          // slides in under the tofu
   'A-2.1-03': () => { w.towelTop = true; },
   'A-2.1-04': () => { w.weight = true; w.tofuStage = 'pressing'; },
-  'A-2.3-02': () => { w.cutLevel = 1; },
-  'A-2.3-03': () => { w.cutLevel = 2; },
-  'A-2.3-04': async () => { w.cutLevel = 3; await sleep(500); w.tofuStage = 'cubes'; },
-  'A-2.3-05': () => { w.cutLevel = 3; w.tofuStage = 'cubes'; },
-  'A-2.3-06': () => { w.tofuStage = 'cubes'; },
+  'A-2.3-01': async () => { w.cutLevel = 1; await sleep(jumping ? 0 : 700); },       // slabs
+  'A-2.3-02': async () => { w.cutLevel = 2; await sleep(jumping ? 0 : 700); },       // strips
+  'A-2.3-03': async () => { w.cutLevel = 3; await sleep(jumping ? 0 : 600); w.tofuStage = 'cubes'; },
+  'A-2.3-05': () => { w.tofuStage = 'cubes'; },                                         // crumbled by hand
   'A-3.1-02': () => { w.tapOn = false; w.potFilled = true; },
   'A-3.1-03': () => { w.potOnHob = true; },
   'A-3.1-04': () => { w.backHeat = 3; },
@@ -413,6 +412,16 @@ function renderRight() {
       <p><b>${esc(engine.item(ui.pending[0].source).name)}</b>${one ? `: ${esc(one.param)}` : ''}</p>
       <p class="muted">Click the spot in the kitchen.</p>
       <button class="link" data-back>Cancel</button>`;
+  } else if (ui.mode === 'multi') {
+    const acts = engine.actions().filter((a) => a.source === ui.source && a.interaction === 'Click');
+    html = `<button class="link" data-back>← All items</button>
+      <span class="eyebrow">${esc(engine.item(ui.source).name)}: pick all that apply</span><div class="cards">` +
+      acts.map((a) => {
+        const st = ui.optState?.[a.id] || '', sel = ui.selected.has(a.id);
+        return `<button class="card opt multi ${st} ${sel ? 'selected' : ''}" data-pick="${esc(a.id)}" aria-pressed="${sel}" ${st ? 'disabled' : ''}>
+          <span class="tick" aria-hidden="true">${sel || st === 'right' ? '✓' : ''}</span><span class="card-label">${esc(a.param)}</span>
+          ${st === 'right' ? '<span class="verdict ok">✓ Correct</span>' : st === 'wrong' ? '<span class="verdict bad">✗ Wrong</span>' : ''}</button>`;
+      }).join('') + '</div>';
   } else if (ui.mode === 'actions') {
     const acts = choices().filter((a) => a.source === ui.source);
     html = `<button class="link" data-back>← All items</button>
@@ -486,8 +495,49 @@ function checkSingle(id) {
   return refresh();
 }
 
+// Ticked procedure actions (the knife's cuts): wrong picks are judged like any wrong move;
+// with all the right ones ticked, they're performed and animated in order.
+async function checkPicks() {
+  const acts = engine.actions().filter((a) => a.source === ui.source && a.interaction === 'Click');
+  const picked = acts.filter((a) => ui.selected.has(a.id));
+  const wrong = picked.filter((a) => !/^\d+$/.test(a.order));
+  const missing = acts.filter((a) => /^\d+$/.test(a.order) && !engine.done.has(a.id) && !ui.selected.has(a.id));
+  ui.optState = ui.optState || {};
+  if (wrong.length || missing.length) {
+    const lines = [];
+    let outcome = null;
+    for (const a of wrong) {
+      const res = engine.perform(a.id);
+      ui.optState[a.id] = 'wrong';
+      ui.selected.delete(a.id);
+      lines.push(`${a.param}: ${res.feedback}`);
+      outcome = res.outcome;
+      if (res.gameOver) return gameOver();
+    }
+    if (missing.length) { lines.push('Something’s missing. Which cuts get you all the way to 1 cm cubes?'); engine.misses += 1; }
+    ui.checkLocked = true;
+    setFeedback(lines, outcome || 'Recoverable');
+    return refresh();
+  }
+  picked.forEach((a) => { ui.optState[a.id] = 'right'; });
+  ui.locked = true;
+  refresh();
+  const order = picked.sort((x, y) => Number(x.order) - Number(y.order));
+  let last = null;
+  for (const a of order) {
+    last = engine.perform(a.id);
+    await VISUALS[a.id]?.();
+  }
+  ui.locked = false;
+  ui.mode = 'items';
+  ui.selected = new Set();
+  setFeedback(last?.feedback || 'Nicely done.', 'Perfect');
+  refresh();
+}
+
 function doCheck() {
   const sub = engine.sub;
+  if (ui.mode === 'multi') return checkPicks();
   const res = engine.check(ui.selected);
   ui.optState = ui.optState || {};
   if (res.pass) {
@@ -513,7 +563,7 @@ function renderAction() {
   const sub = engine.sub;
   if (!sub || ui.locked || live || $('#hud').hidden) { btn.hidden = true; return; }
   btn.hidden = false;
-  if (sub.type === 'MCQ - Multi select' && !engine.ready) {
+  if ((sub.type === 'MCQ - Multi select' || ui.mode === 'multi') && !engine.ready) {
     // Lists: pick everything, then Check (disabled until something is picked, and after a wrong check).
     btn.textContent = 'Check';
     btn.disabled = !ui.selected.size || ui.checkLocked;
@@ -548,7 +598,15 @@ right.addEventListener('click', async (e) => {
     }
     return checkSingle(id);                      // single select: answered as soon as it's picked
   }
-  if (e.target.closest('[data-back]')) { ui.mode = 'items'; ui.pending = null; return renderRight(); }
+  const pick = e.target.closest('[data-pick]');
+  if (pick && !pick.disabled) {
+    const id = pick.dataset.pick;
+    ui.selected.has(id) ? ui.selected.delete(id) : ui.selected.add(id);
+    ui.checkLocked = false;
+    renderAction();
+    return renderRight();
+  }
+  if (e.target.closest('[data-back]')) { ui.mode = 'items'; ui.pending = null; ui.selected = new Set(); renderAction(); return renderRight(); }
   const src = e.target.closest('[data-source]');
   if (src) return pickSource(src.dataset.source);
   const act = e.target.closest('[data-act]');
@@ -601,7 +659,12 @@ const needsTarget = (a) => ['Drag', 'Click'].includes(a.interaction) && a.target
 function pickSource(id) {
   ui.source = id;
   const acts = choices().filter((a) => a.source === id);
-  if (acts.length && acts.every(needsTarget)) {
+  if (acts.length > 1 && acts.every((a) => a.interaction === 'Click' && a.target && a.target === acts[0].target)) {
+    ui.mode = 'multi';                         // e.g. knife: tick the cuts, then Check
+    ui.selected = new Set();
+    ui.checkLocked = false;
+    renderAction();
+  } else if (acts.length && acts.every(needsTarget)) {
     ui.mode = 'target';
     ui.pending = acts;
   } else {
