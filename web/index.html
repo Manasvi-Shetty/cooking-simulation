@@ -236,9 +236,18 @@
   @keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(147, 196, 125, 0); } }
 
   #ff {
-    position: absolute; top: var(--gutter); left: calc(50% + var(--stage-x)); transform: translateX(-50%);
-    padding: 6px 14px; border-radius: 999px; background: var(--yolk); color: var(--yolk-ink); font: 500 13px var(--font-mono);
+    position: absolute; top: var(--gutter); left: calc(50% + var(--stage-x)); transform: translateX(-50%); z-index: 7;
+    display: flex; align-items: center; gap: 14px; padding: 12px 18px 12px 12px; max-width: min(420px, calc(100% - 32px));
+    border-radius: 16px; background: var(--panel-solid); border: 1px solid color-mix(in srgb, var(--yolk) 55%, transparent);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
   }
+  #ff-ring { --p: 0deg; flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+             background: conic-gradient(var(--yolk) var(--p), rgba(246, 232, 210, 0.12) 0); }
+  #ff-ring span { width: 40px; height: 40px; border-radius: 50%; background: var(--panel-solid); display: grid; place-items: center;
+                  color: var(--yolk); font-size: 16px; }
+  .ff-text { display: grid; gap: 2px; min-width: 0; }
+  #ff-time { font: 600 22px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text); }
+  #ff-label { font-size: 12.5px; color: var(--muted); }
 
   .fb-pop {
     position: absolute; top: calc(var(--gutter) + 46px); left: calc(50% + var(--stage-x)); transform: translateX(-50%); z-index: 7;
@@ -354,7 +363,10 @@
   </div>
   <button class="cta" id="action-btn" hidden>Check</button>
   <div id="fb-pop" class="fb-pop" role="status" aria-live="polite" hidden></div>
-  <div id="ff" hidden>Cooking… time is passing</div>
+  <div id="ff" hidden role="timer" aria-live="off">
+    <span id="ff-ring" aria-hidden="true"><span><svg width="18" height="14" viewBox="0 0 18 14"><path d="M0 0l8 7-8 7zM9 0l8 7-8 7z" fill="currentColor"/></svg></span></span>
+    <span class="ff-text"><span class="eyebrow">Fast-forwarding</span><b id="ff-time">0:00 / 0:00</b><span id="ff-label"></span></span>
+  </div>
 </div>
 
 <div class="overlay" id="jump" hidden role="dialog" aria-modal="true" aria-labelledby="jump-title">

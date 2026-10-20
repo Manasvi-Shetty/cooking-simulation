@@ -67,7 +67,7 @@ const VIEWS = {
   'Serving': V([0, 0.4, 0.82], [0, 0.04, 0.44]),
 };
 // Pasta-pot substeps use the Stove view in the sheet; the pot sits on its own burner, so frame that.
-const CAMERA_OVERRIDE = { 'S6.1': 'Pot', 'S6.2': 'Pot', 'S6.3': 'Pot', 'S7.1': 'Stove wide' };
+const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.2': 'Pot', 'S6.3': 'Pot', 'S7.1': 'Stove wide' };
 const VIEW_BUTTONS = ['Kitchen', 'Counter', 'Cutting board', 'Pot', 'Stove', 'Peek in the pan', 'Sink', 'Serving'];
 let view = 'Overview';
 const camPos = VIEWS.Overview.pos.clone(), camLook = VIEWS.Overview.look.clone(), goal = new THREE.Vector3();
@@ -155,10 +155,23 @@ let ui = { mode: 'none', source: null, pending: null, selected: new Set(), feedb
 // ---------- what each action does to the kitchen ----------
 // Keyed by action ID from flow.json; values may be async (fast-forwarded cooking).
 let jumping = false;      // internal step jump: cooking happens instantly
+// Waits in the recipe are fast-forwarded (a few real seconds at most) behind a kitchen timer.
+let ffLabel = '';
 const ff = (seconds, speed = 30) => {
   if (jumping) { for (let t = 0; t < seconds; t += 0.5) Sim.stepModel(s, 0.5); return Promise.resolve(); }
-  return new Promise((resolve) => { run = { remaining: seconds, speed, resolve }; });
+  return new Promise((resolve) => {
+    run = { total: seconds, remaining: seconds, speed: Math.max(speed, seconds / 3), resolve };
+    $('#ff-label').textContent = ffLabel || 'Cooking';
+    renderTimer();
+    $('#ff').hidden = false;
+  });
 };
+const mmss = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+function renderTimer() {
+  const done = run.total - run.remaining;
+  $('#ff-time').textContent = `${mmss(done)} / ${mmss(run.total)}`;
+  $('#ff-ring').style.setProperty('--p', `${(done / run.total) * 360}deg`);
+}
 const VISUALS = {
   'A-2.1-01': async () => { w.tofuStage = 'draining'; await sleep(jumping ? 0 : 1600); w.tofuStage = 'block'; },
   'A-2.1-02': () => { w.towelBottom = true; },          // slides in under the tofu
@@ -378,7 +391,7 @@ function renderRight() {
         return `<button class="card opt ${multi ? 'multi' : ''} ${tiles ? 'tile' : ''} ${st} ${sel ? 'selected' : ''}" data-opt="${esc(o.id)}" aria-pressed="${sel}"
           ${engine.ready || st === 'wrong' ? 'disabled' : ''}>
           ${tiles ? `<span class="tile-img">${img || '<span class="no-img" aria-hidden="true"></span>'}</span>` : ''}
-          ${multi ? `<span class="tick" aria-hidden="true">${sel ? '✓' : ''}</span>` : ''}
+          ${multi && !tiles ? `<span class="tick" aria-hidden="true">${sel ? '✓' : ''}</span>` : ''}
           <span class="card-label">${esc(o.label)}</span>${st === 'right' ? '<span class="verdict ok">✓ Correct</span>' : st === 'wrong' ? '<span class="verdict bad">✗ Wrong</span>' : ''}</button>`;
       }).join('') + '</div>' +
       '';
@@ -632,6 +645,7 @@ async function perform(a) {
   }
   setFeedback(res.feedback, res.ok ? (res.feedback ? 'Perfect' : null) : res.outcome);
   const fx = VISUALS[a.id];
+  ffLabel = a.task || a.param;
   if (fx) {
     ui.locked = true;
     refresh();
@@ -911,8 +925,8 @@ renderer.setAnimationLoop(() => {
     const simDt = Math.min(dt * run.speed, run.remaining);
     for (let left2 = simDt; left2 > 0; left2 -= 0.5) Sim.stepModel(s, Math.min(0.5, left2));
     run.remaining -= simDt;
-    $('#ff').hidden = false;
-    if (run.remaining <= 0) { const r = run; run = null; $('#ff').hidden = true; r.resolve(); }
+    renderTimer();
+    if (run.remaining <= 0) { const r = run; run = null; setTimeout(() => { if (!run) $('#ff').hidden = true; }, 600); r.resolve(); }
   } else if (live) {
     for (let left2 = dt * 3; left2 > 0; left2 -= 0.5) Sim.stepModel(s, Math.min(0.5, left2));
     if (s.curds >= 0.65) plateSauce(true);
