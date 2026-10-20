@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
@@ -22,9 +23,10 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, small ? 1.5 : 2));
 renderer.toneMapping = THREE.AgXToneMapping;
 renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFShadowMap;      // with shadow.radius: soft, wide penumbrae
 
 const scene = new THREE.Scene();
+const ENV_INTENSITY = 0.9;
 scene.background = new THREE.Color('#1b1815');
 const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 20);
 const sun = new THREE.DirectionalLight(new THREE.Color('#fff4e6'), 2.4);
@@ -34,6 +36,8 @@ sun.shadow.mapSize.set(2048, 2048);
 Object.assign(sun.shadow.camera, { left: -1.3, right: 1.1, top: 0.8, bottom: -0.8, near: 0.2, far: 4 });
 sun.shadow.bias = -0.0004;
 sun.shadow.normalBias = 0.01;
+sun.shadow.radius = 7;
+sun.shadow.blurSamples = 16;
 scene.add(sun);
 
 const composer = new EffectComposer(renderer);
@@ -100,9 +104,25 @@ const [gltf, FLOW] = await Promise.all([loadKitchen(), loadFlow()]).catch((err) 
   throw err;
 });
 
+// Light the kitchen with the same studio HDRI the Blender renders (restaurant, item cards) use,
+// so reflections and fill light match them. Shipped base64 like the model; RoomEnvironment
+// is the fallback if it can't load.
 const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
-scene.environmentIntensity = 0.7;
+try {
+  const res = await fetch('assets/env.hdr.b64.txt');
+  const bin = Uint8Array.from(atob((await res.text()).trim()), (c) => c.charCodeAt(0));
+  const d = new RGBELoader().parse(bin.buffer);
+  const hdr = new THREE.DataTexture(d.data, d.width, d.height, THREE.RGBAFormat, d.type);
+  Object.assign(hdr, { flipY: true, mapping: THREE.EquirectangularReflectionMapping, colorSpace: THREE.LinearSRGBColorSpace,
+    minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, generateMipmaps: false, needsUpdate: true });
+  scene.environment = pmrem.fromEquirectangular(hdr).texture;
+  hdr.dispose();
+  scene.environmentIntensity = ENV_INTENSITY;
+} catch (err) {
+  console.warn('HDRI failed, using RoomEnvironment', err);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
+  scene.environmentIntensity = 0.7;
+}
 
 gltf.scene.traverse((o) => {
   if (!o.isMesh) return;
