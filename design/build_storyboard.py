@@ -162,6 +162,13 @@ for cell in ws[1]:
     cell.border = box
 ws.row_dimensions[1].height = 22
 ws.freeze_panes = "A2"
+# One row per task. Lists sit in one cell, a bullet per line (line breaks + wrap); the row is
+# made tall enough for the longest cell so every bullet shows.
+def cell_lines(text, width):
+    per = max(width - 2, 8)
+    return sum(max(1, -(-len(line) // per)) for line in str(text).split("\n"))
+
+
 for kind, vals in rows:
     ws.append(vals)
     r = ws.max_row
@@ -172,13 +179,12 @@ for kind, vals in rows:
         c.fill = PatternFill("solid", fgColor="F3D9A6")
         c.alignment = Alignment(vertical="center")
         ws.row_dimensions[r].height = 20
-    else:
-        lines = max(max(len(str(v)) // max(WIDTHS[i] - 4, 8) + str(v).count("\n") + 1 for i, v in enumerate(vals)), 1)
-        ws.row_dimensions[r].height = min(15 * lines, 400)
-        for i, c in enumerate(ws[r]):
-            c.font = font(bold=(i == 0))
-            c.alignment = Alignment(vertical="top", wrap_text=True)
-            c.border = box
+        continue
+    ws.row_dimensions[r].height = min(13.5 * max(cell_lines(v, w) for v, w in zip(vals, WIDTHS)) + 6, 409)
+    for i, c in enumerate(ws[r]):
+        c.font = font(bold=(i == 0))
+        c.alignment = Alignment(vertical="top", wrap_text=True)
+        c.border = box
 ws.auto_filter.ref = f"A1:G{ws.max_row}"
 wb.save(OUT)
 print("wrote", OUT, sum(1 for k, _ in rows if k == "task"), "tasks in", sum(1 for k, _ in rows if k == "step"), "steps")
