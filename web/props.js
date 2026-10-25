@@ -13,7 +13,7 @@ const approach = (cur, target, rate, dt) => cur + (target - cur) * (1 - Math.exp
 // Layout (metres, Y up). The stove and skillet sit at the origin.
 export const SPOTS = {
   board: new THREE.Vector3(0.66, 0, 0.12),
-  tofuBlock: new THREE.Vector3(0.62, 0.02, 0.12),
+  tofuBlock: new THREE.Vector3(0.66, 0.02, 0.12),       // centred on the board
   eggBowl: new THREE.Vector3(0.5, 0, -0.18),
   whitesCup: new THREE.Vector3(0.64, 0, -0.1),
   hob: new THREE.Vector3(-0.62, 0, -0.08),
@@ -107,6 +107,34 @@ export class Props {
     const b = this._add(new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.02, 0.25), std('#b98a5a', 0.6)));
     b.position.copy(SPOTS.board).setY(0.01);
     this.items['T-KNIFE'] = [b];
+  }
+
+  // The knife at rest beside the board, or mid-cut: level 1 slices flat through the side of the
+  // block (slabs), 2 chops down along its length (strips), 3 chops across (cubes). k runs 0 -> 1
+  // over the whole set of cuts; returns how many of that set's cut lines are done.
+  _poseKnife(ca) {
+    const knife = this.knife;
+    if (!knife || !this.knifeRest) return 0;
+    if (!ca) {
+      knife.position.copy(this.knifeRest);
+      knife.rotation.set(0, 1.45, 0);
+      return 0;
+    }
+    const set = this.cutSets[ca.level - 1], n = set.length;
+    const seg = Math.min(ca.k, 0.9999) * n, j = Math.floor(seg), f = seg - j;
+    const m = set[j].position, c = this.cuts.position;
+    const away = Math.abs(1 - 2 * f);                    // 1 = clear of the tofu, 0 = through it
+    const half = this.bladeWidth / 2;
+    if (ca.level === 1) {
+      knife.rotation.set(0, 0, 0);
+      knife.position.set(c.x, c.y + m.y, c.z + 0.01 + (0.07 + half) * away);
+    } else {
+      knife.rotation.set(Math.PI / 2, ca.level === 2 ? 0 : Math.PI / 2, 0);
+      const y = 0.021 + half + 0.04 * away;                 // edge comes down onto the board
+      if (ca.level === 2) knife.position.set(c.x + 0.02, y, c.z + m.z);
+      else knife.position.set(c.x + m.x, y, c.z - 0.02);
+    }
+    return f >= 0.5 ? j + 1 : j;
   }
 
   _tofu() {
@@ -406,7 +434,43 @@ export class Props {
       hide([stand, ...extra]);
       return m;
     };
-    onto(this.items['T-KNIFE'][0], 'board');
+    const board = onto(this.items['T-KNIFE'][0], 'board');
+    // The board model comes with its knife lying across it: move the knife beside the board so it
+    // stays clear of the tofu and towels.
+    board.updateWorldMatrix(true, true);
+    const knifeParts = ['Blade', 'KnifeHandle'].map((n) => board.getObjectByName(n)).filter(Boolean);
+    const knife = this.knife = new THREE.Group();
+    knife.rotation.order = 'YXZ';                          // yaw, then tip the blade up about its own length
+    if (knifeParts.length) {
+      const blade = knifeParts[0];
+      const centre = new THREE.Box3().setFromObject(blade).getCenter(new THREE.Vector3());
+      knife.position.copy(centre);
+      this.root.add(knife);
+      knife.updateWorldMatrix(true, false);
+      const inner = new THREE.Group();
+      knife.add(inner);
+      knifeParts.forEach((o) => inner.attach(o));
+      // Turn the parts so the blade runs along the knife's local x with the handle at -x.
+      const pts = [], Y = new THREE.Vector3(0, 1, 0);
+      const pa = blade.geometry.attributes.position;
+      for (let k = 0; k < pa.count; k++) pts.push(new THREE.Vector3().fromBufferAttribute(pa, k).applyMatrix4(blade.matrixWorld).sub(centre));
+      let best = 0, bestZ = Infinity;
+      for (let a = 0; a < Math.PI; a += Math.PI / 360) {
+        let lo = Infinity, hi = -Infinity;
+        pts.forEach((v) => { const z = v.clone().applyAxisAngle(Y, -a).z; lo = Math.min(lo, z); hi = Math.max(hi, z); });
+        if (hi - lo < bestZ) { bestZ = hi - lo; best = a; }
+      }
+      const handle = new THREE.Box3().setFromObject(knifeParts[1] || blade).getCenter(new THREE.Vector3()).sub(centre);
+      if (handle.applyAxisAngle(Y, -best).x > 0) best += Math.PI;
+      inner.rotation.y = -best;
+      this.bladeWidth = bestZ;
+      // Resting on the counter to the right of the board, handle towards the learner.
+      knife.position.set(0.93, 0, 0.22);
+      knife.rotation.set(0, 1.45, 0);
+      knife.updateWorldMatrix(true, true);
+      knife.position.y -= new THREE.Box3().setFromObject(knife).min.y;
+      this.knifeRest = knife.position.clone();
+    }
     onto(this.items['T-GRATER'][0], 'grater');
     onto(this.items['I-PEPPER'][0], 'mill', { fit: false });
     onto(this.items['T-BOWL'][0], 'cup', { fit: false });
@@ -424,7 +488,7 @@ export class Props {
     pec.rotation.y = -0.5;
     this.root.add(pec);
     hide([cheese]);
-    this.followers = [[pec, cheese]];
+    this.followers = [[pec, cheese], [knife, this.items['T-KNIFE'][0]]];
     // Sink (sunken through the opening cut in the counter) and the induction hob.
     const sink = model('sink');
     sink.position.copy(SPOTS.sink);
@@ -519,7 +583,11 @@ export class Props {
       });
     }
     this.cuts.visible = this.block.visible && w.cutLevel > 0;
-    this.cutSets.forEach((set, i) => set.forEach((m) => { m.visible = w.cutLevel > i; }));
+    // While a cut is being made (w.cutAnim = { level, k }), its lines appear as the knife passes them.
+    const ca = w.cutAnim;
+    const shown = this._poseKnife(ca);
+    if (ca) this.cuts.visible = this.block.visible;
+    this.cutSets.forEach((set, i) => set.forEach((m, j) => { m.visible = w.cutLevel > i || (!!ca && ca.level === i + 1 && j < shown); }));
 
     // Pot: sink -> hob, water level, lid, boil.
     const target = w.potOnHob ? SPOTS.hob : SPOTS.sink;

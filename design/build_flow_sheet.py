@@ -430,11 +430,8 @@ def act(sub, order, inter, src, srcloc, tgt, param, correct, outcome, ok_fb, bad
 
 
 S = "Scene"; RP = "Right panel"
-SQUEEZE = ("Gently! You've cracked it. We'll still get cubes, but some will crumble.")
 act("S2.1", 1, "Click", "I-TOFU", S, "", "Open the pack", "Correct", "Perfect",
     "", "Open the pack and drain it before anything else.", "NEXT", 0)
-act("S2.1", "-", "Hold", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
-    "", SQUEEZE, "NEXT", -5, "tofu_cracked = true")
 
 act("S2.2", 1, "Drag", "T-TOWELS", RP, "E-BOARD", "First towel under the tofu", "Correct", "Perfect",
     "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
@@ -442,8 +439,6 @@ act("S2.2", 2, "Drag", "T-TOWELS", RP, "I-TOFU", "Second towel on top", "Correct
     "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
 act("S2.2", 3, "Drag", "E-WEIGHT", RP, "I-TOFU", "Heavy pan on top as a weight", "Correct", "Perfect",
     "", "The weight goes on last, on top of the towels.", "NEXT", 0, "tofu_pressing = true")
-act("S2.2", "-", "Hold", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
-    "", SQUEEZE, "NEXT", -5, "tofu_cracked = true")
 
 # The cuts as a pick-all-that-apply list → Check: the three 1 cm cuts animate in order.
 act("S2.4", 1, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm slabs, cut lengthways", "Correct", "Perfect",

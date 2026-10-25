@@ -206,13 +206,25 @@ export class Food {
 
     this.tofuMaterial = mat;
 
-    // 1 cm tofu cubes. Each has a spot on the board, in the pan, on the resting plate
-    // and on top of the finished pasta; update() glides them between stages.
+    // 1 cm tofu cubes: the whole 10 × 6.5 × 3 cm block cut into a 10 × 7 × 3 grid. Each cube has a
+    // spot on the board, in the pan, on the resting plate and on top of the finished pasta; update()
+    // glides them between stages.
     const rnd = this.random;
     this.guanciale = [];
-    const N_CUBES = 36;
+    const GRID = [10, 7, 3];                               // along x, along z, layers
+    const N_CUBES = GRID[0] * GRID[1] * GRID[2];
+    // Spots packed edge to edge on a disc (jittered grid), nearest the centre first.
+    const disc = (radius, step) => {
+      const pts = [];
+      for (let x = -radius; x <= radius; x += step) for (let z = -radius; z <= radius; z += step) {
+        if (x * x + z * z <= radius * radius) pts.push([x + (rnd() - 0.5) * 0.0012, z + (rnd() - 0.5) * 0.0012]);
+      }
+      return pts.sort((p, q) => (p[0] ** 2 + p[1] ** 2) - (q[0] ** 2 + q[1] ** 2));
+    };
+    const panSpots = disc(0.09, 0.0108);                   // one layer covering the pan floor
+    const plateSpots = [0.07, 0.056, 0.042, 0.026].flatMap((r, layer) => disc(r, 0.0112).map(([x, z]) => [x, z, layer]));
     for (let i = 0; i < N_CUBES; i++) {
-      const sz = 0.0095 + rnd() * 0.0012;
+      const sz = 0.0095 + rnd() * 0.0008;
       const g = new THREE.BoxGeometry(sz, sz, sz, 3, 3, 3);
       const pos = g.attributes.position, seed = rnd() * 100;
       for (let k = 0; k < pos.count; k++) {
@@ -226,15 +238,17 @@ export class Food {
       for (let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k) * 0.4 + ou, uv.getY(k) * 0.4 + ov);
       const mesh = new THREE.Mesh(g, mat);
       mesh.castShadow = mesh.receiveShadow = true;
-      const col = i % 9, row = Math.floor(i / 9);
-      const boardPos = new THREE.Vector3(SPOTS.tofuBlock.x - 0.04 + col * 0.0102, 0.02 + sz / 2, SPOTS.tofuBlock.z - 0.016 + row * 0.0102);
-      const a = rnd() * Math.PI * 2, r = 0.088 * Math.sqrt(rnd());
-      const floorPos = new THREE.Vector3(r * Math.cos(a), PAN.floorY + sz / 2, r * Math.sin(a));
-      const pa2 = rnd() * Math.PI * 2, pr2 = 0.045 * Math.sqrt(rnd());
-      const platePos = new THREE.Vector3(SPOTS.plate.x + pr2 * Math.cos(pa2), 0.0105 + sz / 2 + (i % 3) * 0.004, SPOTS.plate.z + pr2 * Math.sin(pa2));
+      // On the board the cubes still sit together in the shape of the block, just parted a little.
+      const col = i % GRID[0], row = Math.floor(i / GRID[0]) % GRID[1], layer = Math.floor(i / (GRID[0] * GRID[1]));
+      const boardPos = new THREE.Vector3(SPOTS.tofuBlock.x + (col - (GRID[0] - 1) / 2) * 0.0104, 0.02 + sz / 2 + layer * 0.0094,
+        SPOTS.tofuBlock.z + (row - (GRID[1] - 1) / 2) * 0.0097);
+      const [fx, fz] = panSpots[i % panSpots.length];
+      const floorPos = new THREE.Vector3(fx, PAN.floorY + sz / 2 + (i >= panSpots.length ? sz : 0), fz);
+      const [qx, qz, ql] = plateSpots[i % plateSpots.length];
+      const platePos = new THREE.Vector3(SPOTS.plate.x + qx, 0.0105 + sz / 2 + ql * 0.0095, SPOTS.plate.z + qz);
       const pa = rnd() * Math.PI * 2, pr = PAN.pileR * 0.9 * Math.pow(rnd(), 0.7);
       const px = pr * Math.cos(pa), pz = pr * Math.sin(pa);
-      const pilePos = new THREE.Vector3(px, this.top(px, pz) - rnd() * 0.003, pz);
+      const pilePos = new THREE.Vector3(px, this.top(px, pz) - (i < 50 ? rnd() * 0.003 : 0.004 + rnd() * 0.01), pz);   // most fold in under the strands
       const spin = rnd() * Math.PI;
       this.guanciale.push({ mesh, boardPos, floorPos, platePos, pilePos, spin,
         tilt: new THREE.Euler((rnd() - 0.5) * 1.4, spin, (rnd() - 0.5) * 1.4) });

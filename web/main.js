@@ -206,7 +206,7 @@ function freshState() {
   s = Sim.newState();
   s.tofuInPan = false;
   w = {
-    tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0,
+    tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
     potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
     oil: false, tossT: 0, flips: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, cheeseIn: false, mugFull: false,
     plated: 0, peppered: false, served: false, bellT: 0,
@@ -216,7 +216,7 @@ function freshState() {
 }
 freshState();
 
-let run = null;           // fast-forward: { remaining, speed, resolve }
+let run = null;           // fast-forward: { total, remaining, dur (real seconds), t0, resolve }
 let live = false;         // S7.4: sauce reacts in (sped-up) real time
 let ui = { mode: 'none', source: null, pending: null, selected: new Set(), feedback: null, hint: null, locked: false };
 
@@ -228,7 +228,8 @@ let ffLabel = '';
 const ff = (seconds, speed = 30) => {
   if (jumping) { for (let t = 0; t < seconds; t += 0.5) Sim.stepModel(s, 0.5); return Promise.resolve(); }
   return new Promise((resolve) => {
-    run = { total: seconds, remaining: seconds, speed: Math.max(speed, seconds / 3), resolve };
+    // Never more than 4 real seconds, however long the wait in the recipe.
+    run = { total: seconds, remaining: seconds, dur: Math.min(4, seconds / speed), t0: performance.now(), resolve };
     $('#ff-label').textContent = ffLabel || 'Cooking';
     renderTimer();
     $('#ff').hidden = false;
@@ -240,14 +241,27 @@ function renderTimer() {
   $('#ff-time').textContent = `${mmss(done)} / ${mmss(run.total)}`;
   $('#ff-ring').style.setProperty('--p', `${(done / run.total) * 360}deg`);
 }
+// The knife makes one set of cuts (props poses it from w.cutAnim), then the cut lines stay.
+const cut = (level, ms) => async () => {
+  if (!jumping) {
+    const t0 = performance.now();
+    w.cutAnim = { level, k: 0 };
+    while (w.cutAnim.k < 1) {
+      await sleep(16);
+      w.cutAnim.k = Math.min(1, (performance.now() - t0) / ms);
+    }
+  }
+  w.cutAnim = null;
+  w.cutLevel = level;
+};
 const VISUALS = {
   'A-2.1-01': async () => { w.tofuStage = 'draining'; await sleep(jumping ? 0 : 1600); w.tofuStage = 'block'; },
   'A-2.2-01': () => { w.towelBottom = true; },          // slides in under the tofu
   'A-2.2-02': () => { w.towelTop = true; },
   'A-2.2-03': () => { w.weight = true; w.tofuStage = 'pressing'; },
-  'A-2.4-01': async () => { w.cutLevel = 1; await sleep(jumping ? 0 : 700); },       // slabs
-  'A-2.4-02': async () => { w.cutLevel = 2; await sleep(jumping ? 0 : 700); },       // strips
-  'A-2.4-03': async () => { w.cutLevel = 3; await sleep(jumping ? 0 : 600); w.tofuStage = 'cubes'; },
+  'A-2.4-01': cut(1, 1200),                                                          // slabs
+  'A-2.4-02': cut(2, 1800),                                                          // strips
+  'A-2.4-03': async () => { await cut(3, 2200)(); w.tofuStage = 'cubes'; },          // cubes
   'A-3.1-02': () => { w.tapOn = false; w.potFilled = true; },
   'A-3.1-03': () => { w.potOnHob = true; },
   'A-3.1-04': () => { w.backHeat = 3; },
@@ -447,6 +461,12 @@ function repeatCount(a) {
   return m ? Number(m[1]) : 3;
 }
 
+const VERDICT = {
+  right: '<span class="verdict ok">✓ Correct</span>',
+  auto: '<span class="verdict auto">✓ Autocorrected</span>',   // filled in by the system after the last try
+  wrong: '<span class="verdict bad">✗ Wrong</span>',
+};
+
 function renderRight() {
   const sub = engine.sub;
   let html = '';
@@ -461,11 +481,13 @@ function renderRight() {
         const st = ui.optState?.[o.id] || '';
         const sel = ui.selected.has(o.id);
         const img = tiles ? itemImg(o.item) : '';
-        return `<button class="card opt ${multi ? 'multi' : ''} ${tiles ? 'tile' : ''} ${st} ${sel ? 'selected' : ''}" data-opt="${esc(o.id)}" aria-pressed="${sel}"
-          ${engine.ready || st === 'wrong' ? 'disabled' : ''}>
+        // Lists: a wrong pick stays ticked so it can be unticked; confirmed picks are locked in.
+        const locked = engine.ready || st === 'right' || st === 'auto' || (st === 'wrong' && !multi);
+        return `<button class="card opt ${multi ? 'multi' : ''} ${tiles ? 'tile' : ''} ${st === 'auto' ? 'right' : st} ${sel ? 'selected' : ''}" data-opt="${esc(o.id)}" aria-pressed="${sel}"
+          ${locked ? 'disabled' : ''}>
           ${tiles ? `<span class="tile-img">${img || '<span class="no-img" aria-hidden="true"></span>'}</span>` : ''}
           ${multi && !tiles ? `<span class="tick" aria-hidden="true">${sel ? '✓' : ''}</span>` : ''}
-          <span class="card-label">${esc(o.label)}</span>${st === 'right' ? '<span class="verdict ok">✓ Correct</span>' : st === 'wrong' ? '<span class="verdict bad">✗ Wrong</span>' : ''}</button>`;
+          <span class="card-label">${esc(o.label)}</span>${VERDICT[st] || ''}</button>`;
       }).join('') + '</div>' +
       '';
   } else if (live) {
@@ -511,8 +533,25 @@ function renderRight() {
   }
   right.innerHTML = html;
   right.hidden = !html;                     // nothing to pick here: no panel
+  setHeld(ui.mode === 'target' && !ui.locked ? ui.pending[0].source : null);
   renderPins();
 }
+
+// While an item is picked up, the pointer becomes that item over the kitchen.
+const held = $('#held');
+function setHeld(id) {
+  document.body.classList.toggle('holding', !!id);
+  if (!id) { held.classList.add('off'); held.dataset.id = ''; return; }
+  if (held.dataset.id !== id) {
+    held.dataset.id = id;
+    held.innerHTML = itemImg(id) || `<span class="no-img"></span>`;
+  }
+}
+document.addEventListener('pointermove', (e) => {
+  held.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+  const overKitchen = e.target === canvas || !!e.target.closest('#pins');
+  held.classList.toggle('off', !document.body.classList.contains('holding') || !overKitchen);
+});
 
 // ---------- pins (clickable spots in the 3D kitchen) ----------
 // Clickable in the kitchen: it has a pin spot and its model is showing (or, with no model
@@ -578,7 +617,7 @@ async function checkSingle(id) {
   applyOptionEffect(o);
   setFeedback([o.feedback, chancesLine()].filter(Boolean), o.outcome);
   if (res.reveal) {
-    res.reveal.forEach((rid) => { ui.optState[rid] = 'right'; });
+    res.reveal.forEach((rid) => { ui.optState[rid] = 'auto'; });
     setFeedback([o.feedback, 'Here’s the right answer. Let’s keep going.'], o.outcome);
   }
   if (res.gameOver) return gameOver();
@@ -647,11 +686,20 @@ function doCheck() {
     engine.options().forEach((o) => { if (ui.selected.has(o.id)) { ui.optState[o.id] = 'right'; if (o.item) w.committed.add(o.item); } });
     setFeedback(['All there. Nicely done.'], 'Perfect');
   } else {
-    res.wrong.forEach((o) => { ui.optState[o.id] = 'wrong'; ui.selected.delete(o.id); });
+    // Right picks are confirmed and brought out now; wrong ones stay ticked, marked, for the learner to untick.
+    res.wrong.forEach((o) => { ui.optState[o.id] = 'wrong'; });
+    engine.options().forEach((o) => {
+      if (ui.selected.has(o.id) && o.correctness !== 'Incorrect') { ui.optState[o.id] = 'right'; if (o.item) w.committed.add(o.item); }
+    });
     setFeedback(checkLines(sub, res.wrong, res.missing.length > 0), null);
     const lines = ui.feedback.text;
     if (res.reveal) {
-      engine.options().forEach((o) => { if (o.correctness !== 'Incorrect') { ui.optState[o.id] = 'right'; ui.selected.add(o.id); } });
+      engine.options().forEach((o) => {
+        if (o.correctness === 'Incorrect') { ui.selected.delete(o.id); return; }
+        if (ui.optState[o.id] !== 'right') ui.optState[o.id] = 'auto';
+        ui.selected.add(o.id);
+        if (o.item) w.committed.add(o.item);
+      });
       lines.push('Here’s the full list. Let’s keep going.');
     }
     if (!res.reveal) lines.push(chancesLine());
@@ -694,6 +742,7 @@ right.addEventListener('click', async (e) => {
   if (opt && !opt.disabled) {
     const id = opt.dataset.opt;
     if (sub.type === 'MCQ - Multi select') {
+      if (ui.optState[id] === 'wrong') delete ui.optState[id];
       ui.selected.has(id) ? ui.selected.delete(id) : ui.selected.add(id);
       ui.checkLocked = false;
       renderAction();
@@ -783,6 +832,9 @@ function pickSource(id) {
   }
   ui.source = id;
   const acts = choices().filter((a) => a.source === id);
+  if (acts.length === 1 && acts[0].interaction === 'Click' && !needsTarget(acts[0])) {
+    return perform(acts[0]);                   // only one thing to do with it (open the tofu pack): just do it
+  }
   if (acts.length > 1 && acts.every((a) => a.interaction === 'Click' && a.target && a.target === acts[0].target)) {
     ui.mode = 'multi';                         // e.g. knife: tick the cuts, then Check
     ui.selected = new Set();
@@ -1112,7 +1164,8 @@ renderer.setAnimationLoop(() => {
   if (dining) return;                // the opening shows a still image of the restaurant
 
   if (run) {
-    const simDt = Math.min(dt * run.speed, run.remaining);
+    const due = run.total * Math.min(1, (performance.now() - run.t0) / 1000 / run.dur);
+    const simDt = Math.min(due - (run.total - run.remaining), run.remaining);
     for (let left2 = simDt; left2 > 0; left2 -= 0.5) Sim.stepModel(s, Math.min(0.5, left2));
     run.remaining -= simDt;
     renderTimer();

@@ -1447,24 +1447,6 @@
    "task": ""
   },
   {
-   "id": "A-2.1-02",
-   "sub": "S2.1",
-   "order": "-",
-   "interaction": "Hold",
-   "source": "I-TOFU",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "Squeeze the block hard by hand",
-   "correctness": "Incorrect",
-   "outcome": "Degraded",
-   "okFb": "",
-   "badFb": "Gently! You've cracked it. We'll still get cubes, but some will crumble.",
-   "branch": "NEXT",
-   "score": -5,
-   "effect": "tofu_cracked = true",
-   "task": ""
-  },
-  {
    "id": "A-2.2-01",
    "sub": "S2.2",
    "order": "1",
@@ -1516,24 +1498,6 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "tofu_pressing = true",
-   "task": ""
-  },
-  {
-   "id": "A-2.2-04",
-   "sub": "S2.2",
-   "order": "-",
-   "interaction": "Hold",
-   "source": "I-TOFU",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "Squeeze the block hard by hand",
-   "correctness": "Incorrect",
-   "outcome": "Degraded",
-   "okFb": "",
-   "badFb": "Gently! You've cracked it. We'll still get cubes, but some will crumble.",
-   "branch": "NEXT",
-   "score": -5,
-   "effect": "tofu_cracked = true",
    "task": ""
   },
   {
