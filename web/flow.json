@@ -26,12 +26,12 @@
  "substeps": [
   {
    "step": 1,
-   "stepTitle": "Read the order and set up",
+   "stepTitle": "Assemble the Ingredients and Utensils",
    "id": "S1.1",
    "title": "Confirm the order",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "Table 6 wants two plates of carbonara. What exactly did they ask for?",
+   "left": "Select the appropriate order details to confirm what the customer asked for.",
    "right": "Four order summaries (cards)",
    "tip": "T-1.1",
    "camera": "Counter",
@@ -41,16 +41,18 @@
    "next": "S1.2",
    "learning": "Reading the brief is the first cooking skill: dietary needs and 'Roman-style' change the whole plan.",
    "sceneState": "Order ticket pinned above the counter; empty counter.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 1,
-   "stepTitle": "Read the order and set up",
+   "stepTitle": "Assemble the Ingredients and Utensils",
    "id": "S1.2",
    "title": "Bring the tools",
    "type": "MCQ - Multi select",
    "required": "Yes",
-   "left": "First, the equipment. Choose the tools for the job.",
+   "left": "Select the appropriate tools for preparing the dish.",
    "right": "Equipment cards (12)",
    "tip": "",
    "camera": "Counter",
@@ -60,16 +62,18 @@
    "next": "S1.3",
    "learning": "No colander: the pasta moves straight from pot to pan with tongs, carrying starchy water with it.",
    "sceneState": "Empty counter; the chosen tools appear together when the picks pass the check.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "A few of these won't help today: {items}. Walk through the dish: press, cut, boil, fry, grate, whisk, move the pasta, save the water. Which tools does each stage really need?",
+   "mixedMissing": "And something's still missing. Think through each stage again."
   },
   {
    "step": 1,
-   "stepTitle": "Read the order and set up",
+   "stepTitle": "Assemble the Ingredients and Utensils",
    "id": "S1.3",
    "title": "Bring the ingredients to the table",
    "type": "MCQ - Multi select",
    "required": "Yes",
-   "left": "Now the ingredients. Pick everything you need for two plates of tofu carbonara. Leave out anything that doesn't belong.",
+   "left": "Select the appropriate ingredients for two plates of the customer's carbonara.",
    "right": "Pantry and fridge items (14 cards)",
    "tip": "T-1.3",
    "camera": "Counter",
@@ -79,7 +83,9 @@
    "next": "S2.1",
    "learning": "Carbonara is only five ingredients, so each one matters. No cream: the creaminess comes from egg, cheese, fat and starchy water.",
    "sceneState": "Tools on the counter; the chosen ingredients appear together when the picks pass the check.",
-   "notes": "Decoys teach the classic mistakes (cream, garlic, meat)."
+   "notes": "Decoys teach the classic mistakes (cream, garlic, meat).",
+   "multiWrong": "Some of these don't belong in this carbonara: {items}. Read the order again: no meat, no cream, and keep it Roman.",
+   "mixedMissing": "And you're short of something. Check the order again."
   },
   {
    "step": 2,
@@ -98,7 +104,9 @@
    "next": "S2.2",
    "learning": "Water on the surface turns to steam and stops browning. Dry tofu crisps; wet tofu steams.",
    "sceneState": "Tofu package on the board.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 2,
@@ -117,7 +125,9 @@
    "next": "S2.3",
    "learning": "15-20 minutes removes most surface water. Use the time to get the pasta water on.",
    "sceneState": "Tofu stack with weight on top.",
-   "notes": "Timer fast-forwards; the scene shows water pooling on the towel."
+   "notes": "Timer fast-forwards; the scene shows water pooling on the towel.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 2,
@@ -136,7 +146,9 @@
    "next": "S2.4",
    "learning": "Even 1 cm cubes cook at the same rate and give the most crisp surface per bite.",
    "sceneState": "Pressed tofu block on the board.",
-   "notes": "Cutting pattern: slabs, then strips, then cubes."
+   "notes": "Cutting pattern: slabs, then strips, then cubes.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 2,
@@ -155,7 +167,9 @@
    "next": "S3.1",
    "learning": "Soy sauce adds savoury depth (umami); smoked paprika adds smokiness. Go light: pecorino is already very salty.",
    "sceneState": "Tofu cubes in a bowl.",
-   "notes": "Optional substep: skipping it gives a Degraded 'bland' note."
+   "notes": "Optional substep: skipping it gives a Degraded 'bland' note.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 3,
@@ -174,7 +188,9 @@
    "next": "S4.1",
    "learning": "Water takes about 10 minutes to boil, so start it early and prep while it heats.",
    "sceneState": "Pot on the counter next to the sink.",
-   "notes": "Salt goes in later (S6.1), once the water boils."
+   "notes": "Salt goes in later (S6.1), once the water boils.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 4,
@@ -193,7 +209,9 @@
    "next": "S4.2",
    "learning": "Guanciale starts cold so its fat can melt out slowly. Tofu has almost no fat, so it needs hot oil to crisp instead of stick.",
    "sceneState": "Empty skillet on the front burner; burner off.",
-   "notes": "Key adaptation moment from guanciale to tofu."
+   "notes": "Key adaptation moment from guanciale to tofu.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 4,
@@ -212,7 +230,9 @@
    "next": "S4.3",
    "learning": "Browning (the Maillard reaction) starts around 140 \u00b0C. Moving the tofu too soon tears the crust before it forms.",
    "sceneState": "Skillet on burner; heat knob at Off.",
-   "notes": "Live sim: heat knob, wait-time choices, Peek view to judge colour."
+   "notes": "Live sim: heat knob, wait-time choices, Peek view to judge colour.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 4,
@@ -231,7 +251,9 @@
    "next": "S5.1",
    "learning": "The oil now carries flavour and becomes the fat in the sauce emulsion. Tofu goes back in at the end so it stays crisp.",
    "sceneState": "Crisp tofu in the skillet; burner on.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 5,
@@ -250,7 +272,9 @@
    "next": "S5.2",
    "learning": "Yolks bring richness and colour; a couple of whole eggs make the sauce looser and easier to handle. Rule: 1 whole + 1 yolk per person, plus 1 yolk 'for the pot'.",
    "sceneState": "Egg carton and empty bowl on the counter.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 5,
@@ -269,7 +293,9 @@
    "next": "S5.3",
    "learning": "Egg whites set at a lower temperature than yolks, which is one reason extra yolks make a more forgiving sauce.",
    "sceneState": "Bowl and egg carton on the counter.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 5,
@@ -288,7 +314,9 @@
    "next": "S5.4",
    "learning": "Powder-fine cheese melts evenly into the egg. Coarse shreds clump and turn stringy.",
    "sceneState": "Box grater and a wedge of pecorino on the counter.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 5,
@@ -307,7 +335,9 @@
    "next": "S6.1",
    "learning": "Freshly cracked pepper is a main flavour here, not a garnish.",
    "sceneState": "Bowl with eggs.",
-   "notes": "No salt: the cheese brings plenty."
+   "notes": "No salt: the cheese brings plenty.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 6,
@@ -326,7 +356,9 @@
    "next": "S6.2",
    "learning": "Pasta absorbs salt as it cooks. Salt more lightly than usual for carbonara: the pecorino and soy are salty, and the water goes into the sauce.",
    "sceneState": "Pot at a rolling boil.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 6,
@@ -345,7 +377,9 @@
    "next": "S6.3",
    "learning": "Stirring in the first minute stops the strands sticking while their surface starch is gelatinising.",
    "sceneState": "Salted water at a rolling boil.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 6,
@@ -364,7 +398,9 @@
    "next": "S7.1",
    "learning": "The pasta keeps cooking in the pan with the sauce, so it comes out a minute before al dente.",
    "sceneState": "Spaghetti boiling; timer running.",
-   "notes": "Timer fast-forwards to the chosen minute."
+   "notes": "Timer fast-forwards to the chosen minute.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 7,
@@ -383,7 +419,9 @@
    "next": "S7.2",
    "learning": "Starchy pasta water is the glue that binds fat and egg. It's your insurance if the sauce gets too thick.",
    "sceneState": "Pasta near al dente; skillet with flavoured oil.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 7,
@@ -402,7 +440,9 @@
    "next": "S7.3",
    "learning": "Tempering warms the eggs gradually so they aren't shocked by the hot pan. You can always thicken a sauce, but you can't unscramble one.",
    "sceneState": "Egg paste in the bowl; pasta in the skillet.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 7,
@@ -421,7 +461,9 @@
    "next": "S7.4",
    "learning": "Egg yolk starts to thicken around 62 \u00b0C and scrambles above 70 \u00b0C. A pan on the flame is far hotter than that.",
    "sceneState": "Pasta tossing in the pan on low heat.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 7,
@@ -440,7 +482,9 @@
    "next": "S8.1",
    "learning": "Thicken with gentle heat, loosen with pasta water. Constant movement keeps any one spot from overheating.",
    "sceneState": "Pan off the heat; pasta coated in oil.",
-   "notes": "Live sim: speed control, heat on/off, splash water, Plate button."
+   "notes": "Live sim: speed control, heat on/off, splash water, Plate button.",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 8,
@@ -459,7 +503,9 @@
    "next": "S8.2",
    "learning": "Keep it simple: the toppings repeat the dish's own flavours.",
    "sceneState": "Two warm bowls on the counter.",
-   "notes": ""
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": ""
   },
   {
    "step": 8,
@@ -478,7 +524,9 @@
    "next": "END",
    "learning": "Carbonara keeps thickening as it cools. Serve it immediately.",
    "sceneState": "Finished pasta in the pan.",
-   "notes": "Leads to the Outcomes screen."
+   "notes": "Leads to the Outcomes screen.",
+   "multiWrong": "",
+   "mixedMissing": ""
   }
  ],
  "options": [
@@ -545,7 +593,7 @@
   {
    "id": "O-1.3-b",
    "sub": "S1.3",
-   "label": "Extra-firm tofu",
+   "label": "Extra-firm Tofu",
    "item": "I-TOFU",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -581,7 +629,7 @@
   {
    "id": "O-1.3-e",
    "sub": "S1.3",
-   "label": "Black peppercorns",
+   "label": "Black Peppercorns",
    "item": "I-PEPPER",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -593,7 +641,7 @@
   {
    "id": "O-1.3-f",
    "sub": "S1.3",
-   "label": "Coarse salt",
+   "label": "Coarse Salt",
    "item": "I-SALT",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -605,7 +653,7 @@
   {
    "id": "O-1.3-g",
    "sub": "S1.3",
-   "label": "Olive oil",
+   "label": "Olive Oil",
    "item": "I-OIL",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -617,7 +665,7 @@
   {
    "id": "O-1.3-h",
    "sub": "S1.3",
-   "label": "Soy sauce",
+   "label": "Soy Sauce",
    "item": "I-SOY",
    "correctness": "Acceptable",
    "outcome": "Acceptable",
@@ -629,7 +677,7 @@
   {
    "id": "O-1.3-i",
    "sub": "S1.3",
-   "label": "Smoked paprika",
+   "label": "Smoked Paprika",
    "item": "I-PAPRIKA",
    "correctness": "Acceptable",
    "outcome": "Acceptable",
@@ -653,7 +701,7 @@
   {
    "id": "O-1.3-k",
    "sub": "S1.3",
-   "label": "Heavy cream",
+   "label": "Heavy Cream",
    "item": "I-CREAM",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -701,7 +749,7 @@
   {
    "id": "O-1.2-a",
    "sub": "S1.2",
-   "label": "Large pot with lid",
+   "label": "Large Pot with Lid",
    "item": "T-POT",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -713,7 +761,7 @@
   {
    "id": "O-1.2-b",
    "sub": "S1.2",
-   "label": "Heavy skillet (cast iron)",
+   "label": "Heavy Skillet (Cast Iron)",
    "item": "T-SKILLET",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -725,7 +773,7 @@
   {
    "id": "O-1.2-c",
    "sub": "S1.2",
-   "label": "Chef's knife and board",
+   "label": "Chef's Knife and Board",
    "item": "T-KNIFE",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -737,7 +785,7 @@
   {
    "id": "O-1.2-d",
    "sub": "S1.2",
-   "label": "2 clean kitchen towels",
+   "label": "2 Kitchen Towels",
    "item": "T-TOWELS",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -749,7 +797,7 @@
   {
    "id": "O-1.2-e",
    "sub": "S1.2",
-   "label": "Box grater",
+   "label": "Box Grater",
    "item": "T-GRATER",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -761,7 +809,7 @@
   {
    "id": "O-1.2-f",
    "sub": "S1.2",
-   "label": "Mixing bowl and whisk",
+   "label": "Mixing Bowl and Whisk",
    "item": "T-BOWL",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -773,7 +821,7 @@
   {
    "id": "O-1.2-g",
    "sub": "S1.2",
-   "label": "Slotted spoon",
+   "label": "Slotted Spoon",
    "item": "T-SLOTTED",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -797,7 +845,7 @@
   {
    "id": "O-1.2-i",
    "sub": "S1.2",
-   "label": "Ladle and mug",
+   "label": "Ladle and Mug",
    "item": "T-MUG",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -833,7 +881,7 @@
   {
    "id": "O-1.2-l",
    "sub": "S1.2",
-   "label": "Baking tray",
+   "label": "Baking Tray",
    "item": "T-TRAY",
    "correctness": "Incorrect",
    "outcome": "Recoverable",

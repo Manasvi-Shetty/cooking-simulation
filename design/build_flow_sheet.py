@@ -97,22 +97,22 @@ LISTS = {
 # Chef tip ID | Camera | Pass rule | Feedback if incomplete (multi-select) | Max attempts |
 # On pass -> | Learning point | Scene state on entry | Notes | (checks)
 FLOW = [
-    (1, "Read the order and set up", "S1.1", "Confirm the order", "MCQ - Single select", "Yes",
-     "Table 6 wants two plates of carbonara. What exactly did they ask for?",
+    (1, "Assemble the Ingredients and Utensils", "S1.1", "Confirm the order", "MCQ - Single select", "Yes",
+     "Select the appropriate order details to confirm what the customer asked for.",
      "Four order summaries (cards)", "T-1.1", "Counter",
      "Select the one correct summary.", "", 2, "S1.2",
      "Reading the brief is the first cooking skill: dietary needs and 'Roman-style' change the whole plan.",
      "Order ticket pinned above the counter; empty counter.", ""),
-    (1, "Read the order and set up", "S1.2", "Bring the tools", "MCQ - Multi select", "Yes",
-     "First, the equipment. Choose the tools for the job.",
+    (1, "Assemble the Ingredients and Utensils", "S1.2", "Bring the tools", "MCQ - Multi select", "Yes",
+     "Select the appropriate tools for preparing the dish.",
      "Equipment cards (12)", "", "Counter",
      "All Correct items selected and no Incorrect items.",
      "You're missing a tool. Think through each stage: press, cut, boil, fry, grate, whisk, move pasta, save water.",
      3, "S1.3",
      "No colander: the pasta moves straight from pot to pan with tongs, carrying starchy water with it.",
      "Empty counter; the chosen tools appear together when the picks pass the check.", ""),
-    (1, "Read the order and set up", "S1.3", "Bring the ingredients to the table", "MCQ - Multi select", "Yes",
-     "Now the ingredients. Pick everything you need for two plates of tofu carbonara. Leave out anything that doesn't belong.",
+    (1, "Assemble the Ingredients and Utensils", "S1.3", "Bring the ingredients to the table", "MCQ - Multi select", "Yes",
+     "Select the appropriate ingredients for two plates of the customer's carbonara.",
      "Pantry and fridge items (14 cards)", "T-1.3", "Counter",
      "All Correct items selected and no Incorrect items. Acceptable items allowed.",
      "Something's missing. Check the order again: pasta, protein, eggs, cheese, seasoning and something to cook the tofu in.",
@@ -248,6 +248,16 @@ FLOW = [
      "Carbonara keeps thickening as it cools. Serve it immediately.",
      "Finished pasta in the pan.", "Leads to the Outcomes screen."),
 ]
+# Multi-select branching (storyboard): the popup when several incorrect items are checked at once
+# ({items} becomes their names), and the line added after the incorrect feedback when something
+# is also missing.
+MULTI_FEEDBACK = {
+    "S1.2": ("A few of these won't help today: {items}. Walk through the dish: press, cut, boil, fry, grate, whisk, "
+             "move the pasta, save the water. Which tools does each stage really need?",
+             "And something's still missing. Think through each stage again."),
+    "S1.3": ("Some of these don't belong in this carbonara: {items}. Read the order again: no meat, no cream, and keep it Roman.",
+             "And you're short of something. Check the order again."),
+}
 flow_rows = []
 for i, r in enumerate(FLOW, start=2):
     assert len(r) == 17, (r[2], len(r))
@@ -255,7 +265,7 @@ for i, r in enumerate(FLOW, start=2):
         f'=COUNTIF(\'MCQ Options\'!$B:$B,C{i})+COUNTIF(\'Procedure Actions\'!$B:$B,C{i})',
         f'=IF(I{i}="","None",IF(COUNTIF(\'Chef Tips\'!$A:$A,I{i})>0,"OK","Missing tip"))',
         f'=IF(R{i}=0,"No options/actions",IF(S{i}="Missing tip","Fix tip",IF(OR(N{i}="END",COUNTIF($C:$C,N{i})>0),"OK","Bad next ID")))',
-    ])
+    ] + list(MULTI_FEEDBACK.get(r[2], ("", ""))))
 
 # ---------------------------------------------------------------- MCQ options
 # Option ID | Substep | Option label (right panel) | Item ID | Correctness | Outcome | Chef feedback | Branch to | Score | State effect
@@ -278,16 +288,16 @@ opt("S1.1", "4 × tofu carbonara, no cream", "", "Incorrect", "Recoverable",
 
 for label, item, cor, out, fb in [
     ("Spaghetti (dried, bronze-cut)", "I-SPAGHETTI", "Correct", "Perfect", "Dried pasta releases more starch into the water than fresh. Perfect."),
-    ("Extra-firm tofu", "I-TOFU", "Correct", "Perfect", "Extra-firm holds its shape and crisps. Silken would fall apart."),
+    ("Extra-firm Tofu", "I-TOFU", "Correct", "Perfect", "Extra-firm holds its shape and crisps. Silken would fall apart."),
     ("Eggs", "I-EGGS", "Correct", "Perfect", "The heart of the sauce."),
     ("Pecorino Romano", "I-PECORINO", "Correct", "Perfect", "Sharp, salty sheep's cheese from Lazio. The classic choice."),
-    ("Black peppercorns", "I-PEPPER", "Correct", "Perfect", "Whole, so we can crack them fresh."),
-    ("Coarse salt", "I-SALT", "Correct", "Perfect", "For the pasta water."),
-    ("Olive oil", "I-OIL", "Correct", "Perfect", "Tofu has no fat to render, so the oil does that job."),
-    ("Soy sauce", "I-SOY", "Acceptable", "Acceptable", "Good thinking: a little soy gives the tofu savoury depth."),
-    ("Smoked paprika", "I-PAPRIKA", "Acceptable", "Acceptable", "Nice. A pinch brings back the smokiness guanciale would have given."),
+    ("Black Peppercorns", "I-PEPPER", "Correct", "Perfect", "Whole, so we can crack them fresh."),
+    ("Coarse Salt", "I-SALT", "Correct", "Perfect", "For the pasta water."),
+    ("Olive Oil", "I-OIL", "Correct", "Perfect", "Tofu has no fat to render, so the oil does that job."),
+    ("Soy Sauce", "I-SOY", "Acceptable", "Acceptable", "Good thinking: a little soy gives the tofu savoury depth."),
+    ("Smoked Paprika", "I-PAPRIKA", "Acceptable", "Acceptable", "Nice. A pinch brings back the smokiness guanciale would have given."),
     ("Guanciale", "I-GUANCIALE", "Incorrect", "Recoverable", "That's the classic, but our customer doesn't eat meat. Put it back."),
-    ("Heavy cream", "I-CREAM", "Incorrect", "Recoverable", "No cream! She asked for Roman-style, and in Rome carbonara never has cream."),
+    ("Heavy Cream", "I-CREAM", "Incorrect", "Recoverable", "No cream! She asked for Roman-style, and in Rome carbonara never has cream."),
     ("Garlic", "I-GARLIC", "Incorrect", "Recoverable", "Garlic isn't in carbonara. Keep it for another dish."),
     ("Butter", "I-BUTTER", "Incorrect", "Recoverable", "We don't need butter. The oil and egg give us all the richness."),
     ("Parsley", "I-PARSLEY", "Incorrect", "Recoverable", "Pretty, but it doesn't belong here."),
@@ -295,18 +305,18 @@ for label, item, cor, out, fb in [
     opt("S1.3", label, item, cor, out, fb, "NEXT" if cor != "Incorrect" else "RETRY", 0 if cor != "Incorrect" else -3)
 
 for label, item, cor, out, fb in [
-    ("Large pot with lid", "T-POT", "Correct", "Perfect", "Big pot, lots of room for the spaghetti to move."),
-    ("Heavy skillet (cast iron)", "T-SKILLET", "Correct", "Perfect", "Heavy pans hold heat evenly. Great for crisping tofu."),
-    ("Chef's knife and board", "T-KNIFE", "Correct", "Perfect", "For neat 1 cm cubes."),
-    ("2 clean kitchen towels", "T-TOWELS", "Correct", "Perfect", "To press the water out of the tofu."),
-    ("Box grater", "T-GRATER", "Correct", "Perfect", "We'll use its finest side."),
-    ("Mixing bowl and whisk", "T-BOWL", "Correct", "Perfect", "For the egg mixture."),
-    ("Slotted spoon", "T-SLOTTED", "Correct", "Perfect", "Lifts the tofu out and leaves the oil behind."),
+    ("Large Pot with Lid", "T-POT", "Correct", "Perfect", "Big pot, lots of room for the spaghetti to move."),
+    ("Heavy Skillet (Cast Iron)", "T-SKILLET", "Correct", "Perfect", "Heavy pans hold heat evenly. Great for crisping tofu."),
+    ("Chef's Knife and Board", "T-KNIFE", "Correct", "Perfect", "For neat 1 cm cubes."),
+    ("2 Kitchen Towels", "T-TOWELS", "Correct", "Perfect", "To press the water out of the tofu."),
+    ("Box Grater", "T-GRATER", "Correct", "Perfect", "We'll use its finest side."),
+    ("Mixing Bowl and Whisk", "T-BOWL", "Correct", "Perfect", "For the egg mixture."),
+    ("Slotted Spoon", "T-SLOTTED", "Correct", "Perfect", "Lifts the tofu out and leaves the oil behind."),
     ("Tongs", "T-TONGS", "Correct", "Perfect", "To move the pasta straight into the pan."),
-    ("Ladle and mug", "T-MUG", "Correct", "Perfect", "To save pasta water. Don't forget it!"),
+    ("Ladle and Mug", "T-MUG", "Correct", "Perfect", "To save pasta water. Don't forget it!"),
     ("Colander", "T-COLANDER", "Incorrect", "Recoverable", "No colander. If we drain the pasta, we pour our best ingredient, the starchy water, down the sink."),
     ("Blender", "T-BLENDER", "Incorrect", "Recoverable", "A whisk is all we need. A blender would whip air into the eggs."),
-    ("Baking tray", "T-TRAY", "Incorrect", "Recoverable", "No oven today. Everything happens on the stove."),
+    ("Baking Tray", "T-TRAY", "Incorrect", "Recoverable", "No oven today. Everything happens on the stove."),
 ]:
     opt("S1.2", label, item, cor, out, fb, "NEXT" if cor != "Incorrect" else "RETRY", 0 if cor != "Incorrect" else -3)
 
@@ -795,8 +805,9 @@ FLOW_HEAD = ["Step", "Step title", "Substep ID", "Substep title", "Type", "Requi
              "Left panel: instruction / question", "Right panel shows", "Chef tip at start (ID)", "Camera view",
              "Pass rule", "Feedback if incomplete (multi-select)", "Max attempts", "On pass →",
              "Learning point (science)", "Scene state on entry", "Notes",
-             "Options / actions defined", "Tip check", "Row check"]
-wf = sheet("Flow", FLOW_HEAD, [6, 20, 9, 24, 17, 9, 42, 26, 11, 13, 30, 34, 9, 9, 44, 30, 28, 11, 11, 13],
+             "Options / actions defined", "Tip check", "Row check",
+             "Feedback if several incorrect (multi-select)", "Added if also incomplete (multi-select)"]
+wf = sheet("Flow", FLOW_HEAD, [6, 20, 9, 24, 17, 9, 42, 26, 11, 13, 30, 34, 9, 9, 44, 30, 28, 11, 11, 13, 44, 34],
            flow_rows, band_key=1, check_cols=(18, 19, 20))
 dropdown(wf, "E", "=Lists!$A$2:$A$4")
 dropdown(wf, "F", "=Lists!$H$2:$H$3")

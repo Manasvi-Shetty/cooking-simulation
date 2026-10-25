@@ -28,7 +28,8 @@ substeps = rows("Flow", {
     "required": "Required?", "left": "Left panel: instruction / question", "right": "Right panel shows",
     "tip": "Chef tip at start (ID)", "camera": "Camera view", "passRule": "Pass rule",
     "incomplete": "Feedback if incomplete (multi-select)", "maxAttempts": "Max attempts", "next": "On pass →",
-    "learning": "Learning point (science)", "sceneState": "Scene state on entry", "notes": "Notes"})
+    "learning": "Learning point (science)", "sceneState": "Scene state on entry", "notes": "Notes",
+    "multiWrong": "Feedback if several incorrect (multi-select)", "mixedMissing": "Added if also incomplete (multi-select)"})
 options = rows("MCQ Options", {
     "id": "Option ID", "sub": "Substep ID", "label": "Option label (right panel)", "item": "Item ID",
     "correctness": "Correctness", "outcome": "Outcome", "feedback": "Chef feedback (on select)",

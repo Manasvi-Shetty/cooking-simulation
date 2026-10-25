@@ -353,7 +353,7 @@ function renderLeft() {
       <div id="progress" aria-hidden="true"></div>
       <span class="score">Score <b id="score">${engine.score}</b></span>
     </div>
-    <h2>${esc(sub.title)}</h2>
+    <h2>${esc(sub.stepTitle)}</h2>
     ${sub.required === 'No' ? `<div class="meta">${chip('Optional', 'type')}</div>` : ''}
     ${isProc ? '' : `<p class="instr">${esc(sub.left)}</p>`}
     ${isProc ? taskList() : ''}
@@ -409,7 +409,7 @@ function renderPop(fb) {
     <div class="chef-face" aria-hidden="true">P</div>
     <div class="fb-body">
       <span class="chef-name">NONNA PINA ${fb?.outcome ? chip(fb.outcome, fb.outcome) : ''}</span>
-      ${lines.map((t) => `<p>${esc(t)}</p>`).join('')}
+      ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p>${esc(t)}</p>`)).join('')}
     </div>
     <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button>`;
   pop.hidden = false;
@@ -603,6 +603,19 @@ async function checkPicks() {
   refresh();
 }
 
+// Multi-select feedback (storyboard): one wrong pick gets its own message; several wrong picks get
+// one message naming them; if something is also missing, a line is added after the wrong-pick part.
+function checkLines(sub, wrong, missing) {
+  const names = wrong.map((o) => o.label);
+  const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0];
+  const extra = missing && wrong.length ? sub.mixedMissing : '';
+  if (wrong.length > 1 && sub.multiWrong) return [[sub.multiWrong.replace('{items}', list), extra].filter(Boolean).join(' ')];
+  const lines = wrong.map((o) => ({ b: o.label, t: o.feedback }));
+  if (extra && lines.length === 1) lines[0].t += ` ${extra}`;
+  else if (missing) lines.push(sub.incomplete || 'Something is missing.');
+  return lines;
+}
+
 function doCheck() {
   const sub = engine.sub;
   if (ui.mode === 'multi') return checkPicks();
@@ -610,11 +623,11 @@ function doCheck() {
   ui.optState = ui.optState || {};
   if (res.pass) {
     engine.options().forEach((o) => { if (ui.selected.has(o.id)) { ui.optState[o.id] = 'right'; if (o.item) w.committed.add(o.item); } });
-    setFeedback(['All there. Nicely done.', ...res.acceptable.map((o) => o.feedback)], 'Perfect');
+    setFeedback(['All there. Nicely done.'], 'Perfect');
   } else {
     res.wrong.forEach((o) => { ui.optState[o.id] = 'wrong'; ui.selected.delete(o.id); });
-    const lines = res.wrong.map((o) => `${o.label}: ${o.feedback}`);
-    if (res.missing.length) lines.push(sub.incomplete || 'Something is missing.');
+    setFeedback(checkLines(sub, res.wrong, res.missing.length > 0), null);
+    const lines = ui.feedback.text;
     if (res.reveal) {
       engine.options().forEach((o) => { if (o.correctness !== 'Incorrect') { ui.optState[o.id] = 'right'; ui.selected.add(o.id); } });
       lines.push('Here’s the full list. Let’s keep going.');
