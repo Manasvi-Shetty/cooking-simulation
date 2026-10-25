@@ -242,13 +242,12 @@ function renderTimer() {
 }
 const VISUALS = {
   'A-2.1-01': async () => { w.tofuStage = 'draining'; await sleep(jumping ? 0 : 1600); w.tofuStage = 'block'; },
-  'A-2.1-02': () => { w.towelBottom = true; },          // slides in under the tofu
-  'A-2.1-03': () => { w.towelTop = true; },
-  'A-2.1-04': () => { w.weight = true; w.tofuStage = 'pressing'; },
-  'A-2.3-01': async () => { w.cutLevel = 1; await sleep(jumping ? 0 : 700); },       // slabs
-  'A-2.3-02': async () => { w.cutLevel = 2; await sleep(jumping ? 0 : 700); },       // strips
-  'A-2.3-03': async () => { w.cutLevel = 3; await sleep(jumping ? 0 : 600); w.tofuStage = 'cubes'; },
-  'A-2.3-05': () => { w.tofuStage = 'cubes'; },                                         // crumbled by hand
+  'A-2.2-01': () => { w.towelBottom = true; },          // slides in under the tofu
+  'A-2.2-02': () => { w.towelTop = true; },
+  'A-2.2-03': () => { w.weight = true; w.tofuStage = 'pressing'; },
+  'A-2.4-01': async () => { w.cutLevel = 1; await sleep(jumping ? 0 : 700); },       // slabs
+  'A-2.4-02': async () => { w.cutLevel = 2; await sleep(jumping ? 0 : 700); },       // strips
+  'A-2.4-03': async () => { w.cutLevel = 3; await sleep(jumping ? 0 : 600); w.tofuStage = 'cubes'; },
   'A-3.1-02': () => { w.tapOn = false; w.potFilled = true; },
   'A-3.1-03': () => { w.potOnHob = true; },
   'A-3.1-04': () => { w.backHeat = 3; },
@@ -302,7 +301,7 @@ const ENTER = {
   'S2.1': () => commitStep1(),
   'S4.3': () => w.committed.add('PLATE'),
   'S8.1': () => w.committed.add('SERVING'),
-  'S2.3': () => { w.pressDone = true; w.tofuStage = 'pressed'; },
+  'S2.4': () => { w.pressDone = true; w.tofuStage = 'pressed'; },
   'S4.1': () => { w.boil = 0.3; },
   'S6.1': () => { w.lidOn = false; w.boil = 1; w.potOnHob = true; w.potFilled = true; },
   'S7.4': () => { s.heat = s.heat; },
@@ -331,9 +330,16 @@ function liveLine() {
 
 function chip(text, kind = '') { return `<span class="chip ${esc(kind)}">${esc(text)}</span>`; }
 
-// One task at a time: the next thing to do in this procedure.
+// One task at a time. Merged tasks (storyboard) have one instruction for all their actions;
+// older steps still list the next action on its own.
 function taskList() {
+  const sub = engine.sub;
   const req = engine.required();
+  if (!req.some((a) => a.task)) {
+    return `<div class="task-card" aria-live="polite">
+      <span class="task-no">${esc(sub.id.slice(1))}</span><p class="task-now">${esc(sub.left)}</p>
+    </div>`;
+  }
   const i = req.findIndex((a) => !engine.done.has(a.id));
   if (i < 0) return `<div class="task-card" aria-live="polite"><p class="task-now">All done. Press Continue.</p></div>`;
   return `<div class="task-card" aria-live="polite">
@@ -482,8 +488,9 @@ function renderRight() {
       <button class="link" data-back>Cancel</button>`;
   } else if (ui.mode === 'multi') {
     const acts = engine.actions().filter((a) => a.source === ui.source && a.interaction === 'Click');
-    html = `<button class="link" data-back>← All items</button>
-      <span class="eyebrow">${esc(engine.item(ui.source).name)}: pick all that apply</span><div class="cards">` +
+    const solo = soloMulti(sub);
+    html = `${solo ? '' : '<button class="link" data-back>← All items</button>'}
+      <span class="eyebrow">${solo ? 'Pick all that apply' : `${esc(engine.item(ui.source).name)}: pick all that apply`}</span><div class="cards">` +
       acts.map((a) => {
         const st = ui.optState?.[a.id] || '', sel = ui.selected.has(a.id);
         return `<button class="card opt multi ${st} ${sel ? 'selected' : ''}" data-pick="${esc(a.id)}" aria-pressed="${sel}" ${st ? 'disabled' : ''}>
@@ -499,7 +506,7 @@ function renderRight() {
       (acts.length ? '' : '<p class="muted">Nothing left to do with this.</p>') + '</div>';
   } else if (sub.type === 'Procedure' && !engine.ready) {
     // Things already in the kitchen are clicked there (pins); only the rest get cards.
-    const sources = [...new Set(choices().filter((a) => !onScreen(a.source)).map((a) => a.source))];
+    const sources = pickables().filter((id) => !onScreen(id));
     html = sources.length ? `<div class="cards grid">${sources.map((id) => itemCard(id)).join('')}</div>` : '';
   }
   right.innerHTML = html;
@@ -524,8 +531,7 @@ function renderPins() {
       const targets = [...new Set(engine.actions().map((a) => a.target).filter((t) => t && props.anchors[t]))];
       targets.forEach((id) => pinList.push({ id, kind: 'target' }));
     } else if (ui.mode !== 'actions') {
-      [...new Set(choices().filter((a) => onScreen(a.source)).map((a) => a.source))]
-        .forEach((id) => pinList.push({ id, kind: 'source' }));
+      pickables().filter(onScreen).forEach((id) => pinList.push({ id, kind: 'source' }));
     }
   }
   pins.innerHTML = pinList.map((p) => `<button class="pin ${p.kind}" data-pin="${esc(p.id)}"><span>${esc(engine.item(p.id).name)}</span></button>`).join('');
@@ -572,19 +578,19 @@ async function checkPicks() {
   const missing = acts.filter((a) => /^\d+$/.test(a.order) && !engine.done.has(a.id) && !ui.selected.has(a.id));
   ui.optState = ui.optState || {};
   if (wrong.length || missing.length) {
-    const lines = [];
+    const judged = [];
     let outcome = null;
     for (const a of wrong) {
       const res = engine.perform(a.id);
       ui.optState[a.id] = 'wrong';
       ui.selected.delete(a.id);
-      lines.push(`${a.param}: ${res.feedback}`);
+      judged.push({ label: a.param, feedback: res.feedback });
       outcome = res.outcome;
       if (res.gameOver) return gameOver();
     }
-    if (missing.length) { lines.push('Something’s missing. Which cuts get you all the way to 1 cm cubes?'); engine.misses += 1; }
+    if (missing.length) engine.misses += 1;
     ui.checkLocked = true;
-    setFeedback(lines, outcome || 'Recoverable');
+    setFeedback(checkLines(engine.sub, judged, missing.length > 0), outcome || 'Recoverable');
     return refresh();
   }
   picked.forEach((a) => { ui.optState[a.id] = 'right'; });
@@ -737,7 +743,28 @@ const needsTarget = (a) => ['Drag', 'Click'].includes(a.interaction) && a.target
 
 // Picking an item: if everything you can do with it is "put it somewhere", go straight to
 // choosing the spot (towel → board, towel → tofu). Otherwise list what you can do with it.
+// Everything the learner can pick up now, plus items the storyboard lists as there but not usable yet.
+function pickables() {
+  return [...new Set([...choices().map((a) => a.source), ...(engine.sub.tooEarly?.items || [])])];
+}
+// A task that is nothing but one pick-all-that-apply list (the tofu cuts) opens straight on the list.
+function soloMulti(sub) {
+  const acts = engine.actions(sub);
+  return sub.type === 'Procedure' && acts.length > 1 &&
+    acts.every((a) => a.interaction === 'Click' && a.source === acts[0].source && a.target && a.target === acts[0].target);
+}
+function missFeedback(text) {
+  engine.misses += 1;
+  ui.hint = engine.misses >= engine.sub.maxAttempts ? engine.nextRequired() : null;
+  setFeedback([text, ui.hint ? '' : missesLine()].filter(Boolean), null);
+}
+
 function pickSource(id) {
+  const early = engine.sub.tooEarly;
+  if (early?.items.includes(id) && !choices().some((a) => a.source === id)) {
+    missFeedback(early.text);
+    return refresh();
+  }
   ui.source = id;
   const acts = choices().filter((a) => a.source === id);
   if (acts.length > 1 && acts.every((a) => a.interaction === 'Click' && a.target && a.target === acts[0].target)) {
@@ -771,6 +798,8 @@ pins.addEventListener('click', (e) => {
     // The action that puts this item on that spot (the next one due, if several).
     const fits = ui.pending.filter((a) => a.target === id);
     if (fits.length) return perform(fits.find((a) => a.id === engine.nextRequired()?.id) || fits[0]);
+    const spot = engine.sub.wrongSpot?.[ui.pending[0].source];
+    if (spot) { missFeedback(spot); ui.mode = 'items'; ui.pending = null; return refresh(); }
     setFeedback('Not there. Where would this go?', null);
     return renderPop(ui.feedback);
   }
@@ -852,6 +881,7 @@ function enter(id) {
   popKey = '';
   ENTER[id]?.();
   setView(CAMERA_OVERRIDE[id] || sub.camera);
+  if (soloMulti(sub)) Object.assign(ui, { mode: 'multi', source: engine.actions()[0].source, checkLocked: false });
   refresh();
   const tip = engine.tip();
   if (tip) showTip(tip);

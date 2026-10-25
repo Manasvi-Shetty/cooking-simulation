@@ -43,7 +43,9 @@
    "sceneState": "Order ticket pinned above the counter; empty counter.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 1,
@@ -64,7 +66,9 @@
    "sceneState": "Empty counter; the chosen tools appear together when the picks pass the check.",
    "notes": "",
    "multiWrong": "A few of these won't help today: {items}. Walk through the dish: press, cut, boil, fry, grate, whisk, move the pasta, save the water. Which tools does each stage really need?",
-   "mixedMissing": "And something's still missing. Think through each stage again."
+   "mixedMissing": "And something's still missing. Think through each stage again.",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 1,
@@ -85,81 +89,121 @@
    "sceneState": "Tools on the counter; the chosen ingredients appear together when the picks pass the check.",
    "notes": "Decoys teach the classic mistakes (cream, garlic, meat).",
    "multiWrong": "Some of these don't belong in this carbonara: {items}. Read the order again: no meat, no cream, and keep it Roman.",
-   "mixedMissing": "And you're short of something. Check the order again."
+   "mixedMissing": "And you're short of something. Check the order again.",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 2,
-   "stepTitle": "Prep the tofu",
+   "stepTitle": "Press and Cube the Tofu",
    "id": "S2.1",
-   "title": "Press the tofu",
+   "title": "Open the tofu pack",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Extra-firm tofu holds a lot of water. Set it up to press.",
-   "right": "Tofu, 2 kitchen towels, heavy pan",
+   "left": "Open the tofu pack to drain the packing water.",
+   "right": "2 Kitchen Towels, Heavy Pan (not usable yet)",
    "tip": "T-2.1",
    "camera": "Cutting board",
-   "passRule": "Actions A-2.1-01 to 04 in order.",
+   "passRule": "Action A-2.1-01.",
    "incomplete": "",
    "maxAttempts": 3,
    "next": "S2.2",
-   "learning": "Water on the surface turns to steam and stops browning. Dry tofu crisps; wet tofu steams.",
+   "learning": "Packing water has to go before pressing can draw out the water inside.",
    "sceneState": "Tofu package on the board.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": {
+    "items": [
+     "T-TOWELS",
+     "E-WEIGHT"
+    ],
+    "text": "Open the pack and drain it before anything else."
+   },
+   "wrongSpot": null
   },
   {
    "step": 2,
-   "stepTitle": "Prep the tofu",
+   "stepTitle": "Press and Cube the Tofu",
    "id": "S2.2",
+   "title": "Press the tofu",
+   "type": "Procedure",
+   "required": "Yes",
+   "left": "Draw out moisture from the tofu.",
+   "right": "2 Kitchen Towels, Heavy Pan",
+   "tip": "",
+   "camera": "Cutting board",
+   "passRule": "Actions A-2.2-01 to 03 in order.",
+   "incomplete": "",
+   "maxAttempts": 3,
+   "next": "S2.3",
+   "learning": "Water on the surface turns to steam and stops browning. Dry tofu crisps; wet tofu steams.",
+   "sceneState": "Drained tofu block on the board.",
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": {
+    "T-TOWELS": "One towel under the tofu, one on top. Try again.",
+    "E-WEIGHT": "The heavy pan goes on top of the tofu to press it."
+   }
+  },
+  {
+   "step": 2,
+   "stepTitle": "Press and Cube the Tofu",
+   "id": "S2.3",
    "title": "Choose the pressing time",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "How long do you leave the tofu under the weight?",
+   "left": "Select the appropriate pressing time for draining the tofu.",
    "right": "Timer options (4)",
    "tip": "",
    "camera": "Cutting board",
    "passRule": "Select the Correct option.",
    "incomplete": "",
    "maxAttempts": 2,
-   "next": "S2.3",
+   "next": "S2.4",
    "learning": "15-20 minutes removes most surface water. Use the time to get the pasta water on.",
    "sceneState": "Tofu stack with weight on top.",
    "notes": "Timer fast-forwards; the scene shows water pooling on the towel.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 2,
-   "stepTitle": "Prep the tofu",
-   "id": "S2.3",
+   "stepTitle": "Press and Cube the Tofu",
+   "id": "S2.4",
    "title": "Cut the tofu into cubes",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Cut the pressed tofu into 1 cm cubes, the same size as classic guanciale pieces.",
-   "right": "Chef's knife; cutting guides appear on the tofu",
-   "tip": "T-2.3",
+   "left": "Select the appropriate cuts for evenly sized pieces that crisp well.",
+   "right": "The cuts as a pick-all-that-apply list",
+   "tip": "T-2.4",
    "camera": "Cutting board",
-   "passRule": "Knife: tick A-2.3-01 to 03 (multi-select), then Check; they animate in order.",
-   "incomplete": "",
+   "passRule": "Tick A-2.4-01 to 03 (multi-select), then Check; they animate in order.",
+   "incomplete": "Something\u2019s missing. Which cuts get you all the way to 1 cm cubes?",
    "maxAttempts": 3,
-   "next": "S2.4",
+   "next": "S2.5",
    "learning": "Even 1 cm cubes cook at the same rate and give the most crisp surface per bite.",
    "sceneState": "Pressed tofu block on the board.",
    "notes": "Cutting pattern: slabs, then strips, then cubes.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "And you'll need more cuts to get to even 1 cm cubes.",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 2,
-   "stepTitle": "Prep the tofu",
-   "id": "S2.4",
+   "stepTitle": "Press and Cube the Tofu",
+   "id": "S2.5",
    "title": "Season the tofu",
    "type": "MCQ - Single select",
    "required": "No",
-   "left": "Guanciale brings salty, smoky, savoury flavour. How do you give the tofu some of that?",
+   "left": "Select the appropriate seasoning for a savoury, smoky flavour.",
    "right": "Seasoning options (4)",
-   "tip": "T-2.4",
+   "tip": "T-2.5",
    "camera": "Cutting board",
    "passRule": "Select the Correct option.",
    "incomplete": "",
@@ -169,7 +213,9 @@
    "sceneState": "Tofu cubes in a bowl.",
    "notes": "Optional substep: skipping it gives a Degraded 'bland' note.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 3,
@@ -190,7 +236,9 @@
    "sceneState": "Pot on the counter next to the sink.",
    "notes": "Salt goes in later (S6.1), once the water boils.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 4,
@@ -211,7 +259,9 @@
    "sceneState": "Empty skillet on the front burner; burner off.",
    "notes": "Key adaptation moment from guanciale to tofu.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 4,
@@ -232,7 +282,9 @@
    "sceneState": "Skillet on burner; heat knob at Off.",
    "notes": "Live sim: heat knob, wait-time choices, Peek view to judge colour.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 4,
@@ -253,7 +305,9 @@
    "sceneState": "Crisp tofu in the skillet; burner on.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 5,
@@ -274,7 +328,9 @@
    "sceneState": "Egg carton and empty bowl on the counter.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 5,
@@ -295,7 +351,9 @@
    "sceneState": "Bowl and egg carton on the counter.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 5,
@@ -316,7 +374,9 @@
    "sceneState": "Box grater and a wedge of pecorino on the counter.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 5,
@@ -337,7 +397,9 @@
    "sceneState": "Bowl with eggs.",
    "notes": "No salt: the cheese brings plenty.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 6,
@@ -358,7 +420,9 @@
    "sceneState": "Pot at a rolling boil.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 6,
@@ -379,7 +443,9 @@
    "sceneState": "Salted water at a rolling boil.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 6,
@@ -400,7 +466,9 @@
    "sceneState": "Spaghetti boiling; timer running.",
    "notes": "Timer fast-forwards to the chosen minute.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 7,
@@ -421,7 +489,9 @@
    "sceneState": "Pasta near al dente; skillet with flavoured oil.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 7,
@@ -442,7 +512,9 @@
    "sceneState": "Egg paste in the bowl; pasta in the skillet.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 7,
@@ -463,7 +535,9 @@
    "sceneState": "Pasta tossing in the pan on low heat.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 7,
@@ -484,7 +558,9 @@
    "sceneState": "Pan off the heat; pasta coated in oil.",
    "notes": "Live sim: speed control, heat on/off, splash water, Plate button.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 8,
@@ -505,7 +581,9 @@
    "sceneState": "Two warm bowls on the counter.",
    "notes": "",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   },
   {
    "step": 8,
@@ -526,7 +604,9 @@
    "sceneState": "Finished pasta in the pan.",
    "notes": "Leads to the Outcomes screen.",
    "multiWrong": "",
-   "mixedMissing": ""
+   "mixedMissing": "",
+   "tooEarly": null,
+   "wrongSpot": null
   }
  ],
  "options": [
@@ -891,8 +971,8 @@
    "effect": ""
   },
   {
-   "id": "O-2.2-a",
-   "sub": "S2.2",
+   "id": "O-2.3-a",
+   "sub": "S2.3",
    "label": "No pressing, straight to the knife",
    "item": "",
    "correctness": "Incorrect",
@@ -903,8 +983,8 @@
    "effect": "tofu_moisture = high"
   },
   {
-   "id": "O-2.2-b",
-   "sub": "S2.2",
+   "id": "O-2.3-b",
+   "sub": "S2.3",
    "label": "5 minutes",
    "item": "",
    "correctness": "Incorrect",
@@ -915,8 +995,8 @@
    "effect": "tofu_moisture = medium"
   },
   {
-   "id": "O-2.2-c",
-   "sub": "S2.2",
+   "id": "O-2.3-c",
+   "sub": "S2.3",
    "label": "15-20 minutes",
    "item": "",
    "correctness": "Correct",
@@ -927,8 +1007,8 @@
    "effect": "tofu_moisture = low"
   },
   {
-   "id": "O-2.2-d",
-   "sub": "S2.2",
+   "id": "O-2.3-d",
+   "sub": "S2.3",
    "label": "2 hours",
    "item": "",
    "correctness": "Incorrect",
@@ -939,8 +1019,8 @@
    "effect": ""
   },
   {
-   "id": "O-2.4-a",
-   "sub": "S2.4",
+   "id": "O-2.5-a",
+   "sub": "S2.5",
    "label": "Toss with 1 tsp soy sauce and a pinch of smoked paprika",
    "item": "I-SOY",
    "correctness": "Correct",
@@ -951,8 +1031,8 @@
    "effect": "tofu_seasoned = true"
   },
   {
-   "id": "O-2.4-b",
-   "sub": "S2.4",
+   "id": "O-2.5-b",
+   "sub": "S2.5",
    "label": "Salt it generously",
    "item": "I-SALT",
    "correctness": "Incorrect",
@@ -963,8 +1043,8 @@
    "effect": "salt_level += 1"
   },
   {
-   "id": "O-2.4-c",
-   "sub": "S2.4",
+   "id": "O-2.5-c",
+   "sub": "S2.5",
    "label": "Soak it in 4 tbsp soy sauce",
    "item": "I-SOY",
    "correctness": "Incorrect",
@@ -975,8 +1055,8 @@
    "effect": "tofu_moisture = high; salt_level += 1"
   },
   {
-   "id": "O-2.4-d",
-   "sub": "S2.4",
+   "id": "O-2.5-d",
+   "sub": "S2.5",
    "label": "Leave it plain",
    "item": "",
    "correctness": "Acceptable",
@@ -1359,69 +1439,15 @@
    "param": "Open the pack",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Drain the packing water first.",
+   "okFb": "",
    "badFb": "Open the pack and drain it before anything else.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Select the tofu and open the pack."
+   "task": ""
   },
   {
    "id": "A-2.1-02",
-   "sub": "S2.1",
-   "order": "2",
-   "interaction": "Drag",
-   "source": "T-TOWELS",
-   "srcLoc": "Right panel",
-   "target": "E-BOARD",
-   "param": "First towel under the tofu",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "The first towel goes on the board, underneath the tofu, to catch the water.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Select the kitchen towels, then the cutting board, to lay the first towel under the tofu."
-  },
-  {
-   "id": "A-2.1-03",
-   "sub": "S2.1",
-   "order": "3",
-   "interaction": "Drag",
-   "source": "T-TOWELS",
-   "srcLoc": "Right panel",
-   "target": "I-TOFU",
-   "param": "Second towel on top",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "Towel underneath first, then one on top.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Select the towels again, then the tofu, to cover it with the second towel."
-  },
-  {
-   "id": "A-2.1-04",
-   "sub": "S2.1",
-   "order": "4",
-   "interaction": "Drag",
-   "source": "E-WEIGHT",
-   "srcLoc": "Right panel",
-   "target": "I-TOFU",
-   "param": "Heavy pan on top as a weight",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "Now gravity does the work.",
-   "badFb": "The weight goes on last, on top of the towels.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "tofu_pressing = true",
-   "task": "Select the heavy pan, then the tofu, to weigh it down."
-  },
-  {
-   "id": "A-2.1-05",
    "sub": "S2.1",
    "order": "-",
    "interaction": "Hold",
@@ -1439,8 +1465,80 @@
    "task": ""
   },
   {
-   "id": "A-2.3-01",
-   "sub": "S2.3",
+   "id": "A-2.2-01",
+   "sub": "S2.2",
+   "order": "1",
+   "interaction": "Drag",
+   "source": "T-TOWELS",
+   "srcLoc": "Right panel",
+   "target": "E-BOARD",
+   "param": "First towel under the tofu",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "The first towel goes on the board, underneath the tofu, to catch the water.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-2.2-02",
+   "sub": "S2.2",
+   "order": "2",
+   "interaction": "Drag",
+   "source": "T-TOWELS",
+   "srcLoc": "Right panel",
+   "target": "I-TOFU",
+   "param": "Second towel on top",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "The first towel goes on the board, underneath the tofu, to catch the water.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-2.2-03",
+   "sub": "S2.2",
+   "order": "3",
+   "interaction": "Drag",
+   "source": "E-WEIGHT",
+   "srcLoc": "Right panel",
+   "target": "I-TOFU",
+   "param": "Heavy pan on top as a weight",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "The weight goes on last, on top of the towels.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "tofu_pressing = true",
+   "task": ""
+  },
+  {
+   "id": "A-2.2-04",
+   "sub": "S2.2",
+   "order": "-",
+   "interaction": "Hold",
+   "source": "I-TOFU",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Squeeze the block hard by hand",
+   "correctness": "Incorrect",
+   "outcome": "Degraded",
+   "okFb": "",
+   "badFb": "Gently! You've cracked it. We'll still get cubes, but some will crumble.",
+   "branch": "NEXT",
+   "score": -5,
+   "effect": "tofu_cracked = true",
+   "task": ""
+  },
+  {
+   "id": "A-2.4-01",
+   "sub": "S2.4",
    "order": "1",
    "interaction": "Click",
    "source": "T-KNIFE",
@@ -1449,16 +1547,16 @@
    "param": "1 cm slabs, cut lengthways",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Nice even slabs.",
+   "okFb": "",
    "badFb": "Slabs first, so every piece ends up the same height.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Select the knife, tick the cuts that turn the block into 1 cm cubes, then press Check."
+   "task": ""
   },
   {
-   "id": "A-2.3-02",
-   "sub": "S2.3",
+   "id": "A-2.4-02",
+   "sub": "S2.4",
    "order": "2",
    "interaction": "Click",
    "source": "T-KNIFE",
@@ -1472,11 +1570,11 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Cut the slabs into 1 cm strips."
+   "task": ""
   },
   {
-   "id": "A-2.3-03",
-   "sub": "S2.3",
+   "id": "A-2.4-03",
+   "sub": "S2.4",
    "order": "3",
    "interaction": "Click",
    "source": "T-KNIFE",
@@ -1490,11 +1588,11 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "tofu_cut = cubes_1cm",
-   "task": "Cut across the strips to make 1 cm cubes."
+   "task": ""
   },
   {
-   "id": "A-2.3-04",
-   "sub": "S2.3",
+   "id": "A-2.4-04",
+   "sub": "S2.4",
    "order": "-",
    "interaction": "Click",
    "source": "T-KNIFE",
@@ -1511,14 +1609,14 @@
    "task": ""
   },
   {
-   "id": "A-2.3-05",
-   "sub": "S2.3",
+   "id": "A-2.4-05",
+   "sub": "S2.4",
    "order": "-",
-   "interaction": "Hold",
-   "source": "I-TOFU",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "Crumble it by hand",
+   "interaction": "Click",
+   "source": "T-KNIFE",
+   "srcLoc": "Right panel",
+   "target": "E-CUT-GUIDES",
+   "param": "Crumble by hand",
    "correctness": "Incorrect",
    "outcome": "Degraded",
    "okFb": "",
@@ -2595,16 +2693,16 @@
    "text": "Tofu is mostly water. Press it under a weight and it browns instead of steaming. Use the time to start your pasta water.",
    "button": "Start pressing"
   },
-  "T-2.3": {
-   "id": "T-2.3",
-   "sub": "S2.3",
-   "title": "Same size, same cook",
-   "text": "Cut 1 cm cubes. Even pieces brown at the same rate, so none burn while others stay pale.",
-   "button": "Pick up the knife"
-  },
   "T-2.4": {
    "id": "T-2.4",
    "sub": "S2.4",
+   "title": "Same size, same cook",
+   "text": "Cut 1 cm cubes. Even pieces brown at the same rate, so none burn while others stay pale.",
+   "button": "Start cutting"
+  },
+  "T-2.5": {
+   "id": "T-2.5",
+   "sub": "S2.5",
    "title": "Borrow guanciale's flavour",
    "text": "Guanciale is salty, smoky and savoury. A splash of soy and a pinch of smoked paprika get the tofu part of the way there. Go easy on salt: pecorino is very salty.",
    "button": "Season"

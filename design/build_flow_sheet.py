@@ -119,27 +119,34 @@ FLOW = [
      3, "S2.1",
      "Carbonara is only five ingredients, so each one matters. No cream: the creaminess comes from egg, cheese, fat and starchy water.",
      "Tools on the counter; the chosen ingredients appear together when the picks pass the check.", "Decoys teach the classic mistakes (cream, garlic, meat)."),
-    (2, "Prep the tofu", "S2.1", "Press the tofu", "Procedure", "Yes",
-     "Extra-firm tofu holds a lot of water. Set it up to press.",
-     "Tofu, 2 kitchen towels, heavy pan", "T-2.1", "Cutting board",
-     "Actions A-2.1-01 to 04 in order.", "", 3, "S2.2",
-     "Water on the surface turns to steam and stops browning. Dry tofu crisps; wet tofu steams.",
+    (2, "Press and Cube the Tofu", "S2.1", "Open the tofu pack", "Procedure", "Yes",
+     "Open the tofu pack to drain the packing water.",
+     "2 Kitchen Towels, Heavy Pan (not usable yet)", "T-2.1", "Cutting board",
+     "Action A-2.1-01.", "", 3, "S2.2",
+     "Packing water has to go before pressing can draw out the water inside.",
      "Tofu package on the board.", ""),
-    (2, "Prep the tofu", "S2.2", "Choose the pressing time", "MCQ - Single select", "Yes",
-     "How long do you leave the tofu under the weight?",
+    (2, "Press and Cube the Tofu", "S2.2", "Press the tofu", "Procedure", "Yes",
+     "Draw out moisture from the tofu.",
+     "2 Kitchen Towels, Heavy Pan", "", "Cutting board",
+     "Actions A-2.2-01 to 03 in order.", "", 3, "S2.3",
+     "Water on the surface turns to steam and stops browning. Dry tofu crisps; wet tofu steams.",
+     "Drained tofu block on the board.", ""),
+    (2, "Press and Cube the Tofu", "S2.3", "Choose the pressing time", "MCQ - Single select", "Yes",
+     "Select the appropriate pressing time for draining the tofu.",
      "Timer options (4)", "", "Cutting board",
-     "Select the Correct option.", "", 2, "S2.3",
+     "Select the Correct option.", "", 2, "S2.4",
      "15-20 minutes removes most surface water. Use the time to get the pasta water on.",
      "Tofu stack with weight on top.", "Timer fast-forwards; the scene shows water pooling on the towel."),
-    (2, "Prep the tofu", "S2.3", "Cut the tofu into cubes", "Procedure", "Yes",
-     "Cut the pressed tofu into 1 cm cubes, the same size as classic guanciale pieces.",
-     "Chef's knife; cutting guides appear on the tofu", "T-2.3", "Cutting board",
-     "Knife: tick A-2.3-01 to 03 (multi-select), then Check; they animate in order.", "", 3, "S2.4",
+    (2, "Press and Cube the Tofu", "S2.4", "Cut the tofu into cubes", "Procedure", "Yes",
+     "Select the appropriate cuts for evenly sized pieces that crisp well.",
+     "The cuts as a pick-all-that-apply list", "T-2.4", "Cutting board",
+     "Tick A-2.4-01 to 03 (multi-select), then Check; they animate in order.",
+     "Something’s missing. Which cuts get you all the way to 1 cm cubes?", 3, "S2.5",
      "Even 1 cm cubes cook at the same rate and give the most crisp surface per bite.",
      "Pressed tofu block on the board.", "Cutting pattern: slabs, then strips, then cubes."),
-    (2, "Prep the tofu", "S2.4", "Season the tofu", "MCQ - Single select", "No",
-     "Guanciale brings salty, smoky, savoury flavour. How do you give the tofu some of that?",
-     "Seasoning options (4)", "T-2.4", "Cutting board",
+    (2, "Press and Cube the Tofu", "S2.5", "Season the tofu", "MCQ - Single select", "No",
+     "Select the appropriate seasoning for a savoury, smoky flavour.",
+     "Seasoning options (4)", "T-2.5", "Cutting board",
      "Select the Correct option.", "", 2, "S3.1",
      "Soy sauce adds savoury depth (umami); smoked paprika adds smokiness. Go light: pecorino is already very salty.",
      "Tofu cubes in a bowl.", "Optional substep: skipping it gives a Degraded 'bland' note."),
@@ -257,6 +264,15 @@ MULTI_FEEDBACK = {
              "And something's still missing. Think through each stage again."),
     "S1.3": ("Some of these don't belong in this carbonara: {items}. Read the order again: no meat, no cream, and keep it Roman.",
              "And you're short of something. Check the order again."),
+    "S2.4": ("", "And you'll need more cuts to get to even 1 cm cubes."),
+}
+# Procedure mistakes that aren't actions (storyboard): panel items picked before their turn, and an
+# item dropped on the wrong spot. Written into the Flow tab as "ID, ID: text" / "ID: text | ID: text".
+TOO_EARLY = {
+    "S2.1": "T-TOWELS, E-WEIGHT: Open the pack and drain it before anything else.",
+}
+WRONG_SPOT = {
+    "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The heavy pan goes on top of the tofu to press it.",
 }
 flow_rows = []
 for i, r in enumerate(FLOW, start=2):
@@ -265,7 +281,7 @@ for i, r in enumerate(FLOW, start=2):
         f'=COUNTIF(\'MCQ Options\'!$B:$B,C{i})+COUNTIF(\'Procedure Actions\'!$B:$B,C{i})',
         f'=IF(I{i}="","None",IF(COUNTIF(\'Chef Tips\'!$A:$A,I{i})>0,"OK","Missing tip"))',
         f'=IF(R{i}=0,"No options/actions",IF(S{i}="Missing tip","Fix tip",IF(OR(N{i}="END",COUNTIF($C:$C,N{i})>0),"OK","Bad next ID")))',
-    ] + list(MULTI_FEEDBACK.get(r[2], ("", ""))))
+    ] + list(MULTI_FEEDBACK.get(r[2], ("", ""))) + [TOO_EARLY.get(r[2], ""), WRONG_SPOT.get(r[2], "")])
 
 # ---------------------------------------------------------------- MCQ options
 # Option ID | Substep | Option label (right panel) | Item ID | Correctness | Outcome | Chef feedback | Branch to | Score | State effect
@@ -320,22 +336,22 @@ for label, item, cor, out, fb in [
 ]:
     opt("S1.2", label, item, cor, out, fb, "NEXT" if cor != "Incorrect" else "RETRY", 0 if cor != "Incorrect" else -3)
 
-opt("S2.2", "No pressing, straight to the knife", "", "Incorrect", "Degraded",
+opt("S2.3", "No pressing, straight to the knife", "", "Incorrect", "Degraded",
     "Wet tofu steams and sticks. It'll never get properly crisp.", "NEXT", -10, "tofu_moisture = high")
-opt("S2.2", "5 minutes", "", "Incorrect", "Degraded",
+opt("S2.3", "5 minutes", "", "Incorrect", "Degraded",
     "A start, but there's still plenty of water inside. It will spit and stay soft.", "NEXT", -5, "tofu_moisture = medium")
-opt("S2.2", "15-20 minutes", "", "Correct", "Perfect",
+opt("S2.3", "15-20 minutes", "", "Correct", "Perfect",
     "Perfect. And while it presses, we'll get the pasta water on.", "NEXT", 0, "tofu_moisture = low")
-opt("S2.2", "2 hours", "", "Incorrect", "Recoverable",
+opt("S2.3", "2 hours", "", "Incorrect", "Recoverable",
     "It would be very dry, but Table 6 would be gone by then! 15-20 minutes does the job.", "RETRY", -3)
 
-opt("S2.4", "Toss with 1 tsp soy sauce and a pinch of smoked paprika", "I-SOY", "Correct", "Perfect",
+opt("S2.5", "Toss with 1 tsp soy sauce and a pinch of smoked paprika", "I-SOY", "Correct", "Perfect",
     "Savoury and a little smoky. That's our guanciale stand-in. We'll add the paprika at the end of frying so it doesn't burn.", "NEXT", 0, "tofu_seasoned = true")
-opt("S2.4", "Salt it generously", "I-SALT", "Incorrect", "Degraded",
+opt("S2.5", "Salt it generously", "I-SALT", "Incorrect", "Degraded",
     "Careful. Pecorino is very salty, so the dish will be over-salted.", "NEXT", -5, "salt_level += 1")
-opt("S2.4", "Soak it in 4 tbsp soy sauce", "I-SOY", "Incorrect", "Degraded",
+opt("S2.5", "Soak it in 4 tbsp soy sauce", "I-SOY", "Incorrect", "Degraded",
     "Too much liquid. We just pressed the water out! Now it won't crisp, and it'll be very salty.", "NEXT", -10, "tofu_moisture = high; salt_level += 1")
-opt("S2.4", "Leave it plain", "", "Acceptable", "Degraded",
+opt("S2.5", "Leave it plain", "", "Acceptable", "Degraded",
     "It will work, but plain tofu is mild. A little seasoning gives the dish its savoury backbone.", "NEXT", -3, "tofu_seasoned = false")
 
 opt("S4.1", "Cold pan, no oil, then heat up (like guanciale)", "", "Incorrect", "Recoverable",
@@ -414,27 +430,31 @@ def act(sub, order, inter, src, srcloc, tgt, param, correct, outcome, ok_fb, bad
 
 
 S = "Scene"; RP = "Right panel"
+SQUEEZE = ("Gently! You've cracked it. We'll still get cubes, but some will crumble.")
 act("S2.1", 1, "Click", "I-TOFU", S, "", "Open the pack", "Correct", "Perfect",
-    "Drain the packing water first.", "Open the pack and drain it before anything else.", "NEXT", 0)
-act("S2.1", 2, "Drag", "T-TOWELS", RP, "E-BOARD", "First towel under the tofu", "Correct", "Perfect",
-    "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
-act("S2.1", 3, "Drag", "T-TOWELS", RP, "I-TOFU", "Second towel on top", "Correct", "Perfect",
-    "", "Towel underneath first, then one on top.", "NEXT", 0)
-act("S2.1", 4, "Drag", "E-WEIGHT", RP, "I-TOFU", "Heavy pan on top as a weight", "Correct", "Perfect",
-    "Now gravity does the work.", "The weight goes on last, on top of the towels.", "NEXT", 0, "tofu_pressing = true")
+    "", "Open the pack and drain it before anything else.", "NEXT", 0)
 act("S2.1", "-", "Hold", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
-    "", "Gently! You've cracked it. We'll still get cubes, but some will crumble.", "NEXT", -5, "tofu_cracked = true")
+    "", SQUEEZE, "NEXT", -5, "tofu_cracked = true")
 
-# Knife → tick the cuts (multi-select) → Check: the three 1 cm cuts animate in order.
-act("S2.3", 1, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm slabs, cut lengthways", "Correct", "Perfect",
-    "Nice even slabs.", "Slabs first, so every piece ends up the same height.", "NEXT", 0)
-act("S2.3", 2, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm strips", "Correct", "Perfect",
+act("S2.2", 1, "Drag", "T-TOWELS", RP, "E-BOARD", "First towel under the tofu", "Correct", "Perfect",
+    "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
+act("S2.2", 2, "Drag", "T-TOWELS", RP, "I-TOFU", "Second towel on top", "Correct", "Perfect",
+    "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
+act("S2.2", 3, "Drag", "E-WEIGHT", RP, "I-TOFU", "Heavy pan on top as a weight", "Correct", "Perfect",
+    "", "The weight goes on last, on top of the towels.", "NEXT", 0, "tofu_pressing = true")
+act("S2.2", "-", "Hold", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
+    "", SQUEEZE, "NEXT", -5, "tofu_cracked = true")
+
+# The cuts as a pick-all-that-apply list → Check: the three 1 cm cuts animate in order.
+act("S2.4", 1, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm slabs, cut lengthways", "Correct", "Perfect",
+    "", "Slabs first, so every piece ends up the same height.", "NEXT", 0)
+act("S2.4", 2, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm strips", "Correct", "Perfect",
     "", "Slabs, then strips, then cubes.", "NEXT", 0)
-act("S2.3", 3, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm cubes, cut across", "Correct", "Perfect",
+act("S2.4", 3, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm cubes, cut across", "Correct", "Perfect",
     "Neat little cubes, just like guanciale.", "Cut the strips first.", "NEXT", 0, "tofu_cut = cubes_1cm")
-act("S2.3", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "3 cm chunks", "Incorrect", "Degraded",
+act("S2.4", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "3 cm chunks", "Incorrect", "Degraded",
     "", "Too big. The outside will crisp but the middle stays soft, and they won't sit nicely on a fork.", "NEXT", -5, "tofu_cut = chunks")
-act("S2.3", "-", "Hold", "I-TOFU", S, "", "Crumble it by hand", "Incorrect", "Degraded",
+act("S2.4", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "Crumble by hand", "Incorrect", "Degraded",
     "", "Crumbles burn quickly and vanish into the pasta. Cubes give you a crisp bite.", "NEXT", -5, "tofu_cut = crumbled")
 
 act("S3.1", 1, "Drag", "T-POT", RP, "E-SINK", "Pot under the tap", "Correct", "Perfect",
@@ -563,8 +583,8 @@ TIPS = [
     ("T-1.1", "S1.1", "Read the ticket twice", "Before anything touches a pan, read the order twice. Dietary needs change the ingredients, and a request like 'Roman-style' (so no cream) changes the method.", "Got it"),
     ("T-1.3", "S1.3", "Five ingredients, no shortcuts", "Real carbonara is pasta, eggs, pecorino, black pepper and a cured meat. Today tofu takes the meat's place. Creaminess comes from technique, not cream.", "Let's shop"),
     ("T-2.1", "S2.1", "Dry tofu, crisp tofu", "Tofu is mostly water. Press it under a weight and it browns instead of steaming. Use the time to start your pasta water.", "Start pressing"),
-    ("T-2.3", "S2.3", "Same size, same cook", "Cut 1 cm cubes. Even pieces brown at the same rate, so none burn while others stay pale.", "Pick up the knife"),
-    ("T-2.4", "S2.4", "Borrow guanciale's flavour", "Guanciale is salty, smoky and savoury. A splash of soy and a pinch of smoked paprika get the tofu part of the way there. Go easy on salt: pecorino is very salty.", "Season"),
+    ("T-2.4", "S2.4", "Same size, same cook", "Cut 1 cm cubes. Even pieces brown at the same rate, so none burn while others stay pale.", "Start cutting"),
+    ("T-2.5", "S2.5", "Borrow guanciale's flavour", "Guanciale is salty, smoky and savoury. A splash of soy and a pinch of smoked paprika get the tofu part of the way there. Go easy on salt: pecorino is very salty.", "Season"),
     ("T-3.1", "S3.1", "Water first", "A big pot of water takes about 10 minutes to boil. Get it going now, and the rest of the prep fits around it.", "To the sink"),
     ("T-4.1", "S4.1", "Not every rule transfers", "Guanciale goes into a cold pan so its fat melts out slowly. Tofu has no fat to give. Think about what tofu needs instead.", "Choose"),
     ("T-4.2", "S4.2", "Hands off!", "Once the tofu is in the hot oil, leave it alone for about 3 minutes. The crust needs time to form. Move it too early and it tears and sticks.", "Fire up"),
@@ -806,8 +826,9 @@ FLOW_HEAD = ["Step", "Step title", "Substep ID", "Substep title", "Type", "Requi
              "Pass rule", "Feedback if incomplete (multi-select)", "Max attempts", "On pass →",
              "Learning point (science)", "Scene state on entry", "Notes",
              "Options / actions defined", "Tip check", "Row check",
-             "Feedback if several incorrect (multi-select)", "Added if also incomplete (multi-select)"]
-wf = sheet("Flow", FLOW_HEAD, [6, 20, 9, 24, 17, 9, 42, 26, 11, 13, 30, 34, 9, 9, 44, 30, 28, 11, 11, 13, 44, 34],
+             "Feedback if several incorrect (multi-select)", "Added if also incomplete (multi-select)",
+             "Picked too early (procedure)", "Wrong spot (procedure)"]
+wf = sheet("Flow", FLOW_HEAD, [6, 20, 9, 24, 17, 9, 42, 26, 11, 13, 30, 34, 9, 9, 44, 30, 28, 11, 11, 13, 44, 34, 40, 50],
            flow_rows, band_key=1, check_cols=(18, 19, 20))
 dropdown(wf, "E", "=Lists!$A$2:$A$4")
 dropdown(wf, "F", "=Lists!$H$2:$H$3")
@@ -823,13 +844,6 @@ dropdown(wm, "F", "=Lists!$C$2:$C$6")
 
 # Learner-facing instruction for each required task, shown as a numbered list in the left panel.
 TASKS = {
-    "A-2.1-01": "Select the tofu and open the pack.",
-    "A-2.1-02": "Select the kitchen towels, then the cutting board, to lay the first towel under the tofu.",
-    "A-2.1-03": "Select the towels again, then the tofu, to cover it with the second towel.",
-    "A-2.1-04": "Select the heavy pan, then the tofu, to weigh it down.",
-    "A-2.3-01": "Select the knife, tick the cuts that turn the block into 1 cm cubes, then press Check.",
-    "A-2.3-02": "Cut the slabs into 1 cm strips.",
-    "A-2.3-03": "Cut across the strips to make 1 cm cubes.",
     "A-3.1-01": "Pick the large pot and put it under the tap in the sink.",
     "A-3.1-02": "Hold the tap until the water reaches the fill line (about 3 litres).",
     "A-3.1-03": "Move the pot onto the back burner.",
@@ -870,7 +884,9 @@ TASKS = {
     "A-8.2-04": "Hold to dust each bowl with pecorino, then top with the reserved tofu.",
     "A-8.2-05": "Ring the bell to serve right away.",
 }
-missing = [r[0] for r in A if r[2] not in ("-", "opt") and r[0] not in TASKS]
+# Steps whose procedure tasks are merged (storyboard): one instruction per task, from the Flow tab.
+MERGED_STEPS = {2}
+missing = [r[0] for r in A if r[2] not in ("-", "opt") and r[0] not in TASKS and int(r[1][1]) not in MERGED_STEPS]
 assert not missing, f"No task instruction for {missing}"
 for r in A:
     r.append(TASKS.get(r[0], ""))

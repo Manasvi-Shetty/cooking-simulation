@@ -29,7 +29,8 @@ substeps = rows("Flow", {
     "tip": "Chef tip at start (ID)", "camera": "Camera view", "passRule": "Pass rule",
     "incomplete": "Feedback if incomplete (multi-select)", "maxAttempts": "Max attempts", "next": "On pass →",
     "learning": "Learning point (science)", "sceneState": "Scene state on entry", "notes": "Notes",
-    "multiWrong": "Feedback if several incorrect (multi-select)", "mixedMissing": "Added if also incomplete (multi-select)"})
+    "multiWrong": "Feedback if several incorrect (multi-select)", "mixedMissing": "Added if also incomplete (multi-select)",
+    "tooEarly": "Picked too early (procedure)", "wrongSpot": "Wrong spot (procedure)"})
 options = rows("MCQ Options", {
     "id": "Option ID", "sub": "Substep ID", "label": "Option label (right panel)", "item": "Item ID",
     "correctness": "Correctness", "outcome": "Outcome", "feedback": "Chef feedback (on select)",
@@ -56,6 +57,10 @@ for coll in (options, actions):
         r["score"] = int(r["score"] or 0)
 for s in substeps:
     s["maxAttempts"] = int(s["maxAttempts"] or 1)
+    # "T-TOWELS, E-WEIGHT: text" -> {"items": [...], "text": ...};  "ID: text | ID: text" -> {ID: text}
+    ids, _, text = s["tooEarly"].partition(":")
+    s["tooEarly"] = {"items": [i.strip() for i in ids.split(",")], "text": text.strip()} if text else None
+    s["wrongSpot"] = dict((k.strip(), v.strip()) for k, _, v in (p.partition(":") for p in s["wrongSpot"].split("|")) if v) or None
 
 data = {"order": order, "substeps": substeps, "options": options, "actions": actions,
         "tips": {t["id"]: t for t in tips}, "items": {i["id"]: i for i in items},
