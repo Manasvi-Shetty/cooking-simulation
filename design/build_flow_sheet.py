@@ -337,11 +337,11 @@ for label, item, cor, out, fb in [
     opt("S1.2", label, item, cor, out, fb, "NEXT" if cor != "Incorrect" else "RETRY", 0 if cor != "Incorrect" else -3)
 
 opt("S2.3", "No pressing, straight to the knife", "", "Incorrect", "Degraded",
-    "Wet tofu steams and sticks. It'll never get properly crisp.", "NEXT", -10, "tofu_moisture = high")
+    "Wet tofu steams and sticks. It'll never get properly crisp.", "NEXT", -10, "tofu_moisture = high; press_minutes = 0")
 opt("S2.3", "5 minutes", "", "Incorrect", "Degraded",
-    "A start, but there's still plenty of water inside. It will spit and stay soft.", "NEXT", -5, "tofu_moisture = medium")
+    "A start, but there's still plenty of water inside. It will spit and stay soft.", "NEXT", -5, "tofu_moisture = medium; press_minutes = 5")
 opt("S2.3", "15-20 minutes", "", "Correct", "Perfect",
-    "Perfect. And while it presses, we'll get the pasta water on.", "NEXT", 0, "tofu_moisture = low")
+    "Perfect.", "NEXT", 0, "tofu_moisture = low; press_minutes = 20")
 opt("S2.3", "2 hours", "", "Incorrect", "Recoverable",
     "It would be very dry, but Table 6 would be gone by then! 15-20 minutes does the job.", "RETRY", -3)
 

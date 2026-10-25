@@ -129,6 +129,7 @@ export class Props {
     this.towelTop.position.set(p.x, p.y + 0.036, p.z);
     this.weight = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.08, 0.03, 40), std('#26231f', 0.45)));
     this.weight.position.set(p.x, p.y + 0.054, p.z);
+    this.weightY = p.y + 0.054;
     // Cut lines appear on the block as each cut is made.
     this.cuts = new THREE.Group();
     const line = (w, d) => new THREE.Mesh(new THREE.BoxGeometry(w, 0.0008, d), std('#8c7f68', 0.8));
@@ -505,7 +506,18 @@ export class Props {
     this.block.position.y = SPOTS.tofuBlock.y + 0.015 + (w.towelBottom && !w.pressDone ? 0.004 : 0);   // sits on the towel
     this.towelBottom.visible = w.towelBottom && w.tofuStage !== 'cubes' && !w.pressDone;
     this.towelTop.visible = w.towelTop && !w.pressDone;
-    this.weight.visible = w.weight && !w.pressDone;
+    // Pressing over: the pan lifts off and fades out (w.weightLift 0 → 1).
+    const wl = w.weightLift || 0, le = wl * wl * (3 - 2 * wl);
+    this.weight.visible = w.weight && !w.pressDone && wl < 1;
+    this.weight.position.y = this.weightY + 0.12 * le;
+    if (wl !== this.weightFade) {
+      this.weightFade = wl;
+      this.weight.traverse((o) => {
+        if (!o.material) return;
+        if (!o.userData.ownMat) { o.material = o.material.clone(); o.material.transparent = true; o.userData.ownMat = true; }
+        o.material.opacity = 1 - le;
+      });
+    }
     this.cuts.visible = this.block.visible && w.cutLevel > 0;
     this.cutSets.forEach((set, i) => set.forEach((m) => { m.visible = w.cutLevel > i; }));
 

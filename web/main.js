@@ -206,7 +206,7 @@ function freshState() {
   s = Sim.newState();
   s.tofuInPan = false;
   w = {
-    tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, pressDone: false, cutLevel: 0,
+    tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0,
     potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
     oil: false, tossT: 0, flips: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, cheeseIn: false, mugFull: false,
     plated: 0, peppered: false, served: false, bellT: 0,
@@ -552,13 +552,29 @@ function placePins() {
 // ---------- interaction ----------
 function setFeedback(text, outcome) { ui.feedback = text ? { text, outcome } : null; }
 
+// The pressing time: the timer fast-forwards through it, then the pan lifts off before Nonna speaks.
+async function finishPressing(minutes) {
+  ui.locked = true;
+  refresh();
+  ffLabel = 'Pressing the tofu';
+  if (minutes) await ff(minutes * 60);
+  if (jumping) w.weightLift = 1;
+  for (const t0 = performance.now(); w.weightLift < 1;) {
+    w.weightLift = Math.min(1, (performance.now() - t0) / 900);
+    await sleep(16);
+  }
+  ui.locked = false;
+}
+
 // Single-choice answers are judged as soon as they're picked; lists are judged by the Check button.
-function checkSingle(id) {
+async function checkSingle(id) {
   const res = engine.choose(id);
   const o = res.row;
   ui.optState = ui.optState || {};
   ui.optState[id] = o.correctness === 'Incorrect' ? 'wrong' : 'right';
   if (ui.optState[id] === 'wrong') { ui.selected.delete(id); ui.checkLocked = true; }
+  const press = /press_minutes = (\d+)/.exec(o.effect || '');
+  if (press) await finishPressing(Number(press[1]));
   applyOptionEffect(o);
   setFeedback([o.feedback, chancesLine()].filter(Boolean), o.outcome);
   if (res.reveal) {

@@ -980,7 +980,7 @@
    "feedback": "Wet tofu steams and sticks. It'll never get properly crisp.",
    "branch": "NEXT",
    "score": -10,
-   "effect": "tofu_moisture = high"
+   "effect": "tofu_moisture = high; press_minutes = 0"
   },
   {
    "id": "O-2.3-b",
@@ -992,7 +992,7 @@
    "feedback": "A start, but there's still plenty of water inside. It will spit and stay soft.",
    "branch": "NEXT",
    "score": -5,
-   "effect": "tofu_moisture = medium"
+   "effect": "tofu_moisture = medium; press_minutes = 5"
   },
   {
    "id": "O-2.3-c",
@@ -1001,10 +1001,10 @@
    "item": "",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "feedback": "Perfect. And while it presses, we'll get the pasta water on.",
+   "feedback": "Perfect.",
    "branch": "NEXT",
    "score": 0,
-   "effect": "tofu_moisture = low"
+   "effect": "tofu_moisture = low; press_minutes = 20"
   },
   {
    "id": "O-2.3-d",
