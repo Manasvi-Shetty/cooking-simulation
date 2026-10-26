@@ -207,7 +207,7 @@ function freshState() {
   s.tofuInPan = false;
   w = {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
-    potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
+    potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
     oil: false, tossT: 0, flips: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, cheeseIn: false, mugFull: false,
     plated: 0, peppered: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
@@ -262,10 +262,11 @@ const VISUALS = {
   'A-2.4-01': cut(1, 1200),                                                          // slabs
   'A-2.4-02': cut(2, 1800),                                                          // strips
   'A-2.4-03': async () => { await cut(3, 2200)(); w.tofuStage = 'cubes'; },          // cubes
-  'A-3.1-02': () => { w.tapOn = false; w.potFilled = true; },
-  'A-3.1-03': () => { w.potOnHob = true; },
-  'A-3.1-04': () => { w.backHeat = 3; },
-  'A-3.1-05': () => { w.lidOn = true; },
+  'A-3.1-01': () => { w.potInSink = true; },
+  'A-3.1-02': async () => { w.tapOn = true; await sleep(jumping ? 0 : 1800); w.tapOn = false; w.potFilled = true; },
+  'A-3.2-01': () => { w.potOnHob = true; },
+  'A-3.2-04': () => { w.backHeat = 3; },
+  'A-3.2-05': () => { w.lidOn = true; },
   'A-4.2-01': () => { s.heat = 2; },
   'A-4.2-02': () => { w.oil = true; },
   'A-4.2-03': () => ff(60),
@@ -544,7 +545,7 @@ function setHeld(id) {
   if (!id) { held.classList.add('off'); held.dataset.id = ''; return; }
   if (held.dataset.id !== id) {
     held.dataset.id = id;
-    held.innerHTML = itemImg(id) || `<span class="no-img"></span>`;
+    held.innerHTML = itemImg(id) || `<span class="held-name">${esc(engine.item(id).name)}</span>`;
   }
 }
 document.addEventListener('pointermove', (e) => {
@@ -559,7 +560,7 @@ document.addEventListener('pointermove', (e) => {
 function onScreen(id) {
   if (!props.anchors[id]) return false;
   const shown = props.shown(id, w);
-  return shown ?? choices().some((a) => a.source === id && a.srcLoc === 'Scene');
+  return shown ?? (choices().some((a) => a.source === id && a.srcLoc === 'Scene') || engine.item(id).location === 'Scene');
 }
 let pinList = [];
 function renderPins() {
@@ -567,7 +568,8 @@ function renderPins() {
   const sub = engine.sub;
   if (sub && sub.type === 'Procedure' && !engine.ready && !live && !ui.locked) {
     if (ui.mode === 'target') {
-      const targets = [...new Set(engine.actions().map((a) => a.target).filter((t) => t && props.anchors[t]))];
+      const decoys = engine.sub.wrongDecoys?.[ui.pending[0].source] || [];   // wrong spots worth offering
+      const targets = [...new Set([...engine.actions().map((a) => a.target), ...decoys].filter((t) => t && t !== ui.pending[0].source && props.anchors[t]))];
       targets.forEach((id) => pinList.push({ id, kind: 'target' }));
     } else if (ui.mode !== 'actions') {
       pickables().filter(onScreen).forEach((id) => pinList.push({ id, kind: 'source' }));

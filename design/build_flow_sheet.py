@@ -150,12 +150,18 @@ FLOW = [
      "Select the Correct option.", "", 2, "S3.1",
      "Soy sauce adds savoury depth (umami); smoked paprika adds smokiness. Go light: pecorino is already very salty.",
      "Tofu cubes in a bowl.", "Optional substep: skipping it gives a Degraded 'bland' note."),
-    (3, "Get the pasta water going", "S3.1", "Fill and heat the pasta pot", "Procedure", "Yes",
-     "Get a big pot of water heating for the spaghetti.",
-     "Large pot, lid", "T-3.1", "Sink",
-     "Actions A-3.1-01 to 05 in order.", "", 3, "S4.1",
+    (3, "Boil the Pasta Water", "S3.1", "Fill the pasta pot", "Procedure", "Yes",
+     "Fill the pot with enough water for the pasta to move freely.",
+     "None (panel hidden)", "T-3.1", "Sink",
+     "Actions A-3.1-01 to 02 in order.", "", 3, "S3.2",
+     "Lots of water stays at the boil when the pasta goes in, and gives the strands room so they don't stick.",
+     "Pot on the counter next to the sink.", ""),
+    (3, "Boil the Pasta Water", "S3.2", "Bring the water to the boil", "Procedure", "Yes",
+     "Bring the water to a fast boil.",
+     "None (panel hidden)", "", "Sink",
+     "Actions A-3.2-01 to 03 in order.", "", 3, "S4.1",
      "Water takes about 10 minutes to boil, so start it early and prep while it heats.",
-     "Pot on the counter next to the sink.", "Salt goes in later (S6.1), once the water boils."),
+     "Filled pot in the sink.", "Salt goes in later (S6.1), once the water boils."),
     (4, "Crisp the tofu", "S4.1", "Choose how to start the pan", "MCQ - Single select", "Yes",
      "The classic recipe starts guanciale in a cold pan. How should you start the tofu?",
      "Four ways to start the pan", "T-4.1", "Stove",
@@ -267,11 +273,15 @@ MULTI_FEEDBACK = {
     "S2.4": ("", "And you'll need more cuts to get to even 1 cm cubes."),
 }
 # Procedure mistakes that aren't actions (storyboard): panel items picked before their turn, and an
-# item dropped on the wrong spot. Written into the Flow tab as "ID, ID: text" / "ID: text | ID: text".
+# item dropped on the wrong spot. Written into the Flow tab as "ID, ID: text" / "ID: text | ID: text";
+# a wrong-spot item can name extra decoy spots to show while it's held: "ID [SPOT SPOT]: text".
 TOO_EARLY = {
+    "S3.1": "E-KNOB-BACK, T-LID: Fill the pot with water first.",
     "S2.1": "T-TOWELS, E-WEIGHT: Open the pack and drain it before anything else.",
 }
 WRONG_SPOT = {
+    "S3.1": "T-POT [E-BURNER-BACK E-COUNTER]: The pot needs to go under the tap. Put it in the sink.",
+    "S3.2": "T-POT [E-COUNTER]: That's not where it boils. Put it on the back burner.",
     "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The heavy pan goes on top of the tofu to press it.",
 }
 flow_rows = []
@@ -452,18 +462,23 @@ act("S2.4", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "3 cm chunks", "Incorre
 act("S2.4", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "Crumble by hand", "Incorrect", "Degraded",
     "", "Crumbles burn quickly and vanish into the pasta. Cubes give you a crisp bite.", "NEXT", -5, "tofu_cut = crumbled")
 
-act("S3.1", 1, "Drag", "T-POT", RP, "E-SINK", "Pot under the tap", "Correct", "Perfect",
-    "", "Pot under the tap first.", "NEXT", 0)
-act("S3.1", 2, "Hold", "E-TAP", S, "T-POT", "Fill to about 3 litres (fill line)", "Correct", "Perfect",
-    "Plenty of water, so the pasta moves freely.", "", "NEXT", 0, "water_l = 3")
-act("S3.1", 3, "Drag", "T-POT", S, "E-BURNER-BACK", "Pot onto the back burner", "Correct", "Perfect",
-    "", "Fill it before it goes on the stove.", "NEXT", 0)
-act("S3.1", 4, "Slider / knob", "E-KNOB-BACK", S, "", "High", "Correct", "Perfect",
-    "", "Full heat for the pasta water.", "NEXT", 0)
-act("S3.1", 5, "Drag", "T-POT", RP, "T-POT", "Lid on", "Correct", "Perfect",
-    "A lid brings it to the boil much faster.", "", "NEXT", 0, "water_heating = true")
-act("S3.1", "-", "Hold", "E-TAP", S, "T-POT", "Fill only to 1 litre", "Incorrect", "Recoverable",
+act("S3.1", 1, "Drag", "T-POT", S, "E-SINK", "Pot under the tap", "Correct", "Perfect",
+    "", "", "NEXT", 0)
+act("S3.1", 2, "Click", "E-TAP", S, "", "Fill to about 3 litres (fill line)", "Correct", "Perfect",
+    "Plenty of water, so the pasta moves freely.", "Place the pot under the tap first.", "NEXT", 0, "water_l = 3")
+act("S3.1", "-", "Click", "E-TAP", S, "", "Fill only to 1 litre", "Incorrect", "Recoverable",
     "", "Too little. The water would drop off the boil and the pasta would stick. Fill it to the line.", "RETRY", -3)
+
+act("S3.2", 1, "Drag", "T-POT", S, "E-BURNER-BACK", "Pot onto the back burner", "Correct", "Perfect",
+    "", "", "NEXT", 0)
+act("S3.2", "-", "Slider / knob", "E-KNOB-BACK", S, "", "Low", "Incorrect", "Recoverable",
+    "", "Full heat for the pasta water.", "RETRY", 0)
+act("S3.2", "-", "Slider / knob", "E-KNOB-BACK", S, "", "Medium", "Incorrect", "Recoverable",
+    "", "Full heat for the pasta water.", "RETRY", 0)
+act("S3.2", 2, "Slider / knob", "E-KNOB-BACK", S, "", "High", "Correct", "Perfect",
+    "", "Pot first, then the heat.", "NEXT", 0)
+act("S3.2", 3, "Drag", "T-LID", S, "T-POT", "Lid on", "Correct", "Perfect",
+    "A lid brings it to the boil much faster.", "Get the pot heating first, then the lid goes on.", "NEXT", 0, "water_heating = true")
 
 act("S4.2", 1, "Slider / knob", "E-KNOB-FRONT", S, "", "Medium (target 170-200 °C)", "Correct", "Perfect",
     "", "Heat the pan first.", "NEXT", 0)
@@ -628,6 +643,7 @@ ITEMS = [
     ("E-WEIGHT", "Heavy pan (weight)", "Right panel", "Spare cast-iron pan used as a press", "Drag on top of tofu"),
     ("E-SINK", "Sink", "Scene", "Sink to the left of the stove", "Drop target"),
     ("E-TAP", "Tap", "Scene", "Mixer tap", "Hold to fill"),
+    ("T-LID", "Pot lid", "Scene", "The large pot's lid, resting on the counter", "Drag onto the pot"),
     ("E-BURNER-BACK", "Back burner", "Scene", "Gas burner for the pasta pot", "Drop target"),
     ("E-KNOB-BACK", "Back burner knob", "Scene", "Off / Low / Medium / High", "Turn"),
     ("E-KNOB-FRONT", "Front burner knob", "Scene", "Off / Lowest / Low / Medium / High", "Turn"),
@@ -839,11 +855,6 @@ dropdown(wm, "F", "=Lists!$C$2:$C$6")
 
 # Learner-facing instruction for each required task, shown as a numbered list in the left panel.
 TASKS = {
-    "A-3.1-01": "Pick the large pot and put it under the tap in the sink.",
-    "A-3.1-02": "Hold the tap until the water reaches the fill line (about 3 litres).",
-    "A-3.1-03": "Move the pot onto the back burner.",
-    "A-3.1-04": "Turn the back burner knob to High.",
-    "A-3.1-05": "Put the lid on the pot so it boils faster.",
     "A-4.2-01": "Turn the front burner knob to Medium (aim for 170-200 °C).",
     "A-4.2-02": "Pour 2 tbsp of olive oil into the skillet.",
     "A-4.2-03": "Wait until the oil shimmers, about 1 minute.",
@@ -880,7 +891,7 @@ TASKS = {
     "A-8.2-05": "Ring the bell to serve right away.",
 }
 # Steps whose procedure tasks are merged (storyboard): one instruction per task, from the Flow tab.
-MERGED_STEPS = {2}
+MERGED_STEPS = {2, 3}
 missing = [r[0] for r in A if r[2] not in ("-", "opt") and r[0] not in TASKS and int(r[1][1]) not in MERGED_STEPS]
 assert not missing, f"No task instruction for {missing}"
 for r in A:

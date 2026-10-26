@@ -60,7 +60,15 @@ for s in substeps:
     # "T-TOWELS, E-WEIGHT: text" -> {"items": [...], "text": ...};  "ID: text | ID: text" -> {ID: text}
     ids, _, text = s["tooEarly"].partition(":")
     s["tooEarly"] = {"items": [i.strip() for i in ids.split(",")], "text": text.strip()} if text else None
-    s["wrongSpot"] = dict((k.strip(), v.strip()) for k, _, v in (p.partition(":") for p in s["wrongSpot"].split("|")) if v) or None
+    # "ID [SPOT SPOT]: text | ID: text" -> wrongSpot {ID: text}, wrongDecoys {ID: [SPOT, ...]}
+    spots, decoys = {}, {}
+    for part in filter(None, s["wrongSpot"].split("|")):
+        key, _, text = part.partition(":")
+        sid, _, extra = key.strip().partition("[")
+        spots[sid.strip()] = text.strip()
+        if extra:
+            decoys[sid.strip()] = extra.strip(" ]").split()
+    s["wrongSpot"], s["wrongDecoys"] = spots or None, decoys or None
 
 data = {"order": order, "substeps": substeps, "options": options, "actions": actions,
         "tips": {t["id"]: t for t in tips}, "items": {i["id"]: i for i in items},

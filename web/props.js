@@ -18,6 +18,7 @@ export const SPOTS = {
   whitesCup: new THREE.Vector3(0.64, 0, -0.1),
   hob: new THREE.Vector3(-0.62, 0, -0.08),
   sink: new THREE.Vector3(-0.98, 0, 0.02),
+  potCounter: new THREE.Vector3(-0.15, 0, 0.27),       // where the pasta pot waits before it's filled
   plate: new THREE.Vector3(-0.42, 0, 0.3),
   mug: new THREE.Vector3(0.42, 0, 0.3),
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
@@ -81,7 +82,7 @@ export class Props {
     this._smallThings();
     this._serving();
     this.anchors = this._anchors();
-    this.potPos = SPOTS.sink.clone();
+    this.potPos = SPOTS.potCounter.clone();
   }
 
   _add(mesh, shadow = true) {
@@ -527,6 +528,7 @@ export class Props {
       'E-PAN-OIL': v(-0.04, 0.07, 0.04),
       'T-SKILLET': v(0, 0.11, -0.03),
       'T-POT': v(0, 0, 0),                      // follows the pot; set in update()
+      'T-LID': v(0, 0, 0),                      // follows the lid; set in update()
       'T-BOWL': v(b.x, 0.075, b.z),
       'E-COUNTER': v(b.x, 0.02, b.z + 0.08),
       'E-WHITES-CUP': v(SPOTS.whitesCup.x, 0.07, SPOTS.whitesCup.z),
@@ -542,6 +544,7 @@ export class Props {
   // Is this item's model in the kitchen right now (so it can be clicked there)? Read from the
   // world state rather than mesh visibility, which only catches up on the next frame.
   shown(id, w) {
+    if (id === 'T-LID') return this.shown('T-POT', w);
     if (id === 'I-TOFU') return ['pack', 'draining', 'block', 'pressing', 'pressed', 'cubes'].includes(w.tofuStage);
     return this.items[id] ? w.committed.has(id) || w.onCounter.has(id) : null;   // null: no model to check
   }
@@ -589,13 +592,13 @@ export class Props {
     if (ca) this.cuts.visible = this.block.visible;
     this.cutSets.forEach((set, i) => set.forEach((m, j) => { m.visible = w.cutLevel > i || (!!ca && ca.level === i + 1 && j < shown); }));
 
-    // Pot: sink -> hob, water level, lid, boil.
-    const target = w.potOnHob ? SPOTS.hob : SPOTS.sink;
+    // Pot: counter -> sink -> hob, water level, lid, boil.
+    const target = w.potOnHob ? SPOTS.hob : w.potInSink ? SPOTS.sink : SPOTS.potCounter;
     this.potPos.x = approach(this.potPos.x, target.x, 5, dt);
     this.potPos.z = approach(this.potPos.z, target.z, 5, dt);
     const lift = Math.min(Math.abs(this.potPos.x - target.x) * 2, 0.08);
     const SINK_FLOOR = -0.168;                            // the basin floor, 17 cm below the counter
-    this.pot.position.set(this.potPos.x, (w.potOnHob ? 0.012 : SINK_FLOOR) + lift, this.potPos.z);
+    this.pot.position.set(this.potPos.x, (w.potOnHob ? 0.012 : w.potInSink ? SINK_FLOOR : 0) + lift, this.potPos.z);
     this.anchors['T-POT'].set(this.potPos.x, this.pot.position.y + 0.19, this.potPos.z);
     // The tap's stream runs from the aerator down to the water in the pot (or the basin floor).
     const top = 0.245, bottom = w.potOnHob ? SINK_FLOOR : this.pot.position.y + Math.max(w.waterLevel, 0.008);
@@ -607,6 +610,7 @@ export class Props {
     this.stream.visible = w.tapOn;
     this.lid.position.set(w.lidOn ? this.potPos.x : -0.38, w.lidOn ? this.pot.position.y + 0.155 : 0.006, w.lidOn ? this.potPos.z : -0.32);
     this.lid.rotation.x = w.lidOn ? 0 : 0;
+    this.anchors['T-LID'].set(this.lid.position.x, this.lid.position.y + 0.03, this.lid.position.z);
     this.potPasta.visible = w.pastaInPot;
     this.backKnob.rotation.y = -w.backHeat * 0.85;
     this.hobRing.material.color.set(w.backHeat > 0 ? '#ff5a2a' : '#5a5a5a');

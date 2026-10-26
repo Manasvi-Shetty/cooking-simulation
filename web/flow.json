@@ -45,7 +45,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 1,
@@ -68,7 +69,8 @@
    "multiWrong": "A few of these won't help today: {items}. Walk through the dish: press, cut, boil, fry, grate, whisk, move the pasta, save the water. Which tools does each stage really need?",
    "mixedMissing": "And something's still missing. Think through each stage again.",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 1,
@@ -91,7 +93,8 @@
    "multiWrong": "Some of these don't belong in this carbonara: {items}. Read the order again: no meat, no cream, and keep it Roman.",
    "mixedMissing": "And you're short of something. Check the order again.",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 2,
@@ -120,7 +123,8 @@
     ],
     "text": "Open the pack and drain it before anything else."
    },
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 2,
@@ -146,7 +150,8 @@
    "wrongSpot": {
     "T-TOWELS": "One towel under the tofu, one on top. Try again.",
     "E-WEIGHT": "The heavy pan goes on top of the tofu to press it."
-   }
+   },
+   "wrongDecoys": null
   },
   {
    "step": 2,
@@ -169,7 +174,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 2,
@@ -192,7 +198,8 @@
    "multiWrong": "",
    "mixedMissing": "And you'll need more cuts to get to even 1 cm cubes.",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 2,
@@ -215,30 +222,75 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 3,
-   "stepTitle": "Get the pasta water going",
+   "stepTitle": "Boil the Pasta Water",
    "id": "S3.1",
-   "title": "Fill and heat the pasta pot",
+   "title": "Fill the pasta pot",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Get a big pot of water heating for the spaghetti.",
-   "right": "Large pot, lid",
+   "left": "Fill the pot with enough water for the pasta to move freely.",
+   "right": "None (panel hidden)",
    "tip": "T-3.1",
    "camera": "Sink",
-   "passRule": "Actions A-3.1-01 to 05 in order.",
+   "passRule": "Actions A-3.1-01 to 02 in order.",
+   "incomplete": "",
+   "maxAttempts": 3,
+   "next": "S3.2",
+   "learning": "Lots of water stays at the boil when the pasta goes in, and gives the strands room so they don't stick.",
+   "sceneState": "Pot on the counter next to the sink.",
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": "",
+   "tooEarly": {
+    "items": [
+     "E-KNOB-BACK",
+     "T-LID"
+    ],
+    "text": "Fill the pot with water first."
+   },
+   "wrongSpot": {
+    "T-POT": "The pot needs to go under the tap. Put it in the sink."
+   },
+   "wrongDecoys": {
+    "T-POT": [
+     "E-BURNER-BACK",
+     "E-COUNTER"
+    ]
+   }
+  },
+  {
+   "step": 3,
+   "stepTitle": "Boil the Pasta Water",
+   "id": "S3.2",
+   "title": "Bring the water to the boil",
+   "type": "Procedure",
+   "required": "Yes",
+   "left": "Bring the water to a fast boil.",
+   "right": "None (panel hidden)",
+   "tip": "",
+   "camera": "Sink",
+   "passRule": "Actions A-3.2-01 to 03 in order.",
    "incomplete": "",
    "maxAttempts": 3,
    "next": "S4.1",
    "learning": "Water takes about 10 minutes to boil, so start it early and prep while it heats.",
-   "sceneState": "Pot on the counter next to the sink.",
+   "sceneState": "Filled pot in the sink.",
    "notes": "Salt goes in later (S6.1), once the water boils.",
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": {
+    "T-POT": "That's not where it boils. Put it on the back burner."
+   },
+   "wrongDecoys": {
+    "T-POT": [
+     "E-COUNTER"
+    ]
+   }
   },
   {
    "step": 4,
@@ -261,7 +313,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 4,
@@ -284,7 +337,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 4,
@@ -307,7 +361,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 5,
@@ -330,7 +385,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 5,
@@ -353,7 +409,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 5,
@@ -376,7 +433,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 5,
@@ -399,7 +457,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 6,
@@ -422,7 +481,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 6,
@@ -445,7 +505,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 6,
@@ -468,7 +529,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 7,
@@ -491,7 +553,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 7,
@@ -514,7 +577,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 7,
@@ -537,7 +601,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 7,
@@ -560,7 +625,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 8,
@@ -583,7 +649,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   },
   {
    "step": 8,
@@ -606,7 +673,8 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null
+   "wrongSpot": null,
+   "wrongDecoys": null
   }
  ],
  "options": [
@@ -1596,98 +1664,44 @@
    "order": "1",
    "interaction": "Drag",
    "source": "T-POT",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "E-SINK",
    "param": "Pot under the tap",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
-   "badFb": "Pot under the tap first.",
+   "badFb": "",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Pick the large pot and put it under the tap in the sink."
+   "task": ""
   },
   {
    "id": "A-3.1-02",
    "sub": "S3.1",
    "order": "2",
-   "interaction": "Hold",
+   "interaction": "Click",
    "source": "E-TAP",
    "srcLoc": "Scene",
-   "target": "T-POT",
+   "target": "",
    "param": "Fill to about 3 litres (fill line)",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "Plenty of water, so the pasta moves freely.",
-   "badFb": "",
+   "badFb": "Place the pot under the tap first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "water_l = 3",
-   "task": "Hold the tap until the water reaches the fill line (about 3 litres)."
+   "task": ""
   },
   {
    "id": "A-3.1-03",
    "sub": "S3.1",
-   "order": "3",
-   "interaction": "Drag",
-   "source": "T-POT",
-   "srcLoc": "Scene",
-   "target": "E-BURNER-BACK",
-   "param": "Pot onto the back burner",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "Fill it before it goes on the stove.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Move the pot onto the back burner."
-  },
-  {
-   "id": "A-3.1-04",
-   "sub": "S3.1",
-   "order": "4",
-   "interaction": "Slider / knob",
-   "source": "E-KNOB-BACK",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "High",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "Full heat for the pasta water.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Turn the back burner knob to High."
-  },
-  {
-   "id": "A-3.1-05",
-   "sub": "S3.1",
-   "order": "5",
-   "interaction": "Drag",
-   "source": "T-POT",
-   "srcLoc": "Right panel",
-   "target": "T-POT",
-   "param": "Lid on",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "A lid brings it to the boil much faster.",
-   "badFb": "",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "water_heating = true",
-   "task": "Put the lid on the pot so it boils faster."
-  },
-  {
-   "id": "A-3.1-06",
-   "sub": "S3.1",
    "order": "-",
-   "interaction": "Hold",
+   "interaction": "Click",
    "source": "E-TAP",
    "srcLoc": "Scene",
-   "target": "T-POT",
+   "target": "",
    "param": "Fill only to 1 litre",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1696,6 +1710,96 @@
    "branch": "RETRY",
    "score": -3,
    "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-3.2-01",
+   "sub": "S3.2",
+   "order": "1",
+   "interaction": "Drag",
+   "source": "T-POT",
+   "srcLoc": "Scene",
+   "target": "E-BURNER-BACK",
+   "param": "Pot onto the back burner",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-3.2-02",
+   "sub": "S3.2",
+   "order": "-",
+   "interaction": "Slider / knob",
+   "source": "E-KNOB-BACK",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Low",
+   "correctness": "Incorrect",
+   "outcome": "Recoverable",
+   "okFb": "",
+   "badFb": "Full heat for the pasta water.",
+   "branch": "RETRY",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-3.2-03",
+   "sub": "S3.2",
+   "order": "-",
+   "interaction": "Slider / knob",
+   "source": "E-KNOB-BACK",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Medium",
+   "correctness": "Incorrect",
+   "outcome": "Recoverable",
+   "okFb": "",
+   "badFb": "Full heat for the pasta water.",
+   "branch": "RETRY",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-3.2-04",
+   "sub": "S3.2",
+   "order": "2",
+   "interaction": "Slider / knob",
+   "source": "E-KNOB-BACK",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "High",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "Pot first, then the heat.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-3.2-05",
+   "sub": "S3.2",
+   "order": "3",
+   "interaction": "Drag",
+   "source": "T-LID",
+   "srcLoc": "Scene",
+   "target": "T-POT",
+   "param": "Lid on",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "A lid brings it to the boil much faster.",
+   "badFb": "Get the pot heating first, then the lid goes on.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "water_heating = true",
    "task": ""
   },
   {
@@ -2980,6 +3084,13 @@
    "location": "Scene",
    "description": "Mixer tap",
    "interactions": "Hold to fill"
+  },
+  "T-LID": {
+   "id": "T-LID",
+   "name": "Pot lid",
+   "location": "Scene",
+   "description": "The large pot's lid, resting on the counter",
+   "interactions": "Drag onto the pot"
   },
   "E-BURNER-BACK": {
    "id": "E-BURNER-BACK",
