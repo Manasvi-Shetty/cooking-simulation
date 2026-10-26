@@ -832,6 +832,14 @@ function pickSource(id) {
     missFeedback(early.text);
     return refresh();
   }
+  // Merged tasks: an item whose turn hasn't come yet (the tap before the pot is in the sink) says
+  // what comes first instead of offering its options.
+  const req = engine.required(), next = engine.nextRequired();
+  const mine = req.filter((a) => a.source === id && !engine.done.has(a.id));
+  if (!req.some((a) => a.task) && next && mine.length && !mine.some((a) => a.id === next.id)) {
+    missFeedback(mine[0].badFb || 'Not yet. Something else comes first.');
+    return refresh();
+  }
   ui.source = id;
   const acts = choices().filter((a) => a.source === id);
   if (acts.length === 1 && acts[0].interaction === 'Click' && !needsTarget(acts[0])) {
