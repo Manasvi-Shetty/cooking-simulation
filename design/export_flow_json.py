@@ -30,7 +30,8 @@ substeps = rows("Flow", {
     "incomplete": "Feedback if incomplete (multi-select)", "maxAttempts": "Max attempts", "next": "On pass →",
     "learning": "Learning point (science)", "sceneState": "Scene state on entry", "notes": "Notes",
     "multiWrong": "Feedback if several incorrect (multi-select)", "mixedMissing": "Added if also incomplete (multi-select)",
-    "tooEarly": "Picked too early (procedure)", "wrongSpot": "Wrong spot (procedure)"})
+    "tooEarly": "Picked too early (procedure)", "wrongSpot": "Wrong spot (procedure)",
+    "shortHold": "Released too early (hold)"})
 options = rows("MCQ Options", {
     "id": "Option ID", "sub": "Substep ID", "label": "Option label (right panel)", "item": "Item ID",
     "correctness": "Correctness", "outcome": "Outcome", "feedback": "Chef feedback (on select)",
@@ -57,9 +58,14 @@ for coll in (options, actions):
         r["score"] = int(r["score"] or 0)
 for s in substeps:
     s["maxAttempts"] = int(s["maxAttempts"] or 1)
-    # "T-TOWELS, E-WEIGHT: text" -> {"items": [...], "text": ...};  "ID: text | ID: text" -> {ID: text}
-    ids, _, text = s["tooEarly"].partition(":")
-    s["tooEarly"] = {"items": [i.strip() for i in ids.split(",")], "text": text.strip()} if text else None
+    # "T-TOWELS, E-WEIGHT: text | ID: text" -> {"items": [...], "texts": {ID: text}}
+    early = {}
+    for part in filter(None, s["tooEarly"].split("|")):
+        ids, _, text = part.partition(":")
+        early.update({i.strip(): text.strip() for i in ids.split(",")})
+    s["tooEarly"] = {"items": list(early), "texts": early} if early else None
+    # "ID: text" -> {ID: text}
+    s["shortHold"] = dict((k.strip(), v.strip()) for k, _, v in (p.partition(":") for p in filter(None, s["shortHold"].split("|")))) or None
     # "ID [SPOT SPOT]: text | ID: text" -> wrongSpot {ID: text}, wrongDecoys {ID: [SPOT, ...]}
     spots, decoys = {}, {}
     for part in filter(None, s["wrongSpot"].split("|")):

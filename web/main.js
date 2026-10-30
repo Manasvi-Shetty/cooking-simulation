@@ -267,18 +267,19 @@ const VISUALS = {
   'A-3.2-01': () => { w.potOnHob = true; },
   'A-3.2-04': () => { w.backHeat = 3; },
   'A-3.2-05': () => { w.lidOn = true; },
-  'A-4.2-01': () => { s.heat = 2; },
-  'A-4.2-02': () => { w.oil = true; },
-  'A-4.2-03': () => ff(60),
-  'A-4.2-04': () => { w.tofuStage = 'pan'; s.tofuInPan = true; },
-  'A-4.2-05': () => ff(180),
-  'A-4.2-06': () => { w.tossT = 1; w.flips += 1; },
-  'A-4.2-07': () => ff(210),
-  'A-4.2-08': () => { w.tossT = 1; },
-  'A-4.2-09': async () => { s.heat = 3; s.tofuInPan = true; w.tofuStage = 'pan'; await ff(300, 40); },
-  'A-4.3-01': () => { s.heat = 0; },
-  'A-4.3-03': () => { w.tofuStage = 'plate'; s.tofuInPan = false; s.guancialeDone = true; },
-  'A-4.3-04': async () => { w.oil = false; await sleep(700); w.oil = true; },
+  'A-4.2-02': () => { s.heat = 2; },
+  'A-4.2-04': async () => { s.heat = 3; await ff(300, 40); },                     // high, too long: smoke
+  'A-4.2-05': () => { w.oil = true; },
+  'A-4.2-06': () => ff(60),
+  'A-4.3-01': () => { w.tofuStage = 'pan'; s.tofuInPan = true; },
+  'A-4.3-03': () => ff(180),
+  'A-4.3-05': () => { w.tossT = 1; w.flips += 1; },
+  'A-4.3-06': () => { w.tossT = 1; },
+  'A-4.3-07': () => ff(180),
+  'A-4.3-09': () => ff(30),
+  'A-4.4-01': () => { s.heat = 0; },
+  'A-4.4-03': () => { w.tofuStage = 'plate'; s.tofuInPan = false; s.guancialeDone = true; },
+  'A-4.4-04': async () => { w.oil = false; await sleep(700); w.oil = true; },
   'A-5.2-02': () => { w.bowlStage = 'eggs'; w.wholeEggs = 2; },
   'A-5.2-03': () => { w.yolks = 3; },
   'A-5.4-01': () => { w.cheeseIn = true; },
@@ -296,7 +297,7 @@ const VISUALS = {
   'A-8.2-01': () => { w.tofuStage = 'pile'; },
   'A-8.2-02': () => { s.heat = 0; w.plated = 2; w.served = true; w.tofuStage = 'served'; },
   'A-8.2-03': () => { w.peppered = true; },
-  'A-8.2-05': () => { w.bellT = 1.2; },
+  'A-8.3-01': () => { w.bellT = 1.2; },
 };
 // Effects of MCQ answers that change the kitchen.
 function applyOptionEffect(o) {
@@ -314,7 +315,7 @@ function commitStep1() {
 }
 const ENTER = {
   'S2.1': () => commitStep1(),
-  'S4.3': () => w.committed.add('PLATE'),
+  'S4.4': () => w.committed.add('PLATE'),
   'S8.1': () => w.committed.add('SERVING'),
   'S2.4': () => { w.pressDone = true; w.tofuStage = 'pressed'; },
   'S4.1': () => { w.boil = 0.3; },
@@ -779,10 +780,16 @@ right.addEventListener('pointerdown', (e) => {
   const a = FLOW.actions.find((x) => x.id === act.dataset.act);
   if (a.source === 'E-TAP') w.tapOn = true;
   act.classList.add('holding');
-  holdTimer = setTimeout(() => { act.classList.remove('holding'); act.dataset.held = '1'; choose(a); }, 1100);
+  holdStart = { a, t: performance.now() };
+  holdTimer = setTimeout(() => { holdStart = null; act.classList.remove('holding'); act.dataset.held = '1'; choose(a); }, 1100);
 });
+let holdStart = null;
 const cancelHold = () => {
   clearTimeout(holdTimer);
+  // Let go too soon (the pecorino before 150 g): Nonna says to keep going.
+  const short = holdStart && engine.sub.shortHold?.[holdStart.a.source];
+  if (short && performance.now() - holdStart.t > 150) { setFeedback(short, null); renderPop(ui.feedback); }
+  holdStart = null;
   document.querySelectorAll('.holding').forEach((el) => el.classList.remove('holding'));
   if (!engine.done.has('A-3.1-02')) w.tapOn = false;
 };
@@ -829,14 +836,18 @@ function missFeedback(text) {
 function pickSource(id) {
   const early = engine.sub.tooEarly;
   if (early?.items.includes(id) && !choices().some((a) => a.source === id)) {
-    missFeedback(early.text);
+    missFeedback(early.texts[id]);
     return refresh();
   }
   // Merged tasks: an item whose turn hasn't come yet (the tap before the pot is in the sink) says
   // what comes first instead of offering its options.
   const req = engine.required(), next = engine.nextRequired();
   const mine = req.filter((a) => a.source === id && !engine.done.has(a.id));
-  if (!req.some((a) => a.task) && next && mine.length && !mine.some((a) => a.id === next.id)) {
+  // An item with a wrong move of its own can make it: one done on the spot (skip tempering) any time,
+  // one that goes somewhere (tongs that toss too soon) once the task is under way.
+  const errs = choices().filter((a) => a.source === id && a.order === '-');
+  const canErr = errs.some((a) => !a.target) || (errs.length > 0 && req.some((a) => engine.done.has(a.id)));
+  if (!req.some((a) => a.task) && next && mine.length && !mine.some((a) => a.id === next.id) && !canErr) {
     missFeedback(mine[0].badFb || 'Not yet. Something else comes first.');
     return refresh();
   }
@@ -874,8 +885,9 @@ pins.addEventListener('click', (e) => {
   const id = p.dataset.pin;
   if (ui.mode === 'target') {
     // The action that puts this item on that spot (the next one due, if several).
+    // Not its turn yet: the wrong move for that spot if there is one (paprika too early), else out of order.
     const fits = ui.pending.filter((a) => a.target === id);
-    if (fits.length) return perform(fits.find((a) => a.id === engine.nextRequired()?.id) || fits[0]);
+    if (fits.length) return perform(fits.find((a) => a.id === engine.nextRequired()?.id) || fits.find((a) => a.order === '-') || fits[0]);
     const spot = engine.sub.wrongSpot?.[ui.pending[0].source];
     if (spot) { missFeedback(spot); ui.mode = 'items'; ui.pending = null; return refresh(); }
     setFeedback('Not there. Where would this go?', null);

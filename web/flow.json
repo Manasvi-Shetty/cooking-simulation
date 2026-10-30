@@ -46,6 +46,7 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -70,6 +71,7 @@
    "mixedMissing": "And something's still missing. Think through each stage again.",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -94,6 +96,7 @@
    "mixedMissing": "And you're short of something. Check the order again.",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -121,9 +124,13 @@
      "T-TOWELS",
      "E-WEIGHT"
     ],
-    "text": "Open the pack and drain it before anything else."
+    "texts": {
+     "T-TOWELS": "Open the pack and drain it before anything else.",
+     "E-WEIGHT": "Open the pack and drain it before anything else."
+    }
    },
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -151,6 +158,7 @@
     "T-TOWELS": "One towel under the tofu, one on top. Try again.",
     "E-WEIGHT": "The heavy pan goes on top of the tofu to press it."
    },
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -175,6 +183,7 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -199,6 +208,7 @@
    "mixedMissing": "And you'll need more cuts to get to even 1 cm cubes.",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -223,6 +233,7 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
@@ -250,11 +261,15 @@
      "E-KNOB-BACK",
      "T-LID"
     ],
-    "text": "Fill the pot with water first."
+    "texts": {
+     "E-KNOB-BACK": "Fill the pot with water first.",
+     "T-LID": "Fill the pot with water first."
+    }
    },
    "wrongSpot": {
     "T-POT": "The pot needs to go under the tap. Put it in the sink."
    },
+   "shortHold": null,
    "wrongDecoys": {
     "T-POT": [
      "E-BURNER-BACK",
@@ -286,6 +301,7 @@
    "wrongSpot": {
     "T-POT": "That's not where it boils. Put it on the back burner."
    },
+   "shortHold": null,
    "wrongDecoys": {
     "T-POT": [
      "E-COUNTER"
@@ -294,12 +310,12 @@
   },
   {
    "step": 4,
-   "stepTitle": "Crisp the tofu",
+   "stepTitle": "Fry the Tofu Until Crisp",
    "id": "S4.1",
    "title": "Choose how to start the pan",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "The classic recipe starts guanciale in a cold pan. How should you start the tofu?",
+   "left": "Select the appropriate way to start the pan for crisp tofu.",
    "right": "Four ways to start the pan",
    "tip": "T-4.1",
    "camera": "Stove",
@@ -314,46 +330,98 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 4,
-   "stepTitle": "Crisp the tofu",
+   "stepTitle": "Fry the Tofu Until Crisp",
    "id": "S4.2",
+   "title": "Heat the oil",
+   "type": "Procedure",
+   "required": "Yes",
+   "left": "Heat the oil to frying temperature.",
+   "right": "Olive oil, kitchen timer, smoked paprika, tongs (only the oil is usable yet)",
+   "tip": "",
+   "camera": "Stove",
+   "passRule": "Actions A-4.2 in order; heat inside the target range.",
+   "incomplete": "",
+   "maxAttempts": 3,
+   "next": "S4.3",
+   "learning": "Browning (the Maillard reaction) starts around 140 \u00b0C. Shimmering oil is hot enough to seal the tofu straight away.",
+   "sceneState": "Skillet on the front burner; heat knob at Off.",
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": "",
+   "tooEarly": {
+    "items": [
+     "I-TOFU",
+     "E-TIMER",
+     "I-PAPRIKA",
+     "T-TONGS"
+    ],
+    "texts": {
+     "I-TOFU": "Wait for the shimmer, or the tofu will stick.",
+     "E-TIMER": "Get the oil hot first.",
+     "I-PAPRIKA": "Get the oil hot first.",
+     "T-TONGS": "Get the oil hot first."
+    }
+   },
+   "wrongSpot": {
+    "I-OIL": "The oil goes into the skillet."
+   },
+   "shortHold": null,
+   "wrongDecoys": {
+    "I-OIL": [
+     "T-POT"
+    ]
+   }
+  },
+  {
+   "step": 4,
+   "stepTitle": "Fry the Tofu Until Crisp",
+   "id": "S4.3",
    "title": "Fry the tofu until golden",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Heat the oil, then fry the tofu until golden and crisp on most sides.",
-   "right": "Olive oil, tofu cubes, tongs, smoked paprika and soy (if seasoned)",
-   "tip": "T-4.2",
+   "left": "Fry the tofu until crisp and golden on all sides.",
+   "right": "Kitchen timer, tongs, soy sauce, smoked paprika",
+   "tip": "T-4.3",
    "camera": "Stove",
-   "passRule": "Actions A-4.2-01 to 07 in order; heat and wait times inside the target ranges.",
+   "passRule": "Actions A-4.3 in order; wait times inside the target ranges.",
    "incomplete": "",
-   "maxAttempts": 2,
-   "next": "S4.3",
-   "learning": "Browning (the Maillard reaction) starts around 140 \u00b0C. Moving the tofu too soon tears the crust before it forms.",
-   "sceneState": "Skillet on burner; heat knob at Off.",
-   "notes": "Live sim: heat knob, wait-time choices, Peek view to judge colour.",
+   "maxAttempts": 3,
+   "next": "S4.4",
+   "learning": "Moving the tofu too soon tears the crust before it forms. Paprika burns fast, so it goes in at the very end.",
+   "sceneState": "Shimmering oil in the skillet; tofu cubes on the board.",
+   "notes": "",
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null,
-   "wrongDecoys": null
+   "wrongSpot": {
+    "I-TOFU": "The tofu goes into the hot skillet."
+   },
+   "shortHold": null,
+   "wrongDecoys": {
+    "I-TOFU": [
+     "T-POT"
+    ]
+   }
   },
   {
    "step": 4,
-   "stepTitle": "Crisp the tofu",
-   "id": "S4.3",
+   "stepTitle": "Fry the Tofu Until Crisp",
+   "id": "S4.4",
    "title": "Lift out the tofu, keep the oil",
    "type": "Procedure",
    "required": "Yes",
-   "left": "The tofu is crisp. Turn off the heat and set the tofu aside, but keep the flavoured oil in the pan.",
-   "right": "Slotted spoon, plate",
-   "tip": "T-4.3",
+   "left": "Take the tofu out while keeping the flavoured oil in the pan.",
+   "right": "None (panel hidden)",
+   "tip": "T-4.4",
    "camera": "Stove",
-   "passRule": "Actions A-4.3-01 to 03 in order.",
+   "passRule": "Actions A-4.4 in order.",
    "incomplete": "",
-   "maxAttempts": 2,
+   "maxAttempts": 3,
    "next": "S5.1",
    "learning": "The oil now carries flavour and becomes the fat in the sauce emulsion. Tofu goes back in at the end so it stays crisp.",
    "sceneState": "Crisp tofu in the skillet; burner on.",
@@ -361,17 +429,24 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null,
-   "wrongDecoys": null
+   "wrongSpot": {
+    "T-SLOTTED": "Put the tofu on the resting plate so it stays crisp."
+   },
+   "shortHold": null,
+   "wrongDecoys": {
+    "T-SLOTTED": [
+     "E-COUNTER"
+    ]
+   }
   },
   {
    "step": 5,
-   "stepTitle": "Make the egg mixture",
+   "stepTitle": "Prepare the Egg and Cheese Mixture",
    "id": "S5.1",
    "title": "Choose the eggs",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "How many eggs for two plates?",
+   "left": "Select the appropriate eggs for a rich sauce for two.",
    "right": "Egg combinations (4)",
    "tip": "",
    "camera": "Counter",
@@ -386,20 +461,21 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 5,
-   "stepTitle": "Make the egg mixture",
+   "stepTitle": "Prepare the Egg and Cheese Mixture",
    "id": "S5.2",
    "title": "Crack and separate the eggs",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Crack 2 whole eggs into the bowl, then separate 3 more and add only the yolks.",
-   "right": "Eggs, mixing bowl, small cup for whites",
+   "left": "Add the eggs to the bowl for the sauce base.",
+   "right": "Eggs",
    "tip": "T-5.2",
    "camera": "Counter",
-   "passRule": "Actions A-5.2-01 to 03 in order (A-5.2-03 repeated 3 times).",
+   "passRule": "Actions A-5.2 in order.",
    "incomplete": "",
    "maxAttempts": 3,
    "next": "S5.3",
@@ -410,16 +486,17 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 5,
-   "stepTitle": "Make the egg mixture",
+   "stepTitle": "Prepare the Egg and Cheese Mixture",
    "id": "S5.3",
    "title": "Pick the grater",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "Which side of the box grater do you use for the pecorino?",
+   "left": "Select the appropriate grater side for cheese that melts smoothly.",
    "right": "Four grater sides",
    "tip": "T-5.3",
    "camera": "Counter",
@@ -434,22 +511,23 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 5,
-   "stepTitle": "Make the egg mixture",
+   "stepTitle": "Prepare the Egg and Cheese Mixture",
    "id": "S5.4",
    "title": "Grate, season and whisk",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Grate 150 g of pecorino into the eggs, add about \u00bd tbsp of cracked pepper, and whisk to a thick paste.",
-   "right": "Pecorino, box grater, pepper mill, whisk",
+   "left": "Combine the cheese and pepper with the eggs into a smooth paste.",
+   "right": "Pecorino, pepper mill, coarse salt",
    "tip": "",
    "camera": "Counter",
-   "passRule": "Actions A-5.4-01 to 03 in order.",
+   "passRule": "Actions A-5.4 in order.",
    "incomplete": "",
-   "maxAttempts": 2,
+   "maxAttempts": 3,
    "next": "S6.1",
    "learning": "Freshly cracked pepper is a main flavour here, not a garnish.",
    "sceneState": "Bowl with eggs.",
@@ -458,16 +536,19 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": {
+    "I-PECORINO": "Keep going. You need about 150 g for the sauce to coat the pasta."
+   },
    "wrongDecoys": null
   },
   {
    "step": 6,
-   "stepTitle": "Cook the pasta",
+   "stepTitle": "Cook the Spaghetti",
    "id": "S6.1",
    "title": "Salt the water",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "The water is at a rolling boil (about 3 litres). How much salt goes in?",
+   "left": "Select the appropriate amount of salt for seasoning the pasta water.",
    "right": "Salt amounts (4)",
    "tip": "T-6.1",
    "camera": "Stove",
@@ -482,40 +563,52 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 6,
-   "stepTitle": "Cook the pasta",
+   "stepTitle": "Cook the Spaghetti",
    "id": "S6.2",
    "title": "Add the spaghetti",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Add the spaghetti and stop it from sticking.",
-   "right": "Spaghetti (300 g), tongs",
+   "left": "Cook the pasta in the salted water without it sticking.",
+   "right": "Coarse salt, spaghetti, olive oil, tongs",
    "tip": "",
    "camera": "Stove",
-   "passRule": "Actions A-6.2-01 to 03 in order.",
+   "passRule": "Actions A-6.2 in order.",
    "incomplete": "",
-   "maxAttempts": 2,
+   "maxAttempts": 3,
    "next": "S6.3",
    "learning": "Stirring in the first minute stops the strands sticking while their surface starch is gelatinising.",
-   "sceneState": "Salted water at a rolling boil.",
+   "sceneState": "Water at a rolling boil.",
    "notes": "",
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null,
-   "wrongDecoys": null
+   "wrongSpot": {
+    "I-SALT": "That goes into the boiling pot.",
+    "I-SPAGHETTI": "That goes into the boiling pot."
+   },
+   "shortHold": null,
+   "wrongDecoys": {
+    "I-SALT": [
+     "T-SKILLET"
+    ],
+    "I-SPAGHETTI": [
+     "T-SKILLET"
+    ]
+   }
   },
   {
    "step": 6,
-   "stepTitle": "Cook the pasta",
+   "stepTitle": "Cook the Spaghetti",
    "id": "S6.3",
    "title": "Decide when to pull the pasta",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "The packet says 11 minutes. When do you take the spaghetti out?",
+   "left": "Select the appropriate time to take the pasta out for finishing it in the pan.",
    "right": "Times (4)",
    "tip": "T-6.3",
    "camera": "Stove",
@@ -530,22 +623,23 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 7,
-   "stepTitle": "Bring the sauce together",
+   "stepTitle": "Combine the Pasta and Sauce",
    "id": "S7.1",
    "title": "Move the pasta into the pan",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Save some pasta water first, then move the pasta into the pan with the tofu oil.",
-   "right": "Mug, ladle, tongs",
+   "left": "Move the pasta into the pan, keeping some cooking water aside.",
+   "right": "None (panel hidden)",
    "tip": "T-7.1",
    "camera": "Stove",
-   "passRule": "Actions A-7.1-01 to 04 in order.",
+   "passRule": "Actions A-7.1 in order.",
    "incomplete": "",
-   "maxAttempts": 2,
+   "maxAttempts": 3,
    "next": "S7.2",
    "learning": "Starchy pasta water is the glue that binds fat and egg. It's your insurance if the sauce gets too thick.",
    "sceneState": "Pasta near al dente; skillet with flavoured oil.",
@@ -553,23 +647,30 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": null,
-   "wrongDecoys": null
+   "wrongSpot": {
+    "T-TONGS": "The pasta goes into the skillet with the flavoured oil."
+   },
+   "shortHold": null,
+   "wrongDecoys": {
+    "T-TONGS": [
+     "E-PLATE"
+    ]
+   }
   },
   {
    "step": 7,
-   "stepTitle": "Bring the sauce together",
+   "stepTitle": "Combine the Pasta and Sauce",
    "id": "S7.2",
    "title": "Temper the eggs",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Loosen the egg mixture with hot pasta water until it pours like cream.",
-   "right": "Mug of pasta water, whisk, egg bowl",
+   "left": "Temper the egg mixture so it pours like cream.",
+   "right": "None (panel hidden)",
    "tip": "T-7.2",
    "camera": "Counter",
-   "passRule": "Actions A-7.2-01 to 03 in order.",
+   "passRule": "Actions A-7.2 in order.",
    "incomplete": "",
-   "maxAttempts": 2,
+   "maxAttempts": 3,
    "next": "S7.3",
    "learning": "Tempering warms the eggs gradually so they aren't shocked by the hot pan. You can always thicken a sauce, but you can't unscramble one.",
    "sceneState": "Egg paste in the bowl; pasta in the skillet.",
@@ -578,16 +679,17 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 7,
-   "stepTitle": "Bring the sauce together",
+   "stepTitle": "Combine the Pasta and Sauce",
    "id": "S7.3",
    "title": "Deal with the heat",
    "type": "MCQ - Single select",
    "required": "Yes",
-   "left": "The egg mixture is ready. What do you do with the pan before it goes in?",
+   "left": "Select the appropriate heat level for adding the eggs.",
    "right": "Heat choices (4)",
    "tip": "T-7.3",
    "camera": "Stove",
@@ -602,17 +704,18 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 7,
-   "stepTitle": "Bring the sauce together",
+   "stepTitle": "Combine the Pasta and Sauce",
    "id": "S7.4",
    "title": "Toss into a silky sauce",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Pour in the eggs and keep everything moving until the sauce is thick and glossy, like b\u00e9chamel.",
-   "right": "Egg mixture, tongs, mug of pasta water, heat knob; live sauce thermometer",
+   "left": "Toss the pasta with the eggs into a silky sauce, then plate it.",
+   "right": "Toss speed, heat on/off, splash of pasta water, Plate it; live sauce thermometer",
    "tip": "T-7.4",
    "camera": "Peek in the pan",
    "passRule": "Actions A-7.4-01 to 03 in order; sauce must end Silky (thickened, no curds).",
@@ -626,16 +729,17 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 8,
-   "stepTitle": "Finish and serve",
+   "stepTitle": "Plate and Serve the Dish",
    "id": "S8.1",
    "title": "Choose the toppings",
    "type": "MCQ - Multi select",
    "required": "Yes",
-   "left": "What goes on top before it goes out?",
+   "left": "Select the appropriate toppings for a classic finish.",
    "right": "Topping cards (6)",
    "tip": "",
    "camera": "Serving",
@@ -646,34 +750,74 @@
    "learning": "Keep it simple: the toppings repeat the dish's own flavours.",
    "sceneState": "Two warm bowls on the counter.",
    "notes": "",
-   "multiWrong": "",
-   "mixedMissing": "",
+   "multiWrong": "{items} would cover up the flavours this dish is built on. A Roman carbonara is finished simply, with things already on your counter.",
+   "mixedMissing": "And the classic finish is still missing something.",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   },
   {
    "step": 8,
-   "stepTitle": "Finish and serve",
+   "stepTitle": "Plate and Serve the Dish",
    "id": "S8.2",
-   "title": "Plate and serve",
+   "title": "Plate the pasta",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Fold the tofu back in, twirl each portion into a bowl, top it, and send it out straight away.",
-   "right": "Crisp tofu, tongs, 2 bowls, pepper mill, pecorino, service bell",
+   "left": "Plate the pasta with its toppings.",
+   "right": "Tongs, black peppercorns, pecorino, kitchen timer",
    "tip": "T-8.2",
    "camera": "Serving",
-   "passRule": "Actions A-8.2-01 to 05 in order, within 60 s (sim time).",
+   "passRule": "Actions A-8.2 in order.",
+   "incomplete": "",
+   "maxAttempts": 3,
+   "next": "S8.3",
+   "learning": "Carbonara keeps thickening as it cools. Plate it fast.",
+   "sceneState": "Finished pasta in the pan; crisp tofu on the resting plate.",
+   "notes": "",
+   "multiWrong": "",
+   "mixedMissing": "",
+   "tooEarly": {
+    "items": [
+     "E-BELL"
+    ],
+    "texts": {
+     "E-BELL": "Plate and top both bowls first."
+    }
+   },
+   "wrongSpot": {
+    "T-TONGS": "The pasta goes into the serving bowls."
+   },
+   "shortHold": null,
+   "wrongDecoys": {
+    "T-TONGS": [
+     "E-PLATE"
+    ]
+   }
+  },
+  {
+   "step": 8,
+   "stepTitle": "Plate and Serve the Dish",
+   "id": "S8.3",
+   "title": "Serve",
+   "type": "Procedure",
+   "required": "Yes",
+   "left": "Serve the dish while it's hot.",
+   "right": "None (panel hidden)",
+   "tip": "",
+   "camera": "Serving",
+   "passRule": "Action A-8.3-01, within 60 s (sim time).",
    "incomplete": "",
    "maxAttempts": 1,
    "next": "END",
    "learning": "Carbonara keeps thickening as it cools. Serve it immediately.",
-   "sceneState": "Finished pasta in the pan.",
+   "sceneState": "Two topped bowls on the pass.",
    "notes": "Leads to the Outcomes screen.",
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": null,
+   "shortHold": null,
    "wrongDecoys": null
   }
  ],
@@ -1425,7 +1569,7 @@
   {
    "id": "O-8.1-a",
    "sub": "S8.1",
-   "label": "Freshly cracked black pepper",
+   "label": "Freshly Cracked Black Pepper",
    "item": "",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -1437,7 +1581,7 @@
   {
    "id": "O-8.1-b",
    "sub": "S8.1",
-   "label": "A dusting of pecorino",
+   "label": "A Dusting of Pecorino",
    "item": "",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -1449,7 +1593,7 @@
   {
    "id": "O-8.1-c",
    "sub": "S8.1",
-   "label": "Chopped parsley",
+   "label": "Chopped Parsley",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1461,7 +1605,7 @@
   {
    "id": "O-8.1-d",
    "sub": "S8.1",
-   "label": "A drizzle of cream",
+   "label": "A Drizzle of Cream",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1473,7 +1617,7 @@
   {
    "id": "O-8.1-e",
    "sub": "S8.1",
-   "label": "Chilli flakes",
+   "label": "Chilli Flakes",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1485,10 +1629,10 @@
   {
    "id": "O-8.1-f",
    "sub": "S8.1",
-   "label": "Extra crispy tofu on top",
+   "label": "Extra Crispy Tofu on Top",
    "item": "",
-   "correctness": "Acceptable",
-   "outcome": "Acceptable",
+   "correctness": "Correct",
+   "outcome": "Perfect",
    "feedback": "Good idea for an 'extra-crispy' request: a few pieces on top stay crunchiest.",
    "branch": "NEXT",
    "score": 0,
@@ -1805,6 +1949,24 @@
   {
    "id": "A-4.2-01",
    "sub": "S4.2",
+   "order": "-",
+   "interaction": "Slider / knob",
+   "source": "E-KNOB-FRONT",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Low",
+   "correctness": "Incorrect",
+   "outcome": "Recoverable",
+   "okFb": "",
+   "badFb": "Too gentle. The tofu would soak up oil instead of crisping. Medium is right.",
+   "branch": "RETRY",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.2-02",
+   "sub": "S4.2",
    "order": "1",
    "interaction": "Slider / knob",
    "source": "E-KNOB-FRONT",
@@ -1814,140 +1976,32 @@
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
-   "badFb": "Heat the pan first.",
+   "badFb": "",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Turn the front burner knob to Medium (aim for 170-200 \u00b0C)."
-  },
-  {
-   "id": "A-4.2-02",
-   "sub": "S4.2",
-   "order": "2",
-   "interaction": "Drag",
-   "source": "I-OIL",
-   "srcLoc": "Right panel",
-   "target": "T-SKILLET",
-   "param": "2 tbsp olive oil",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "Oil before tofu.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Pour 2 tbsp of olive oil into the skillet."
+   "task": ""
   },
   {
    "id": "A-4.2-03",
    "sub": "S4.2",
-   "order": "3",
-   "interaction": "Timer",
-   "source": "E-PAN-OIL",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "Wait until the oil shimmers (about 1 min)",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "See it ripple? That's hot enough.",
-   "badFb": "Wait for the shimmer, or the tofu will stick.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Wait until the oil shimmers, about 1 minute."
-  },
-  {
-   "id": "A-4.2-04",
-   "sub": "S4.2",
-   "order": "4",
-   "interaction": "Drag",
-   "source": "I-TOFU",
-   "srcLoc": "Scene",
-   "target": "T-SKILLET",
-   "param": "Tofu cubes in a single layer",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "Listen to that sizzle.",
-   "badFb": "",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "tofu_in_pan = true",
-   "task": "Add the tofu cubes to the skillet in a single layer."
-  },
-  {
-   "id": "A-4.2-05",
-   "sub": "S4.2",
-   "order": "5",
-   "interaction": "Timer",
-   "source": "E-TIMER",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "Leave undisturbed 3 min (choices: 1 / 3 / 6 min)",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "Don't touch it yet: the crust needs time to form.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Set the timer and leave the cubes alone so they can brown."
-  },
-  {
-   "id": "A-4.2-06",
-   "sub": "S4.2",
-   "order": "6",
-   "interaction": "Click",
-   "source": "T-TONGS",
-   "srcLoc": "Right panel",
-   "target": "T-SKILLET",
-   "param": "Toss / turn the cubes",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "Golden underneath. Now the other sides.",
-   "badFb": "",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": "Use the tongs to turn the cubes over."
-  },
-  {
-   "id": "A-4.2-07",
-   "sub": "S4.2",
-   "order": "7",
-   "interaction": "Timer",
-   "source": "E-TIMER",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "Another 3-4 min, then add soy and paprika for the last 30 s",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "Crisp, golden and smoky.",
-   "badFb": "",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "tofu_state = crisp",
-   "task": "Cook 3-4 minutes more; add the soy sauce and paprika in the last 30 seconds."
-  },
-  {
-   "id": "A-4.2-08",
-   "sub": "S4.2",
    "order": "-",
-   "interaction": "Click",
-   "source": "T-TONGS",
-   "srcLoc": "Right panel",
-   "target": "T-SKILLET",
-   "param": "Toss in the first minute",
+   "interaction": "Slider / knob",
+   "source": "E-KNOB-FRONT",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "High",
    "correctness": "Incorrect",
-   "outcome": "Degraded",
+   "outcome": "Recoverable",
    "okFb": "",
-   "badFb": "Too soon! The crust tore and stuck to the pan. Let it sit next time.",
-   "branch": "NEXT",
-   "score": -5,
-   "effect": "tofu_torn = true",
+   "badFb": "Too hot. The oil would smoke before the tofu goes in. Medium is right.",
+   "branch": "RETRY",
+   "score": 0,
+   "effect": "",
    "task": ""
   },
   {
-   "id": "A-4.2-09",
+   "id": "A-4.2-04",
    "sub": "S4.2",
    "order": "-",
    "interaction": "Slider / knob",
@@ -1965,8 +2019,206 @@
    "task": ""
   },
   {
-   "id": "A-4.2-10",
+   "id": "A-4.2-05",
    "sub": "S4.2",
+   "order": "2",
+   "interaction": "Drag",
+   "source": "I-OIL",
+   "srcLoc": "Right panel",
+   "target": "T-SKILLET",
+   "param": "2 tbsp olive oil",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "Heat the pan first.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.2-06",
+   "sub": "S4.2",
+   "order": "3",
+   "interaction": "Timer",
+   "source": "E-PAN-OIL",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Wait until the oil shimmers (about 1 min)",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "See it ripple? That's hot enough.",
+   "badFb": "Add the oil first.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-01",
+   "sub": "S4.3",
+   "order": "1",
+   "interaction": "Drag",
+   "source": "I-TOFU",
+   "srcLoc": "Scene",
+   "target": "T-SKILLET",
+   "param": "Tofu cubes in a single layer",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "tofu_in_pan = true",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-02",
+   "sub": "S4.3",
+   "order": "-",
+   "interaction": "Timer",
+   "source": "E-TIMER",
+   "srcLoc": "Right panel",
+   "target": "",
+   "param": "Leave undisturbed 1 min",
+   "correctness": "Incorrect",
+   "outcome": "Recoverable",
+   "okFb": "",
+   "badFb": "Not yet. The crust needs about 3 minutes to form.",
+   "branch": "RETRY",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-03",
+   "sub": "S4.3",
+   "order": "2",
+   "interaction": "Timer",
+   "source": "E-TIMER",
+   "srcLoc": "Right panel",
+   "target": "",
+   "param": "Leave undisturbed 3 min",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "Get the tofu into the pan first.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-04",
+   "sub": "S4.3",
+   "order": "-",
+   "interaction": "Timer",
+   "source": "E-TIMER",
+   "srcLoc": "Right panel",
+   "target": "",
+   "param": "Leave undisturbed 6 min",
+   "correctness": "Incorrect",
+   "outcome": "Recoverable",
+   "okFb": "",
+   "badFb": "Too long on one side. The cubes will scorch. 3 minutes is enough.",
+   "branch": "RETRY",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-05",
+   "sub": "S4.3",
+   "order": "3",
+   "interaction": "Drag",
+   "source": "T-TONGS",
+   "srcLoc": "Right panel",
+   "target": "T-SKILLET",
+   "param": "Turn the cubes over",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "Let the crust form first.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-06",
+   "sub": "S4.3",
+   "order": "-",
+   "interaction": "Drag",
+   "source": "T-TONGS",
+   "srcLoc": "Right panel",
+   "target": "T-SKILLET",
+   "param": "Toss in the first minute",
+   "correctness": "Incorrect",
+   "outcome": "Degraded",
+   "okFb": "",
+   "badFb": "Too soon! The crust tore and stuck to the pan. Let it sit next time.",
+   "branch": "NEXT",
+   "score": -5,
+   "effect": "tofu_torn = true",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-07",
+   "sub": "S4.3",
+   "order": "4",
+   "interaction": "Timer",
+   "source": "E-TIMER",
+   "srcLoc": "Right panel",
+   "target": "",
+   "param": "Leave for another 3-4 min",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "Turn the cubes first.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-08",
+   "sub": "S4.3",
+   "order": "5",
+   "interaction": "Drag",
+   "source": "I-SOY",
+   "srcLoc": "Right panel",
+   "target": "T-SKILLET",
+   "param": "1 tsp soy sauce",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "",
+   "badFb": "The soy goes in at the end, with the paprika.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-09",
+   "sub": "S4.3",
+   "order": "6",
+   "interaction": "Drag",
+   "source": "I-PAPRIKA",
+   "srcLoc": "Right panel",
+   "target": "T-SKILLET",
+   "param": "A pinch of smoked paprika",
+   "correctness": "Correct",
+   "outcome": "Perfect",
+   "okFb": "Crisp, golden and smoky.",
+   "badFb": "Paprika burns fast. It goes in last, after the soy.",
+   "branch": "NEXT",
+   "score": 0,
+   "effect": "tofu_state = crisp",
+   "task": ""
+  },
+  {
+   "id": "A-4.3-10",
+   "sub": "S4.3",
    "order": "-",
    "interaction": "Drag",
    "source": "I-PAPRIKA",
@@ -1983,8 +2235,8 @@
    "task": ""
   },
   {
-   "id": "A-4.3-01",
-   "sub": "S4.3",
+   "id": "A-4.4-01",
+   "sub": "S4.4",
    "order": "1",
    "interaction": "Slider / knob",
    "source": "E-KNOB-FRONT",
@@ -1994,51 +2246,51 @@
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
-   "badFb": "Heat off first.",
+   "badFb": "",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Turn the front burner knob to Off."
+   "task": ""
   },
   {
-   "id": "A-4.3-02",
-   "sub": "S4.3",
+   "id": "A-4.4-02",
+   "sub": "S4.4",
    "order": "2",
    "interaction": "Drag",
    "source": "T-SLOTTED",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-SKILLET",
    "param": "Lift the tofu out (oil drains back)",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
-   "badFb": "",
+   "badFb": "Heat off first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "With the slotted spoon, lift the tofu out and let the oil drain back into the pan."
+   "task": ""
   },
   {
-   "id": "A-4.3-03",
-   "sub": "S4.3",
+   "id": "A-4.4-03",
+   "sub": "S4.4",
    "order": "3",
    "interaction": "Drag",
    "source": "T-SLOTTED",
    "srcLoc": "Scene",
    "target": "E-PLATE",
-   "param": "Tofu onto the plate",
+   "param": "Tofu onto the resting plate",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "Set aside. It goes back in at the very end.",
-   "badFb": "",
+   "badFb": "Lift the tofu out of the skillet first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "tofu_reserved = true",
-   "task": "Put the tofu on the resting plate."
+   "task": ""
   },
   {
-   "id": "A-4.3-04",
-   "sub": "S4.3",
+   "id": "A-4.4-04",
+   "sub": "S4.4",
    "order": "-",
    "interaction": "Drag",
    "source": "T-SKILLET",
@@ -2055,8 +2307,8 @@
    "task": ""
   },
   {
-   "id": "A-4.3-05",
-   "sub": "S4.3",
+   "id": "A-4.4-05",
+   "sub": "S4.4",
    "order": "-",
    "interaction": "Click",
    "source": "T-SKILLET",
@@ -2078,7 +2330,7 @@
    "order": "1",
    "interaction": "Drag",
    "source": "T-BOWL",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "E-COUNTER",
    "param": "Bowl onto the counter",
    "correctness": "Correct",
@@ -2088,7 +2340,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Pick the mixing bowl and put it on the counter."
+   "task": ""
   },
   {
    "id": "A-5.2-02",
@@ -2102,11 +2354,11 @@
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
-   "badFb": "",
+   "badFb": "Get the bowl onto the counter first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Tap the eggs to crack 2 whole eggs into the bowl."
+   "task": ""
   },
   {
    "id": "A-5.2-03",
@@ -2116,7 +2368,7 @@
    "source": "I-EGGS",
    "srcLoc": "Right panel",
    "target": "E-WHITES-CUP",
-   "param": "Separate: pass the yolk between the shell halves, whites into the cup, yolk into the bowl (\u00d73)",
+   "param": "Separate: whites into the cup, yolk into the bowl (\u00d73)",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "Lovely golden yolks.",
@@ -2124,7 +2376,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "yolks_added = 3",
-   "task": "Separate 3 more eggs: whites go into the cup, yolks into the bowl."
+   "task": ""
   },
   {
    "id": "A-5.2-04",
@@ -2133,7 +2385,25 @@
    "interaction": "Click",
    "source": "I-EGGS",
    "srcLoc": "Right panel",
-   "target": "T-BOWL",
+   "target": "",
+   "param": "Separate: whites and yolks into the bowl",
+   "correctness": "Incorrect",
+   "outcome": "Recoverable",
+   "okFb": "",
+   "badFb": "The whites go into the cup. Only the yolks go in the bowl.",
+   "branch": "RETRY",
+   "score": -3,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-5.2-05",
+   "sub": "S5.2",
+   "order": "-",
+   "interaction": "Click",
+   "source": "I-EGGS",
+   "srcLoc": "Right panel",
+   "target": "",
    "param": "Shell fragment falls in",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -2160,7 +2430,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "cheese_g = 150",
-   "task": "Hold to grate 150 g of pecorino into the bowl. Watch the scale."
+   "task": ""
   },
   {
    "id": "A-5.4-02",
@@ -2173,12 +2443,12 @@
    "param": "Crack about \u00bd tbsp pepper (about 12 twists)",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Be generous, pepper is a main flavour here.",
-   "badFb": "",
+   "okFb": "",
+   "badFb": "Grate the cheese in first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Tap the pepper mill about 12 times over the bowl."
+   "task": ""
   },
   {
    "id": "A-5.4-03",
@@ -2186,7 +2456,7 @@
    "order": "3",
    "interaction": "Hold",
    "source": "T-BOWL",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-BOWL",
    "param": "Whisk until a thick, smooth paste",
    "correctness": "Correct",
@@ -2196,7 +2466,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "egg_paste = ready",
-   "task": "Hold to whisk until you have a thick, smooth paste."
+   "task": ""
   },
   {
    "id": "A-5.4-04",
@@ -2224,7 +2494,7 @@
    "source": "I-SALT",
    "srcLoc": "Right panel",
    "target": "T-POT",
-   "param": "Salt as chosen in S6.1",
+   "param": "Salt as chosen",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
@@ -2232,7 +2502,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Add the salt you chose to the boiling water."
+   "task": ""
   },
   {
    "id": "A-6.2-02",
@@ -2245,12 +2515,12 @@
    "param": "300 g spaghetti",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "In it goes. Push it under as it softens.",
+   "okFb": "",
    "badFb": "Salt the water first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "pasta_in = true",
-   "task": "Add the 300 g of spaghetti to the pot."
+   "task": ""
   },
   {
    "id": "A-6.2-03",
@@ -2264,11 +2534,11 @@
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "No sticking.",
-   "badFb": "",
+   "badFb": "Get the spaghetti in first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Tap the tongs to stir the pasta during the first minute so it doesn't stick."
+   "task": ""
   },
   {
    "id": "A-6.2-04",
@@ -2312,17 +2582,17 @@
    "order": "1",
    "interaction": "Drag",
    "source": "T-MUG",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-POT",
    "param": "Ladle about 1 cup of pasta water into the mug",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Our insurance policy.",
-   "badFb": "Save the water before you move the pasta!",
+   "okFb": "",
+   "badFb": "",
    "branch": "NEXT",
    "score": 0,
    "effect": "water_saved_ml = 240",
-   "task": "With the ladle, scoop about 1 cup of pasta water into the mug."
+   "task": ""
   },
   {
    "id": "A-7.1-02",
@@ -2340,7 +2610,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Turn the front burner knob to the lowest flame."
+   "task": ""
   },
   {
    "id": "A-7.1-03",
@@ -2348,17 +2618,17 @@
    "order": "3",
    "interaction": "Drag",
    "source": "T-TONGS",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-SKILLET",
    "param": "Lift the pasta from pot to pan (water clinging)",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Straight in, starchy water and all.",
-   "badFb": "",
+   "okFb": "",
+   "badFb": "Save the water and lower the flame before you move the pasta.",
    "branch": "NEXT",
    "score": 0,
    "effect": "pasta_in_pan = true",
-   "task": "With the tongs, lift the pasta from the pot into the skillet."
+   "task": ""
   },
   {
    "id": "A-7.1-04",
@@ -2376,7 +2646,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Tap the tongs to toss the pasta in the oil for about 30 seconds."
+   "task": ""
   },
   {
    "id": "A-7.1-05",
@@ -2402,7 +2672,7 @@
    "order": "1",
    "interaction": "Drag",
    "source": "T-MUG",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-BOWL",
    "param": "Pour 60 ml (\u00bc cup) slowly into the eggs",
    "correctness": "Correct",
@@ -2412,7 +2682,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Pour about 60 ml (\u00bc cup) of the pasta water slowly into the egg bowl."
+   "task": ""
   },
   {
    "id": "A-7.2-02",
@@ -2420,17 +2690,17 @@
    "order": "2",
    "interaction": "Hold",
    "source": "T-BOWL",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-BOWL",
    "param": "Whisk hard while pouring",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Keep it moving so no egg sits in the hot water.",
-   "badFb": "",
+   "okFb": "",
+   "badFb": "Pour in a little pasta water first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Hold to whisk hard while you pour."
+   "task": ""
   },
   {
    "id": "A-7.2-03",
@@ -2444,20 +2714,20 @@
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "Smooth and pourable. Ready for the pan.",
-   "badFb": "",
+   "badFb": "Whisk it smooth first, then check how it pours.",
    "branch": "NEXT",
    "score": 0,
    "effect": "eggs_tempered = true",
-   "task": "Check the sauce: it should pour like cream."
+   "task": ""
   },
   {
    "id": "A-7.2-04",
    "sub": "S7.2",
    "order": "-",
-   "interaction": "Drag",
+   "interaction": "Click",
    "source": "T-MUG",
-   "srcLoc": "Right panel",
-   "target": "T-BOWL",
+   "srcLoc": "Scene",
+   "target": "",
    "param": "Dump all the hot water in at once without whisking",
    "correctness": "Incorrect",
    "outcome": "Degraded",
@@ -2474,7 +2744,7 @@
    "order": "-",
    "interaction": "Click",
    "source": "T-BOWL",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "",
    "param": "Skip tempering, pour the cold paste straight into the pan",
    "correctness": "Incorrect",
@@ -2492,7 +2762,7 @@
    "order": "1",
    "interaction": "Drag",
    "source": "T-BOWL",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-SKILLET",
    "param": "Pour the egg mixture over the pasta",
    "correctness": "Correct",
@@ -2502,7 +2772,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "eggs_in = true",
-   "task": "Pour the egg mixture over the pasta in the skillet."
+   "task": ""
   },
   {
    "id": "A-7.4-02",
@@ -2520,7 +2790,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Keep tossing. Watch the thermometer and stay between 62 and 70 \u00b0C."
+   "task": ""
   },
   {
    "id": "A-7.4-03",
@@ -2538,7 +2808,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Plate it as soon as the sauce is glossy and coats the strands."
+   "task": ""
   },
   {
    "id": "A-7.4-04",
@@ -2646,7 +2916,7 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Fold most of the crispy tofu back into the pasta."
+   "task": ""
   },
   {
    "id": "A-8.2-02",
@@ -2659,12 +2929,12 @@
    "param": "Twirl a nest into each bowl (\u00d72)",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Twist the tongs against the pan to make a tidy nest.",
-   "badFb": "",
+   "okFb": "",
+   "badFb": "Fold the tofu back into the pasta first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "With the tongs, twirl a nest of pasta into each serving bowl."
+   "task": ""
   },
   {
    "id": "A-8.2-03",
@@ -2678,11 +2948,11 @@
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
-   "badFb": "",
+   "badFb": "Nests first, then the toppings.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Tap the pepper mill to crack pepper over each bowl."
+   "task": ""
   },
   {
    "id": "A-8.2-04",
@@ -2695,17 +2965,35 @@
    "param": "Dust with pecorino (plus reserved crispy tofu on top)",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "",
+   "okFb": "Beautiful. Ready to go out.",
+   "badFb": "Nests first, then the toppings.",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Hold to dust each bowl with pecorino, then top with the reserved tofu."
+   "task": ""
   },
   {
    "id": "A-8.2-05",
    "sub": "S8.2",
-   "order": "5",
+   "order": "-",
+   "interaction": "Click",
+   "source": "E-PLATE",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Fold all the tofu back in",
+   "correctness": "Incorrect",
+   "outcome": "Recoverable",
+   "okFb": "",
+   "badFb": "Keep a few crispy pieces back for the top.",
+   "branch": "RETRY",
+   "score": -3,
+   "effect": "",
+   "task": ""
+  },
+  {
+   "id": "A-8.3-01",
+   "sub": "S8.3",
+   "order": "1",
    "interaction": "Click",
    "source": "E-BELL",
    "srcLoc": "Scene",
@@ -2713,22 +3001,22 @@
    "param": "Ring the bell: serve immediately",
    "correctness": "Correct",
    "outcome": "Perfect",
-   "okFb": "Service! Hot and silky, straight to Table 6.",
+   "okFb": "Service! Hot and silky, straight to the customer.",
    "badFb": "",
    "branch": "NEXT",
    "score": 0,
    "effect": "",
-   "task": "Ring the bell to serve right away."
+   "task": ""
   },
   {
-   "id": "A-8.2-06",
-   "sub": "S8.2",
+   "id": "A-8.3-02",
+   "sub": "S8.3",
    "order": "-",
    "interaction": "Timer",
    "source": "E-TIMER",
-   "srcLoc": "Scene",
+   "srcLoc": "Right panel",
    "target": "",
-   "param": "Wait more than 60 s (sim) before serving",
+   "param": "Wait more than 60 s before serving",
    "correctness": "Incorrect",
    "outcome": "Degraded",
    "okFb": "",
@@ -2789,16 +3077,16 @@
    "text": "Guanciale goes into a cold pan so its fat melts out slowly. Tofu has no fat to give. Think about what tofu needs instead.",
    "button": "Choose"
   },
-  "T-4.2": {
-   "id": "T-4.2",
-   "sub": "S4.2",
+  "T-4.3": {
+   "id": "T-4.3",
+   "sub": "S4.3",
    "title": "Hands off!",
    "text": "Once the tofu is in the hot oil, leave it alone for about 3 minutes. The crust needs time to form. Move it too early and it tears and sticks.",
    "button": "Fire up"
   },
-  "T-4.3": {
-   "id": "T-4.3",
-   "sub": "S4.3",
+  "T-4.4": {
+   "id": "T-4.4",
+   "sub": "S4.4",
    "title": "Save that oil",
    "text": "The oil in the pan now tastes of crispy, smoky tofu. It becomes the fat in your sauce, so don't pour it away.",
    "button": "Got it"

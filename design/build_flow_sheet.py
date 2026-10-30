@@ -162,104 +162,116 @@ FLOW = [
      "Actions A-3.2-01 to 03 in order.", "", 3, "S4.1",
      "Water takes about 10 minutes to boil, so start it early and prep while it heats.",
      "Filled pot in the sink.", "Salt goes in later (S6.1), once the water boils."),
-    (4, "Crisp the tofu", "S4.1", "Choose how to start the pan", "MCQ - Single select", "Yes",
-     "The classic recipe starts guanciale in a cold pan. How should you start the tofu?",
+    (4, "Fry the Tofu Until Crisp", "S4.1", "Choose how to start the pan", "MCQ - Single select", "Yes",
+     "Select the appropriate way to start the pan for crisp tofu.",
      "Four ways to start the pan", "T-4.1", "Stove",
      "Select the Correct option.", "", 2, "S4.2",
      "Guanciale starts cold so its fat can melt out slowly. Tofu has almost no fat, so it needs hot oil to crisp instead of stick.",
      "Empty skillet on the front burner; burner off.", "Key adaptation moment from guanciale to tofu."),
-    (4, "Crisp the tofu", "S4.2", "Fry the tofu until golden", "Procedure", "Yes",
-     "Heat the oil, then fry the tofu until golden and crisp on most sides.",
-     "Olive oil, tofu cubes, tongs, smoked paprika and soy (if seasoned)", "T-4.2", "Stove",
-     "Actions A-4.2-01 to 07 in order; heat and wait times inside the target ranges.", "", 2, "S4.3",
-     "Browning (the Maillard reaction) starts around 140 °C. Moving the tofu too soon tears the crust before it forms.",
-     "Skillet on burner; heat knob at Off.", "Live sim: heat knob, wait-time choices, Peek view to judge colour."),
-    (4, "Crisp the tofu", "S4.3", "Lift out the tofu, keep the oil", "Procedure", "Yes",
-     "The tofu is crisp. Turn off the heat and set the tofu aside, but keep the flavoured oil in the pan.",
-     "Slotted spoon, plate", "T-4.3", "Stove",
-     "Actions A-4.3-01 to 03 in order.", "", 2, "S5.1",
+    (4, "Fry the Tofu Until Crisp", "S4.2", "Heat the oil", "Procedure", "Yes",
+     "Heat the oil to frying temperature.",
+     "Olive oil, kitchen timer, smoked paprika, tongs (only the oil is usable yet)", "", "Stove",
+     "Actions A-4.2 in order; heat inside the target range.", "", 3, "S4.3",
+     "Browning (the Maillard reaction) starts around 140 °C. Shimmering oil is hot enough to seal the tofu straight away.",
+     "Skillet on the front burner; heat knob at Off.", ""),
+    (4, "Fry the Tofu Until Crisp", "S4.3", "Fry the tofu until golden", "Procedure", "Yes",
+     "Fry the tofu until crisp and golden on all sides.",
+     "Kitchen timer, tongs, soy sauce, smoked paprika", "T-4.3", "Stove",
+     "Actions A-4.3 in order; wait times inside the target ranges.", "", 3, "S4.4",
+     "Moving the tofu too soon tears the crust before it forms. Paprika burns fast, so it goes in at the very end.",
+     "Shimmering oil in the skillet; tofu cubes on the board.", ""),
+    (4, "Fry the Tofu Until Crisp", "S4.4", "Lift out the tofu, keep the oil", "Procedure", "Yes",
+     "Take the tofu out while keeping the flavoured oil in the pan.",
+     "None (panel hidden)", "T-4.4", "Stove",
+     "Actions A-4.4 in order.", "", 3, "S5.1",
      "The oil now carries flavour and becomes the fat in the sauce emulsion. Tofu goes back in at the end so it stays crisp.",
      "Crisp tofu in the skillet; burner on.", ""),
-    (5, "Make the egg mixture", "S5.1", "Choose the eggs", "MCQ - Single select", "Yes",
-     "How many eggs for two plates?",
+    (5, "Prepare the Egg and Cheese Mixture", "S5.1", "Choose the eggs", "MCQ - Single select", "Yes",
+     "Select the appropriate eggs for a rich sauce for two.",
      "Egg combinations (4)", "", "Counter",
      "Select the Correct option.", "", 2, "S5.2",
      "Yolks bring richness and colour; a couple of whole eggs make the sauce looser and easier to handle. Rule: 1 whole + 1 yolk per person, plus 1 yolk 'for the pot'.",
      "Egg carton and empty bowl on the counter.", ""),
-    (5, "Make the egg mixture", "S5.2", "Crack and separate the eggs", "Procedure", "Yes",
-     "Crack 2 whole eggs into the bowl, then separate 3 more and add only the yolks.",
-     "Eggs, mixing bowl, small cup for whites", "T-5.2", "Counter",
-     "Actions A-5.2-01 to 03 in order (A-5.2-03 repeated 3 times).", "", 3, "S5.3",
+    (5, "Prepare the Egg and Cheese Mixture", "S5.2", "Crack and separate the eggs", "Procedure", "Yes",
+     "Add the eggs to the bowl for the sauce base.",
+     "Eggs", "T-5.2", "Counter",
+     "Actions A-5.2 in order.", "", 3, "S5.3",
      "Egg whites set at a lower temperature than yolks, which is one reason extra yolks make a more forgiving sauce.",
      "Bowl and egg carton on the counter.", ""),
-    (5, "Make the egg mixture", "S5.3", "Pick the grater", "MCQ - Single select", "Yes",
-     "Which side of the box grater do you use for the pecorino?",
+    (5, "Prepare the Egg and Cheese Mixture", "S5.3", "Pick the grater", "MCQ - Single select", "Yes",
+     "Select the appropriate grater side for cheese that melts smoothly.",
      "Four grater sides", "T-5.3", "Counter",
      "Select the Correct option.", "", 2, "S5.4",
      "Powder-fine cheese melts evenly into the egg. Coarse shreds clump and turn stringy.",
      "Box grater and a wedge of pecorino on the counter.", ""),
-    (5, "Make the egg mixture", "S5.4", "Grate, season and whisk", "Procedure", "Yes",
-     "Grate 150 g of pecorino into the eggs, add about ½ tbsp of cracked pepper, and whisk to a thick paste.",
-     "Pecorino, box grater, pepper mill, whisk", "", "Counter",
-     "Actions A-5.4-01 to 03 in order.", "", 2, "S6.1",
+    (5, "Prepare the Egg and Cheese Mixture", "S5.4", "Grate, season and whisk", "Procedure", "Yes",
+     "Combine the cheese and pepper with the eggs into a smooth paste.",
+     "Pecorino, pepper mill, coarse salt", "", "Counter",
+     "Actions A-5.4 in order.", "", 3, "S6.1",
      "Freshly cracked pepper is a main flavour here, not a garnish.",
      "Bowl with eggs.", "No salt: the cheese brings plenty."),
-    (6, "Cook the pasta", "S6.1", "Salt the water", "MCQ - Single select", "Yes",
-     "The water is at a rolling boil (about 3 litres). How much salt goes in?",
+    (6, "Cook the Spaghetti", "S6.1", "Salt the water", "MCQ - Single select", "Yes",
+     "Select the appropriate amount of salt for seasoning the pasta water.",
      "Salt amounts (4)", "T-6.1", "Stove",
      "Select the Correct option.", "", 1, "S6.2",
      "Pasta absorbs salt as it cooks. Salt more lightly than usual for carbonara: the pecorino and soy are salty, and the water goes into the sauce.",
      "Pot at a rolling boil.", ""),
-    (6, "Cook the pasta", "S6.2", "Add the spaghetti", "Procedure", "Yes",
-     "Add the spaghetti and stop it from sticking.",
-     "Spaghetti (300 g), tongs", "", "Stove",
-     "Actions A-6.2-01 to 03 in order.", "", 2, "S6.3",
+    (6, "Cook the Spaghetti", "S6.2", "Add the spaghetti", "Procedure", "Yes",
+     "Cook the pasta in the salted water without it sticking.",
+     "Coarse salt, spaghetti, olive oil, tongs", "", "Stove",
+     "Actions A-6.2 in order.", "", 3, "S6.3",
      "Stirring in the first minute stops the strands sticking while their surface starch is gelatinising.",
-     "Salted water at a rolling boil.", ""),
-    (6, "Cook the pasta", "S6.3", "Decide when to pull the pasta", "MCQ - Single select", "Yes",
-     "The packet says 11 minutes. When do you take the spaghetti out?",
+     "Water at a rolling boil.", ""),
+    (6, "Cook the Spaghetti", "S6.3", "Decide when to pull the pasta", "MCQ - Single select", "Yes",
+     "Select the appropriate time to take the pasta out for finishing it in the pan.",
      "Times (4)", "T-6.3", "Stove",
      "Select the Correct option.", "", 1, "S7.1",
      "The pasta keeps cooking in the pan with the sauce, so it comes out a minute before al dente.",
      "Spaghetti boiling; timer running.", "Timer fast-forwards to the chosen minute."),
-    (7, "Bring the sauce together", "S7.1", "Move the pasta into the pan", "Procedure", "Yes",
-     "Save some pasta water first, then move the pasta into the pan with the tofu oil.",
-     "Mug, ladle, tongs", "T-7.1", "Stove",
-     "Actions A-7.1-01 to 04 in order.", "", 2, "S7.2",
+    (7, "Combine the Pasta and Sauce", "S7.1", "Move the pasta into the pan", "Procedure", "Yes",
+     "Move the pasta into the pan, keeping some cooking water aside.",
+     "None (panel hidden)", "T-7.1", "Stove",
+     "Actions A-7.1 in order.", "", 3, "S7.2",
      "Starchy pasta water is the glue that binds fat and egg. It's your insurance if the sauce gets too thick.",
      "Pasta near al dente; skillet with flavoured oil.", ""),
-    (7, "Bring the sauce together", "S7.2", "Temper the eggs", "Procedure", "Yes",
-     "Loosen the egg mixture with hot pasta water until it pours like cream.",
-     "Mug of pasta water, whisk, egg bowl", "T-7.2", "Counter",
-     "Actions A-7.2-01 to 03 in order.", "", 2, "S7.3",
+    (7, "Combine the Pasta and Sauce", "S7.2", "Temper the eggs", "Procedure", "Yes",
+     "Temper the egg mixture so it pours like cream.",
+     "None (panel hidden)", "T-7.2", "Counter",
+     "Actions A-7.2 in order.", "", 3, "S7.3",
      "Tempering warms the eggs gradually so they aren't shocked by the hot pan. You can always thicken a sauce, but you can't unscramble one.",
      "Egg paste in the bowl; pasta in the skillet.", ""),
-    (7, "Bring the sauce together", "S7.3", "Deal with the heat", "MCQ - Single select", "Yes",
-     "The egg mixture is ready. What do you do with the pan before it goes in?",
+    (7, "Combine the Pasta and Sauce", "S7.3", "Deal with the heat", "MCQ - Single select", "Yes",
+     "Select the appropriate heat level for adding the eggs.",
      "Heat choices (4)", "T-7.3", "Stove",
      "Select the Correct option.", "", 1, "S7.4",
      "Egg yolk starts to thicken around 62 °C and scrambles above 70 °C. A pan on the flame is far hotter than that.",
      "Pasta tossing in the pan on low heat.", ""),
-    (7, "Bring the sauce together", "S7.4", "Toss into a silky sauce", "Procedure", "Yes",
-     "Pour in the eggs and keep everything moving until the sauce is thick and glossy, like béchamel.",
-     "Egg mixture, tongs, mug of pasta water, heat knob; live sauce thermometer", "T-7.4", "Peek in the pan",
+    (7, "Combine the Pasta and Sauce", "S7.4", "Toss into a silky sauce", "Procedure", "Yes",
+     "Toss the pasta with the eggs into a silky sauce, then plate it.",
+     "Toss speed, heat on/off, splash of pasta water, Plate it; live sauce thermometer", "T-7.4", "Peek in the pan",
      "Actions A-7.4-01 to 03 in order; sauce must end Silky (thickened, no curds).", "", 1, "S8.1",
      "Thicken with gentle heat, loosen with pasta water. Constant movement keeps any one spot from overheating.",
      "Pan off the heat; pasta coated in oil.", "Live sim: speed control, heat on/off, splash water, Plate button."),
-    (8, "Finish and serve", "S8.1", "Choose the toppings", "MCQ - Multi select", "Yes",
-     "What goes on top before it goes out?",
+    (8, "Plate and Serve the Dish", "S8.1", "Choose the toppings", "MCQ - Multi select", "Yes",
+     "Select the appropriate toppings for a classic finish.",
      "Topping cards (6)", "", "Serving",
      "All Correct items selected and no Incorrect items.",
      "Missing something. A Roman carbonara is finished with two things from the ingredients you already have.",
      2, "S8.2",
      "Keep it simple: the toppings repeat the dish's own flavours.",
      "Two warm bowls on the counter.", ""),
-    (8, "Finish and serve", "S8.2", "Plate and serve", "Procedure", "Yes",
-     "Fold the tofu back in, twirl each portion into a bowl, top it, and send it out straight away.",
-     "Crisp tofu, tongs, 2 bowls, pepper mill, pecorino, service bell", "T-8.2", "Serving",
-     "Actions A-8.2-01 to 05 in order, within 60 s (sim time).", "", 1, "END",
+    (8, "Plate and Serve the Dish", "S8.2", "Plate the pasta", "Procedure", "Yes",
+     "Plate the pasta with its toppings.",
+     "Tongs, black peppercorns, pecorino, kitchen timer", "T-8.2", "Serving",
+     "Actions A-8.2 in order.", "", 3, "S8.3",
+     "Carbonara keeps thickening as it cools. Plate it fast.",
+     "Finished pasta in the pan; crisp tofu on the resting plate.", ""),
+    (8, "Plate and Serve the Dish", "S8.3", "Serve", "Procedure", "Yes",
+     "Serve the dish while it's hot.",
+     "None (panel hidden)", "", "Serving",
+     "Action A-8.3-01, within 60 s (sim time).", "", 1, "END",
      "Carbonara keeps thickening as it cools. Serve it immediately.",
-     "Finished pasta in the pan.", "Leads to the Outcomes screen."),
+     "Two topped bowls on the pass.", "Leads to the Outcomes screen."),
 ]
 # Multi-select branching (storyboard): the popup when several incorrect items are checked at once
 # ({items} becomes their names), and the line added after the incorrect feedback when something
@@ -271,18 +283,32 @@ MULTI_FEEDBACK = {
     "S1.3": ("Some of these don't belong in this carbonara: {items}. Read the order again: no meat, no cream, and keep it Roman.",
              "And you're short of something. Check the order again."),
     "S2.4": ("", "And you'll need more cuts to get to even 1 cm cubes."),
+    "S8.1": ("{items} would cover up the flavours this dish is built on. A Roman carbonara is finished simply, with things already on your counter.",
+             "And the classic finish is still missing something."),
 }
-# Procedure mistakes that aren't actions (storyboard): panel items picked before their turn, and an
-# item dropped on the wrong spot. Written into the Flow tab as "ID, ID: text" / "ID: text | ID: text";
+# Procedure mistakes that aren't actions (storyboard): panel items picked before their turn, an item
+# dropped on the wrong spot, and a hold let go too soon. Written into the Flow tab as
+# "ID, ID: text | ID: text" (several groups allowed);
 # a wrong-spot item can name extra decoy spots to show while it's held: "ID [SPOT SPOT]: text".
 TOO_EARLY = {
     "S3.1": "E-KNOB-BACK, T-LID: Fill the pot with water first.",
     "S2.1": "T-TOWELS, E-WEIGHT: Open the pack and drain it before anything else.",
+    "S4.2": "I-TOFU: Wait for the shimmer, or the tofu will stick. | E-TIMER, I-PAPRIKA, T-TONGS: Get the oil hot first.",
+    "S8.2": "E-BELL: Plate and top both bowls first.",
 }
 WRONG_SPOT = {
     "S3.1": "T-POT [E-BURNER-BACK E-COUNTER]: The pot needs to go under the tap. Put it in the sink.",
     "S3.2": "T-POT [E-COUNTER]: That's not where it boils. Put it on the back burner.",
     "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The heavy pan goes on top of the tofu to press it.",
+    "S4.2": "I-OIL [T-POT]: The oil goes into the skillet.",
+    "S4.3": "I-TOFU [T-POT]: The tofu goes into the hot skillet.",
+    "S4.4": "T-SLOTTED [E-COUNTER]: Put the tofu on the resting plate so it stays crisp.",
+    "S6.2": "I-SALT [T-SKILLET]: That goes into the boiling pot. | I-SPAGHETTI [T-SKILLET]: That goes into the boiling pot.",
+    "S7.1": "T-TONGS [E-PLATE]: The pasta goes into the skillet with the flavoured oil.",
+    "S8.2": "T-TONGS [E-PLATE]: The pasta goes into the serving bowls.",
+}
+SHORT_HOLD = {
+    "S5.4": "I-PECORINO: Keep going. You need about 150 g for the sauce to coat the pasta.",
 }
 flow_rows = []
 for i, r in enumerate(FLOW, start=2):
@@ -291,7 +317,7 @@ for i, r in enumerate(FLOW, start=2):
         f'=COUNTIF(\'MCQ Options\'!$B:$B,C{i})+COUNTIF(\'Procedure Actions\'!$B:$B,C{i})',
         f'=IF(I{i}="","None",IF(COUNTIF(\'Chef Tips\'!$A:$A,I{i})>0,"OK","Missing tip"))',
         f'=IF(R{i}=0,"No options/actions",IF(S{i}="Missing tip","Fix tip",IF(OR(N{i}="END",COUNTIF($C:$C,N{i})>0),"OK","Bad next ID")))',
-    ] + list(MULTI_FEEDBACK.get(r[2], ("", ""))) + [TOO_EARLY.get(r[2], ""), WRONG_SPOT.get(r[2], "")])
+    ] + list(MULTI_FEEDBACK.get(r[2], ("", ""))) + [TOO_EARLY.get(r[2], ""), WRONG_SPOT.get(r[2], ""), SHORT_HOLD.get(r[2], "")])
 
 # ---------------------------------------------------------------- MCQ options
 # Option ID | Substep | Option label (right panel) | Item ID | Correctness | Outcome | Chef feedback | Branch to | Score | State effect
@@ -419,12 +445,12 @@ opt("S7.3", "Turn it up so the sauce thickens faster", "", "Incorrect", "Fatal",
     "The eggs hit a scorching pan and set in seconds. Scrambled eggs on spaghetti.", "GAME_OVER", -100, "ending = FATAL-SCRAMBLED")
 
 for label, cor, out, fb in [
-    ("Freshly cracked black pepper", "Correct", "Perfect", "Yes. A fresh crack for aroma."),
-    ("A dusting of pecorino", "Correct", "Perfect", "Yes. A little more on top."),
-    ("Chopped parsley", "Incorrect", "Recoverable", "Not on a Roman carbonara. Let's keep it classic."),
-    ("A drizzle of cream", "Incorrect", "Recoverable", "No cream. She ordered it Roman-style!"),
-    ("Chilli flakes", "Incorrect", "Recoverable", "Nice on other pastas, but it would drown out the pepper and cheese here."),
-    ("Extra crispy tofu on top", "Acceptable", "Acceptable", "Good idea for an 'extra-crispy' request: a few pieces on top stay crunchiest."),
+    ("Freshly Cracked Black Pepper", "Correct", "Perfect", "Yes. A fresh crack for aroma."),
+    ("A Dusting of Pecorino", "Correct", "Perfect", "Yes. A little more on top."),
+    ("Chopped Parsley", "Incorrect", "Recoverable", "Not on a Roman carbonara. Let's keep it classic."),
+    ("A Drizzle of Cream", "Incorrect", "Recoverable", "No cream. She ordered it Roman-style!"),
+    ("Chilli Flakes", "Incorrect", "Recoverable", "Nice on other pastas, but it would drown out the pepper and cheese here."),
+    ("Extra Crispy Tofu on Top", "Correct", "Perfect", "Good idea for an 'extra-crispy' request: a few pieces on top stay crunchiest."),
 ]:
     opt("S8.1", label, "", cor, out, fb, "NEXT" if cor != "Incorrect" else "RETRY", 0 if cor != "Incorrect" else -3)
 
@@ -480,88 +506,103 @@ act("S3.2", 2, "Slider / knob", "E-KNOB-BACK", S, "", "High", "Correct", "Perfec
 act("S3.2", 3, "Drag", "T-LID", S, "T-POT", "Lid on", "Correct", "Perfect",
     "A lid brings it to the boil much faster.", "Get the pot heating first, then the lid goes on.", "NEXT", 0, "water_heating = true")
 
+act("S4.2", "-", "Slider / knob", "E-KNOB-FRONT", S, "", "Low", "Incorrect", "Recoverable",
+    "", "Too gentle. The tofu would soak up oil instead of crisping. Medium is right.", "RETRY", 0)
 act("S4.2", 1, "Slider / knob", "E-KNOB-FRONT", S, "", "Medium (target 170-200 °C)", "Correct", "Perfect",
-    "", "Heat the pan first.", "NEXT", 0)
-act("S4.2", 2, "Drag", "I-OIL", RP, "T-SKILLET", "2 tbsp olive oil", "Correct", "Perfect",
-    "", "Oil before tofu.", "NEXT", 0)
-act("S4.2", 3, "Timer", "E-PAN-OIL", S, "", "Wait until the oil shimmers (about 1 min)", "Correct", "Perfect",
-    "See it ripple? That's hot enough.", "Wait for the shimmer, or the tofu will stick.", "NEXT", 0)
-act("S4.2", 4, "Drag", "I-TOFU", S, "T-SKILLET", "Tofu cubes in a single layer", "Correct", "Perfect",
-    "Listen to that sizzle.", "", "NEXT", 0, "tofu_in_pan = true")
-act("S4.2", 5, "Timer", "E-TIMER", S, "", "Leave undisturbed 3 min (choices: 1 / 3 / 6 min)", "Correct", "Perfect",
-    "", "Don't touch it yet: the crust needs time to form.", "NEXT", 0)
-act("S4.2", 6, "Click", "T-TONGS", RP, "T-SKILLET", "Toss / turn the cubes", "Correct", "Perfect",
-    "Golden underneath. Now the other sides.", "", "NEXT", 0)
-act("S4.2", 7, "Timer", "E-TIMER", S, "", "Another 3-4 min, then add soy and paprika for the last 30 s", "Correct", "Perfect",
-    "Crisp, golden and smoky.", "", "NEXT", 0, "tofu_state = crisp")
-act("S4.2", "-", "Click", "T-TONGS", RP, "T-SKILLET", "Toss in the first minute", "Incorrect", "Degraded",
-    "", "Too soon! The crust tore and stuck to the pan. Let it sit next time.", "NEXT", -5, "tofu_torn = true")
+    "", "", "NEXT", 0)
+act("S4.2", "-", "Slider / knob", "E-KNOB-FRONT", S, "", "High", "Incorrect", "Recoverable",
+    "", "Too hot. The oil would smoke before the tofu goes in. Medium is right.", "RETRY", 0)
 act("S4.2", "-", "Slider / knob", "E-KNOB-FRONT", S, "", "High for more than 4 min", "Incorrect", "Fatal",
     "", "Smoke! The tofu and oil have burnt. Bitter, acrid and not servable.", "GAME_OVER", -100, "ending = FATAL-BURNT")
-act("S4.2", "-", "Drag", "I-PAPRIKA", RP, "T-SKILLET", "Paprika at the start of frying", "Incorrect", "Degraded",
+act("S4.2", 2, "Drag", "I-OIL", RP, "T-SKILLET", "2 tbsp olive oil", "Correct", "Perfect",
+    "", "Heat the pan first.", "NEXT", 0)
+act("S4.2", 3, "Timer", "E-PAN-OIL", S, "", "Wait until the oil shimmers (about 1 min)", "Correct", "Perfect",
+    "See it ripple? That's hot enough.", "Add the oil first.", "NEXT", 0)
+
+act("S4.3", 1, "Drag", "I-TOFU", S, "T-SKILLET", "Tofu cubes in a single layer", "Correct", "Perfect",
+    "", "", "NEXT", 0, "tofu_in_pan = true")
+act("S4.3", "-", "Timer", "E-TIMER", RP, "", "Leave undisturbed 1 min", "Incorrect", "Recoverable",
+    "", "Not yet. The crust needs about 3 minutes to form.", "RETRY", 0)
+act("S4.3", 2, "Timer", "E-TIMER", RP, "", "Leave undisturbed 3 min", "Correct", "Perfect",
+    "", "Get the tofu into the pan first.", "NEXT", 0)
+act("S4.3", "-", "Timer", "E-TIMER", RP, "", "Leave undisturbed 6 min", "Incorrect", "Recoverable",
+    "", "Too long on one side. The cubes will scorch. 3 minutes is enough.", "RETRY", 0)
+act("S4.3", 3, "Drag", "T-TONGS", RP, "T-SKILLET", "Turn the cubes over", "Correct", "Perfect",
+    "", "Let the crust form first.", "NEXT", 0)
+act("S4.3", "-", "Drag", "T-TONGS", RP, "T-SKILLET", "Toss in the first minute", "Incorrect", "Degraded",
+    "", "Too soon! The crust tore and stuck to the pan. Let it sit next time.", "NEXT", -5, "tofu_torn = true")
+act("S4.3", 4, "Timer", "E-TIMER", RP, "", "Leave for another 3-4 min", "Correct", "Perfect",
+    "", "Turn the cubes first.", "NEXT", 0)
+act("S4.3", 5, "Drag", "I-SOY", RP, "T-SKILLET", "1 tsp soy sauce", "Correct", "Perfect",
+    "", "The soy goes in at the end, with the paprika.", "NEXT", 0)
+act("S4.3", 6, "Drag", "I-PAPRIKA", RP, "T-SKILLET", "A pinch of smoked paprika", "Correct", "Perfect",
+    "Crisp, golden and smoky.", "Paprika burns fast. It goes in last, after the soy.", "NEXT", 0, "tofu_state = crisp")
+act("S4.3", "-", "Drag", "I-PAPRIKA", RP, "T-SKILLET", "Paprika at the start of frying", "Incorrect", "Degraded",
     "", "Paprika burns fast and turns bitter. Add it in the last 30 seconds.", "NEXT", -5, "paprika_bitter = true")
 
-act("S4.3", 1, "Slider / knob", "E-KNOB-FRONT", S, "", "Off", "Correct", "Perfect",
-    "", "Heat off first.", "NEXT", 0)
-act("S4.3", 2, "Drag", "T-SLOTTED", RP, "T-SKILLET", "Lift the tofu out (oil drains back)", "Correct", "Perfect",
+act("S4.4", 1, "Slider / knob", "E-KNOB-FRONT", S, "", "Off", "Correct", "Perfect",
     "", "", "NEXT", 0)
-act("S4.3", 3, "Drag", "T-SLOTTED", S, "E-PLATE", "Tofu onto the plate", "Correct", "Perfect",
-    "Set aside. It goes back in at the very end.", "", "NEXT", 0, "tofu_reserved = true")
-act("S4.3", "-", "Drag", "T-SKILLET", S, "E-SINK", "Pour the oil away", "Incorrect", "Recoverable",
+act("S4.4", 2, "Drag", "T-SLOTTED", S, "T-SKILLET", "Lift the tofu out (oil drains back)", "Correct", "Perfect",
+    "", "Heat off first.", "NEXT", 0)
+act("S4.4", 3, "Drag", "T-SLOTTED", S, "E-PLATE", "Tofu onto the resting plate", "Correct", "Perfect",
+    "Set aside. It goes back in at the very end.", "Lift the tofu out of the skillet first.", "NEXT", 0, "tofu_reserved = true")
+act("S4.4", "-", "Drag", "T-SKILLET", S, "E-SINK", "Pour the oil away", "Incorrect", "Recoverable",
     "", "That oil was flavour! Add 1 tbsp fresh oil to the pan, but the sauce will taste a little flatter.", "NEXT", -5, "fat_flavour = plain")
-act("S4.3", "-", "Click", "T-SKILLET", S, "", "Leave the tofu in the pan", "Incorrect", "Degraded",
+act("S4.4", "-", "Click", "T-SKILLET", S, "", "Leave the tofu in the pan", "Incorrect", "Degraded",
     "", "In the sauce it will soak up liquid and go soft. Crispy tofu was the request!", "NEXT", -5, "tofu_state = soggy")
 
-act("S5.2", 1, "Drag", "T-BOWL", RP, "E-COUNTER", "Bowl onto the counter", "Correct", "Perfect", "", "", "NEXT", 0)
+act("S5.2", 1, "Drag", "T-BOWL", S, "E-COUNTER", "Bowl onto the counter", "Correct", "Perfect", "", "", "NEXT", 0)
 act("S5.2", 2, "Repeat click", "I-EGGS", RP, "T-BOWL", "Crack 2 whole eggs into the bowl (×2)", "Correct", "Perfect",
-    "", "", "NEXT", 0)
-act("S5.2", 3, "Repeat click", "I-EGGS", RP, "E-WHITES-CUP", "Separate: pass the yolk between the shell halves, whites into the cup, yolk into the bowl (×3)", "Correct", "Perfect",
+    "", "Get the bowl onto the counter first.", "NEXT", 0)
+act("S5.2", 3, "Repeat click", "I-EGGS", RP, "E-WHITES-CUP", "Separate: whites into the cup, yolk into the bowl (×3)", "Correct", "Perfect",
     "Lovely golden yolks.", "Whole eggs first, then the extra yolks.", "NEXT", 0, "yolks_added = 3")
-act("S5.2", "-", "Click", "I-EGGS", RP, "T-BOWL", "Shell fragment falls in", "Incorrect", "Recoverable",
+act("S5.2", "-", "Click", "I-EGGS", RP, "", "Separate: whites and yolks into the bowl", "Incorrect", "Recoverable",
+    "", "The whites go into the cup. Only the yolks go in the bowl.", "RETRY", -3)
+act("S5.2", "-", "Click", "I-EGGS", RP, "", "Shell fragment falls in", "Incorrect", "Recoverable",
     "", "A bit of shell got in. Scoop it out with a larger piece of shell, it works like a magnet.", "NEXT", 0)
 
 act("S5.4", 1, "Hold", "I-PECORINO", RP, "T-BOWL", "Grate 150 g on the chosen side (scale shows grams)", "Correct", "Perfect",
     "", "", "NEXT", 0, "cheese_g = 150")
 act("S5.4", 2, "Repeat click", "I-PEPPER", RP, "T-BOWL", "Crack about ½ tbsp pepper (about 12 twists)", "Correct", "Perfect",
-    "Be generous, pepper is a main flavour here.", "", "NEXT", 0)
-act("S5.4", 3, "Hold", "T-BOWL", RP, "T-BOWL", "Whisk until a thick, smooth paste", "Correct", "Perfect",
+    "", "Grate the cheese in first.", "NEXT", 0)
+act("S5.4", 3, "Hold", "T-BOWL", S, "T-BOWL", "Whisk until a thick, smooth paste", "Correct", "Perfect",
     "Thick and smooth. It will loosen with pasta water later.", "Add the cheese and pepper before whisking.", "NEXT", 0, "egg_paste = ready")
 act("S5.4", "-", "Drag", "I-SALT", RP, "T-BOWL", "Add salt to the eggs", "Incorrect", "Degraded",
     "", "No salt here. Pecorino brings plenty.", "NEXT", -5, "salt_level += 1")
 
-act("S6.2", 1, "Drag", "I-SALT", RP, "T-POT", "Salt as chosen in S6.1", "Correct", "Perfect", "", "", "NEXT", 0)
+act("S6.2", 1, "Drag", "I-SALT", RP, "T-POT", "Salt as chosen", "Correct", "Perfect", "", "", "NEXT", 0)
 act("S6.2", 2, "Drag", "I-SPAGHETTI", RP, "T-POT", "300 g spaghetti", "Correct", "Perfect",
-    "In it goes. Push it under as it softens.", "Salt the water first.", "NEXT", 0, "pasta_in = true")
+    "", "Salt the water first.", "NEXT", 0, "pasta_in = true")
 act("S6.2", 3, "Repeat click", "T-TONGS", RP, "T-POT", "Stir during the first minute", "Correct", "Perfect",
-    "No sticking.", "", "NEXT", 0)
+    "No sticking.", "Get the spaghetti in first.", "NEXT", 0)
 act("S6.2", "-", "Drag", "I-OIL", RP, "T-POT", "Oil in the water", "Incorrect", "Recoverable",
     "", "Oil just floats on top. Stirring is what stops sticking. And oily pasta won't hold the sauce.", "NEXT", -2)
 act("S6.2", "-", "Click", "I-SPAGHETTI", RP, "", "Snap the spaghetti in half", "Incorrect", "Recoverable",
     "", "Mamma mia! Long strands are how you twirl. Push them under gently as they soften.", "NEXT", -2)
 
-act("S7.1", 1, "Drag", "T-MUG", RP, "T-POT", "Ladle about 1 cup of pasta water into the mug", "Correct", "Perfect",
-    "Our insurance policy.", "Save the water before you move the pasta!", "NEXT", 0, "water_saved_ml = 240")
+act("S7.1", 1, "Drag", "T-MUG", S, "T-POT", "Ladle about 1 cup of pasta water into the mug", "Correct", "Perfect",
+    "", "", "NEXT", 0, "water_saved_ml = 240")
 act("S7.1", 2, "Slider / knob", "E-KNOB-FRONT", S, "", "Lowest flame", "Correct", "Perfect",
     "", "", "NEXT", 0)
-act("S7.1", 3, "Drag", "T-TONGS", RP, "T-SKILLET", "Lift the pasta from pot to pan (water clinging)", "Correct", "Perfect",
-    "Straight in, starchy water and all.", "", "NEXT", 0, "pasta_in_pan = true")
+act("S7.1", 3, "Drag", "T-TONGS", S, "T-SKILLET", "Lift the pasta from pot to pan (water clinging)", "Correct", "Perfect",
+    "", "Save the water and lower the flame before you move the pasta.", "NEXT", 0, "pasta_in_pan = true")
 act("S7.1", 4, "Repeat click", "T-TONGS", S, "T-SKILLET", "Toss to coat in the oil (about 30 s)", "Correct", "Perfect",
     "Every strand coated in that flavoured oil.", "", "NEXT", 0)
 act("S7.1", "-", "Drag", "T-POT", S, "E-SINK", "Drain the pot into the sink", "Incorrect", "Recoverable",
     "", "There goes the pasta water! If you saved a mug you're fine, otherwise the sauce has nothing to loosen it.", "NEXT", -5, "water_saved_ml = 0 if not saved")
 
-act("S7.2", 1, "Drag", "T-MUG", RP, "T-BOWL", "Pour 60 ml (¼ cup) slowly into the eggs", "Correct", "Perfect",
+act("S7.2", 1, "Drag", "T-MUG", S, "T-BOWL", "Pour 60 ml (¼ cup) slowly into the eggs", "Correct", "Perfect",
     "", "", "NEXT", 0)
-act("S7.2", 2, "Hold", "T-BOWL", RP, "T-BOWL", "Whisk hard while pouring", "Correct", "Perfect",
-    "Keep it moving so no egg sits in the hot water.", "", "NEXT", 0)
+act("S7.2", 2, "Hold", "T-BOWL", S, "T-BOWL", "Whisk hard while pouring", "Correct", "Perfect",
+    "", "Pour in a little pasta water first.", "NEXT", 0)
 act("S7.2", 3, "Click", "T-BOWL", S, "", "Check: pours like cream", "Correct", "Perfect",
-    "Smooth and pourable. Ready for the pan.", "", "NEXT", 0, "eggs_tempered = true")
-act("S7.2", "-", "Drag", "T-MUG", RP, "T-BOWL", "Dump all the hot water in at once without whisking", "Incorrect", "Degraded",
+    "Smooth and pourable. Ready for the pan.", "Whisk it smooth first, then check how it pours.", "NEXT", 0, "eggs_tempered = true")
+act("S7.2", "-", "Click", "T-MUG", S, "", "Dump all the hot water in at once without whisking", "Incorrect", "Degraded",
     "", "Some egg cooked into strands. Strain them out if you can. The rest will still work.", "NEXT", -5, "egg_strands = true")
-act("S7.2", "-", "Click", "T-BOWL", RP, "", "Skip tempering, pour the cold paste straight into the pan", "Incorrect", "Degraded",
+act("S7.2", "-", "Click", "T-BOWL", S, "", "Skip tempering, pour the cold paste straight into the pan", "Incorrect", "Degraded",
     "", "Thick, cold paste hitting hot pasta cooks unevenly. Expect lumps and a higher scramble risk.", "NEXT", -5, "eggs_tempered = false")
 
-act("S7.4", 1, "Drag", "T-BOWL", RP, "T-SKILLET", "Pour the egg mixture over the pasta", "Correct", "Perfect",
+act("S7.4", 1, "Drag", "T-BOWL", S, "T-SKILLET", "Pour the egg mixture over the pasta", "Correct", "Perfect",
     "Now toss, toss, toss!", "", "NEXT", 0, "eggs_in = true")
 act("S7.4", 2, "Slider / knob", "E-TOSS-SPEED", S, "", "Toss continuously (Slow / Medium / Fast); watch the thermometer, 62-70 °C", "Correct", "Perfect",
     "", "", "NEXT", 0)
@@ -580,12 +621,17 @@ act("S7.4", "-", "Click", "E-PLATE-BTN", S, "", "Plate while grainy (curds 0.3-0
 
 act("S8.2", 1, "Drag", "E-PLATE", S, "T-SKILLET", "Fold most of the tofu back in", "Correct", "Perfect", "", "", "NEXT", 0)
 act("S8.2", 2, "Drag", "T-TONGS", RP, "E-BOWLS", "Twirl a nest into each bowl (×2)", "Correct", "Perfect",
-    "Twist the tongs against the pan to make a tidy nest.", "", "NEXT", 0)
-act("S8.2", 3, "Repeat click", "I-PEPPER", RP, "E-BOWLS", "Crack pepper over each bowl", "Correct", "Perfect", "", "", "NEXT", 0)
-act("S8.2", 4, "Hold", "I-PECORINO", RP, "E-BOWLS", "Dust with pecorino (plus reserved crispy tofu on top)", "Correct", "Perfect", "", "", "NEXT", 0)
-act("S8.2", 5, "Click", "E-BELL", S, "", "Ring the bell: serve immediately", "Correct", "Perfect",
-    "Service! Hot and silky, straight to Table 6.", "", "NEXT", 0)
-act("S8.2", "-", "Timer", "E-TIMER", S, "", "Wait more than 60 s (sim) before serving", "Incorrect", "Degraded",
+    "", "Fold the tofu back into the pasta first.", "NEXT", 0)
+act("S8.2", 3, "Repeat click", "I-PEPPER", RP, "E-BOWLS", "Crack pepper over each bowl", "Correct", "Perfect",
+    "", "Nests first, then the toppings.", "NEXT", 0)
+act("S8.2", 4, "Hold", "I-PECORINO", RP, "E-BOWLS", "Dust with pecorino (plus reserved crispy tofu on top)", "Correct", "Perfect",
+    "Beautiful. Ready to go out.", "Nests first, then the toppings.", "NEXT", 0)
+act("S8.2", "-", "Click", "E-PLATE", S, "", "Fold all the tofu back in", "Incorrect", "Recoverable",
+    "", "Keep a few crispy pieces back for the top.", "RETRY", -3)
+
+act("S8.3", 1, "Click", "E-BELL", S, "", "Ring the bell: serve immediately", "Correct", "Perfect",
+    "Service! Hot and silky, straight to the customer.", "", "NEXT", 0)
+act("S8.3", "-", "Timer", "E-TIMER", RP, "", "Wait more than 60 s before serving", "Incorrect", "Degraded",
     "", "It's setting in the bowl. Carbonara waits for no one!", "NEXT", -5, "sauce_set = true")
 
 # ---------------------------------------------------------------- Chef tips
@@ -597,8 +643,8 @@ TIPS = [
     ("T-2.5", "S2.5", "Borrow guanciale's flavour", "Guanciale is salty, smoky and savoury. A splash of soy and a pinch of smoked paprika get the tofu part of the way there. Go easy on salt: pecorino is very salty.", "Season"),
     ("T-3.1", "S3.1", "Water first", "A big pot of water takes about 10 minutes to boil. Get it going now, and the rest of the prep fits around it.", "To the sink"),
     ("T-4.1", "S4.1", "Not every rule transfers", "Guanciale goes into a cold pan so its fat melts out slowly. Tofu has no fat to give. Think about what tofu needs instead.", "Choose"),
-    ("T-4.2", "S4.2", "Hands off!", "Once the tofu is in the hot oil, leave it alone for about 3 minutes. The crust needs time to form. Move it too early and it tears and sticks.", "Fire up"),
-    ("T-4.3", "S4.3", "Save that oil", "The oil in the pan now tastes of crispy, smoky tofu. It becomes the fat in your sauce, so don't pour it away.", "Got it"),
+    ("T-4.3", "S4.3", "Hands off!", "Once the tofu is in the hot oil, leave it alone for about 3 minutes. The crust needs time to form. Move it too early and it tears and sticks.", "Fire up"),
+    ("T-4.4", "S4.4", "Save that oil", "The oil in the pan now tastes of crispy, smoky tofu. It becomes the fat in your sauce, so don't pour it away.", "Got it"),
     ("T-5.2", "S5.2", "Yolks for richness", "Extra yolks make the sauce golden, rich and more forgiving, because yolks set at a higher temperature than whites.", "Crack on"),
     ("T-5.3", "S5.3", "Finer is better", "The finer the cheese, the faster and more evenly it melts into the egg. Coarse shreds go stringy and clump.", "Grate"),
     ("T-6.1", "S6.1", "Season the water, gently", "Pasta water should taste seasoned, not like the sea. In carbonara, go lighter: the water ends up in a sauce full of salty pecorino.", "Salt it"),
@@ -838,8 +884,8 @@ FLOW_HEAD = ["Step", "Step title", "Substep ID", "Substep title", "Type", "Requi
              "Learning point (science)", "Scene state on entry", "Notes",
              "Options / actions defined", "Tip check", "Row check",
              "Feedback if several incorrect (multi-select)", "Added if also incomplete (multi-select)",
-             "Picked too early (procedure)", "Wrong spot (procedure)"]
-wf = sheet("Flow", FLOW_HEAD, [6, 20, 9, 24, 17, 9, 42, 26, 11, 13, 30, 34, 9, 9, 44, 30, 28, 11, 11, 13, 44, 34, 40, 50],
+             "Picked too early (procedure)", "Wrong spot (procedure)", "Released too early (hold)"]
+wf = sheet("Flow", FLOW_HEAD, [6, 20, 9, 24, 17, 9, 42, 26, 11, 13, 30, 34, 9, 9, 44, 30, 28, 11, 11, 13, 44, 34, 40, 50, 40],
            flow_rows, band_key=1, check_cols=(18, 19, 20))
 dropdown(wf, "E", "=Lists!$A$2:$A$4")
 dropdown(wf, "F", "=Lists!$H$2:$H$3")
@@ -853,47 +899,9 @@ wm = sheet("MCQ Options", ["Option ID", "Substep ID", "Option label (right panel
 dropdown(wm, "E", "=Lists!$B$2:$B$4")
 dropdown(wm, "F", "=Lists!$C$2:$C$6")
 
-# Learner-facing instruction for each required task, shown as a numbered list in the left panel.
-TASKS = {
-    "A-4.2-01": "Turn the front burner knob to Medium (aim for 170-200 °C).",
-    "A-4.2-02": "Pour 2 tbsp of olive oil into the skillet.",
-    "A-4.2-03": "Wait until the oil shimmers, about 1 minute.",
-    "A-4.2-04": "Add the tofu cubes to the skillet in a single layer.",
-    "A-4.2-05": "Set the timer and leave the cubes alone so they can brown.",
-    "A-4.2-06": "Use the tongs to turn the cubes over.",
-    "A-4.2-07": "Cook 3-4 minutes more; add the soy sauce and paprika in the last 30 seconds.",
-    "A-4.3-01": "Turn the front burner knob to Off.",
-    "A-4.3-02": "With the slotted spoon, lift the tofu out and let the oil drain back into the pan.",
-    "A-4.3-03": "Put the tofu on the resting plate.",
-    "A-5.2-01": "Pick the mixing bowl and put it on the counter.",
-    "A-5.2-02": "Tap the eggs to crack 2 whole eggs into the bowl.",
-    "A-5.2-03": "Separate 3 more eggs: whites go into the cup, yolks into the bowl.",
-    "A-5.4-01": "Hold to grate 150 g of pecorino into the bowl. Watch the scale.",
-    "A-5.4-02": "Tap the pepper mill about 12 times over the bowl.",
-    "A-5.4-03": "Hold to whisk until you have a thick, smooth paste.",
-    "A-6.2-01": "Add the salt you chose to the boiling water.",
-    "A-6.2-02": "Add the 300 g of spaghetti to the pot.",
-    "A-6.2-03": "Tap the tongs to stir the pasta during the first minute so it doesn't stick.",
-    "A-7.1-01": "With the ladle, scoop about 1 cup of pasta water into the mug.",
-    "A-7.1-02": "Turn the front burner knob to the lowest flame.",
-    "A-7.1-03": "With the tongs, lift the pasta from the pot into the skillet.",
-    "A-7.1-04": "Tap the tongs to toss the pasta in the oil for about 30 seconds.",
-    "A-7.2-01": "Pour about 60 ml (¼ cup) of the pasta water slowly into the egg bowl.",
-    "A-7.2-02": "Hold to whisk hard while you pour.",
-    "A-7.2-03": "Check the sauce: it should pour like cream.",
-    "A-7.4-01": "Pour the egg mixture over the pasta in the skillet.",
-    "A-7.4-02": "Keep tossing. Watch the thermometer and stay between 62 and 70 °C.",
-    "A-7.4-03": "Plate it as soon as the sauce is glossy and coats the strands.",
-    "A-8.2-01": "Fold most of the crispy tofu back into the pasta.",
-    "A-8.2-02": "With the tongs, twirl a nest of pasta into each serving bowl.",
-    "A-8.2-03": "Tap the pepper mill to crack pepper over each bowl.",
-    "A-8.2-04": "Hold to dust each bowl with pecorino, then top with the reserved tofu.",
-    "A-8.2-05": "Ring the bell to serve right away.",
-}
-# Steps whose procedure tasks are merged (storyboard): one instruction per task, from the Flow tab.
-MERGED_STEPS = {2, 3}
-missing = [r[0] for r in A if r[2] not in ("-", "opt") and r[0] not in TASKS and int(r[1][1]) not in MERGED_STEPS]
-assert not missing, f"No task instruction for {missing}"
+# Learner-facing instruction per action. Every step's procedure tasks are now merged (storyboard):
+# one instruction per task, from the Flow tab, so none are set here.
+TASKS = {}
 for r in A:
     r.append(TASKS.get(r[0], ""))
 
