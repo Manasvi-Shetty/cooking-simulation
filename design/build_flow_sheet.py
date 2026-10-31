@@ -121,13 +121,13 @@ FLOW = [
      "Tools on the counter; the chosen ingredients appear together when the picks pass the check.", "Decoys teach the classic mistakes (cream, garlic, meat)."),
     (2, "Press and Cube the Tofu", "S2.1", "Open the tofu pack", "Procedure", "Yes",
      "Open the tofu pack to drain the packing water.",
-     "2 Kitchen Towels, Heavy Pan (not usable yet)", "T-2.1", "Cutting board",
+     "2 Kitchen Towels, Heavy Skillet (not usable yet)", "T-2.1", "Cutting board",
      "Action A-2.1-01.", "", 3, "S2.2",
      "Packing water has to go before pressing can draw out the water inside.",
      "Tofu package on the board.", ""),
     (2, "Press and Cube the Tofu", "S2.2", "Press the tofu", "Procedure", "Yes",
      "Draw out moisture from the tofu.",
-     "2 Kitchen Towels, Heavy Pan", "", "Cutting board",
+     "2 Kitchen Towels, Heavy Skillet", "", "Cutting board",
      "Actions A-2.2-01 to 03 in order.", "", 3, "S2.3",
      "Water on the surface turns to steam and stops browning. Dry tofu crisps; wet tofu steams.",
      "Drained tofu block on the board.", ""),
@@ -170,18 +170,18 @@ FLOW = [
      "Empty skillet on the front burner; burner off.", "Key adaptation moment from guanciale to tofu."),
     (4, "Fry the Tofu Until Crisp", "S4.2", "Heat the oil", "Procedure", "Yes",
      "Heat the oil to frying temperature.",
-     "Olive oil, kitchen timer, smoked paprika, tongs (only the oil is usable yet)", "", "Stove",
+     "Olive oil, smoked paprika, tongs (only the oil is usable yet)", "", "Stove",
      "Actions A-4.2 in order; heat inside the target range.", "", 3, "S4.3",
      "Browning (the Maillard reaction) starts around 140 °C. Shimmering oil is hot enough to seal the tofu straight away.",
      "Skillet on the front burner; heat knob at Off.", ""),
     (4, "Fry the Tofu Until Crisp", "S4.3", "Fry the tofu until golden", "Procedure", "Yes",
      "Fry the tofu until crisp and golden on all sides.",
-     "Kitchen timer, tongs, soy sauce, smoked paprika", "T-4.3", "Stove",
+     "Tongs, soy sauce, smoked paprika (timer options open in the scene)", "", "Stove",
      "Actions A-4.3 in order; wait times inside the target ranges.", "", 3, "S4.4",
      "Moving the tofu too soon tears the crust before it forms. Paprika burns fast, so it goes in at the very end.",
      "Shimmering oil in the skillet; tofu cubes on the board.", ""),
     (4, "Fry the Tofu Until Crisp", "S4.4", "Lift out the tofu, keep the oil", "Procedure", "Yes",
-     "Take the tofu out while keeping the flavoured oil in the pan.",
+     "Take the tofu out.",
      "None (panel hidden)", "T-4.4", "Stove",
      "Actions A-4.4 in order.", "", 3, "S5.1",
      "The oil now carries flavour and becomes the fat in the sauce emulsion. Tofu goes back in at the end so it stays crisp.",
@@ -293,13 +293,13 @@ MULTI_FEEDBACK = {
 TOO_EARLY = {
     "S3.1": "E-KNOB-BACK, T-LID: Fill the pot with water first.",
     "S2.1": "T-TOWELS, E-WEIGHT: Open the pack and drain it before anything else.",
-    "S4.2": "I-TOFU: Wait for the shimmer, or the tofu will stick. | E-TIMER, I-PAPRIKA, T-TONGS: Get the oil hot first.",
+    "S4.2": "I-TOFU: Wait for the shimmer, or the tofu will stick. | I-PAPRIKA, T-TONGS: Get the oil hot first.",
     "S8.2": "E-BELL: Plate and top both bowls first.",
 }
 WRONG_SPOT = {
     "S3.1": "T-POT [E-BURNER-BACK E-COUNTER]: The pot needs to go under the tap. Put it in the sink.",
     "S3.2": "T-POT [E-COUNTER]: That's not where it boils. Put it on the back burner.",
-    "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The heavy pan goes on top of the tofu to press it.",
+    "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The Heavy Skillet goes on top of the tofu to press it.",
     "S4.2": "I-OIL [T-POT]: The oil goes into the skillet.",
     "S4.3": "I-TOFU [T-POT]: The tofu goes into the hot skillet.",
     "S4.4": "T-SLOTTED [E-COUNTER]: Put the tofu on the resting plate so it stays crisp.",
@@ -329,11 +329,11 @@ def opt(sub, label, item, correct, outcome, feedback, branch, score, effect=""):
     O.append([f"O-{sub[1:]}-{letter}", sub, label, item, correct, outcome, feedback, branch, score, effect])
 
 
-opt("S1.1", "2 × Roman-style carbonara (no cream), no meat: tofu instead, extra-crispy", "", "Correct", "Perfect",
+opt("S1.1", "2 × Roman-style carbonara, no meat: tofu instead, extra-crispy", "", "Correct", "Perfect",
     "Exactly. Roman-style means no cream; no meat means tofu, extra crispy. Let's build the plan around that.", "NEXT", 0, "order_confirmed = true")
-opt("S1.1", "2 × classic carbonara with guanciale", "", "Incorrect", "Recoverable",
+opt("S1.1", "2 × classic carbonara with guanciale, extra-crispy", "", "Incorrect", "Recoverable",
     "Read it again: Saumya doesn't eat meat. That changes our protein.", "RETRY", -5)
-opt("S1.1", "2 × creamy carbonara with tofu", "", "Incorrect", "Recoverable",
+opt("S1.1", "2 × creamy carbonara with tofu, do not make it crispy", "", "Incorrect", "Recoverable",
     "She asked for Roman-style, and a Roman carbonara never has cream. Its creaminess comes from egg, cheese and pasta water.", "RETRY", -5)
 opt("S1.1", "4 × tofu carbonara, no cream", "", "Incorrect", "Recoverable",
     "Close, but count again: it's a table for two.", "RETRY", -5)
@@ -358,7 +358,7 @@ for label, item, cor, out, fb in [
 
 for label, item, cor, out, fb in [
     ("Large Pot with Lid", "T-POT", "Correct", "Perfect", "Big pot, lots of room for the spaghetti to move."),
-    ("Heavy Skillet (Cast Iron)", "T-SKILLET", "Correct", "Perfect", "Heavy pans hold heat evenly. Great for crisping tofu."),
+    ("Heavy Skillet", "T-SKILLET", "Correct", "Perfect", "Heavy pans hold heat evenly. Great for crisping tofu."),
     ("Chef's Knife and Board", "T-KNIFE", "Correct", "Perfect", "For neat 1 cm cubes."),
     ("2 Kitchen Towels", "T-TOWELS", "Correct", "Perfect", "To press the water out of the tofu."),
     ("Box Grater", "T-GRATER", "Correct", "Perfect", "We'll use its finest side."),
@@ -372,13 +372,13 @@ for label, item, cor, out, fb in [
 ]:
     opt("S1.2", label, item, cor, out, fb, "NEXT" if cor != "Incorrect" else "RETRY", 0 if cor != "Incorrect" else -3)
 
-opt("S2.3", "No pressing, straight to the knife", "", "Incorrect", "Degraded",
-    "Wet tofu steams and sticks. It'll never get properly crisp.", "NEXT", -10, "tofu_moisture = high; press_minutes = 0")
+opt("S2.3", "1 minute", "", "Incorrect", "Degraded",
+    "Wet tofu steams and sticks. It'll never get properly crisp.", "NEXT", -10, "tofu_moisture = high; press_minutes = 1")
 opt("S2.3", "5 minutes", "", "Incorrect", "Degraded",
     "A start, but there's still plenty of water inside. It will spit and stay soft.", "NEXT", -5, "tofu_moisture = medium; press_minutes = 5")
 opt("S2.3", "15-20 minutes", "", "Correct", "Perfect",
     "Perfect.", "NEXT", 0, "tofu_moisture = low; press_minutes = 20")
-opt("S2.3", "2 hours", "", "Incorrect", "Recoverable",
+opt("S2.3", "45 minutes", "", "Incorrect", "Recoverable",
     "It would be very dry, but Table 6 would be gone by then! 15-20 minutes does the job.", "RETRY", -3)
 
 opt("S2.5", "Toss with 1 tsp soy sauce and a pinch of smoked paprika", "I-SOY", "Correct", "Perfect",
@@ -390,13 +390,13 @@ opt("S2.5", "Soak it in 4 tbsp soy sauce", "I-SOY", "Incorrect", "Degraded",
 opt("S2.5", "Leave it plain", "", "Acceptable", "Degraded",
     "It will work, but plain tofu is mild. A little seasoning gives the dish its savoury backbone.", "NEXT", -3, "tofu_seasoned = false")
 
-opt("S4.1", "Cold pan, no oil, then heat up (like guanciale)", "", "Incorrect", "Recoverable",
+opt("S4.1", "Cold pan, no oil, then heat up", "", "Incorrect", "Recoverable",
     "That's the rule for guanciale, because it brings its own fat. Tofu has none, so it would weld itself to the pan.", "RETRY", -5)
-opt("S4.1", "Cold pan with oil, then heat up", "", "Incorrect", "Recoverable",
+opt("S4.1", "Cold pan with oil, then heat up, wait until it shimmers", "", "Incorrect", "Recoverable",
     "The tofu would soak up oil as it slowly warms and turn greasy instead of crisp.", "RETRY", -3)
 opt("S4.1", "Heat the pan on medium, add 2 tbsp oil, wait until it shimmers", "", "Correct", "Perfect",
     "Yes! Hot oil seals the surface straight away, so it browns instead of sticking.", "NEXT", 0)
-opt("S4.1", "Heat the empty pan on high until it smokes", "", "Incorrect", "Recoverable",
+opt("S4.1", "Heat the empty pan on high until it smokes, then add 2 tbsp oil", "", "Incorrect", "Recoverable",
     "Too hot. Oil would burn the moment it went in, and the tofu would char outside and stay cold inside.", "RETRY", -5)
 
 opt("S5.1", "2 whole eggs + 3 yolks", "I-EGGS", "Correct", "Perfect",
@@ -408,7 +408,7 @@ opt("S5.1", "2 yolks only", "I-EGGS", "Incorrect", "Degraded",
 opt("S5.1", "6 whole eggs and a splash of cream", "I-CREAM", "Incorrect", "Recoverable",
     "Too much egg, and no cream. Let's try that again.", "RETRY", -5)
 
-opt("S5.3", "Finest star-shaped side (powder)", "T-GRATER", "Correct", "Perfect",
+opt("S5.3", "Fine star-shaped side (powder)", "T-GRATER", "Correct", "Perfect",
     "Fluffy as snow. It will melt straight into the eggs.", "NEXT", 0, "cheese_grain = fine")
 opt("S5.3", "Medium holes", "T-GRATER", "Acceptable", "Degraded",
     "Usable, but expect a few little clumps in the sauce.", "NEXT", -3, "cheese_grain = medium")
@@ -468,13 +468,17 @@ def act(sub, order, inter, src, srcloc, tgt, param, correct, outcome, ok_fb, bad
 S = "Scene"; RP = "Right panel"
 act("S2.1", 1, "Click", "I-TOFU", S, "", "Open the pack", "Correct", "Perfect",
     "", "Open the pack and drain it before anything else.", "NEXT", 0)
+act("S2.1", "-", "Click", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
+    "", "Gently! You've cracked it. We'll still get cubes, but some will crumble.", "NEXT", -5, "tofu_cracked = true")
 
 act("S2.2", 1, "Drag", "T-TOWELS", RP, "E-BOARD", "First towel under the tofu", "Correct", "Perfect",
     "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
 act("S2.2", 2, "Drag", "T-TOWELS", RP, "I-TOFU", "Second towel on top", "Correct", "Perfect",
     "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
-act("S2.2", 3, "Drag", "E-WEIGHT", RP, "I-TOFU", "Heavy pan on top as a weight", "Correct", "Perfect",
+act("S2.2", 3, "Drag", "E-WEIGHT", RP, "I-TOFU", "Heavy skillet on top as a weight", "Correct", "Perfect",
     "", "The weight goes on last, on top of the towels.", "NEXT", 0, "tofu_pressing = true")
+act("S2.2", "-", "Click", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
+    "", "Gently! You've cracked it. We'll still get cubes, but some will crumble.", "NEXT", -5, "tofu_cracked = true")
 
 # The cuts as a pick-all-that-apply list → Check: the three 1 cm cuts animate in order.
 act("S2.4", 1, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm slabs, cut lengthways", "Correct", "Perfect",
@@ -485,8 +489,6 @@ act("S2.4", 3, "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "1 cm cubes, cut across",
     "Neat little cubes, just like guanciale.", "Cut the strips first.", "NEXT", 0, "tofu_cut = cubes_1cm")
 act("S2.4", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "3 cm chunks", "Incorrect", "Degraded",
     "", "Too big. The outside will crisp but the middle stays soft, and they won't sit nicely on a fork.", "NEXT", -5, "tofu_cut = chunks")
-act("S2.4", "-", "Click", "T-KNIFE", RP, "E-CUT-GUIDES", "Crumble by hand", "Incorrect", "Degraded",
-    "", "Crumbles burn quickly and vanish into the pasta. Cubes give you a crisp bite.", "NEXT", -5, "tofu_cut = crumbled")
 
 act("S3.1", 1, "Drag", "T-POT", S, "E-SINK", "Pot under the tap", "Correct", "Perfect",
     "", "", "NEXT", 0)
@@ -511,9 +513,7 @@ act("S4.2", "-", "Slider / knob", "E-KNOB-FRONT", S, "", "Low", "Incorrect", "Re
 act("S4.2", 1, "Slider / knob", "E-KNOB-FRONT", S, "", "Medium (target 170-200 °C)", "Correct", "Perfect",
     "", "", "NEXT", 0)
 act("S4.2", "-", "Slider / knob", "E-KNOB-FRONT", S, "", "High", "Incorrect", "Recoverable",
-    "", "Too hot. The oil would smoke before the tofu goes in. Medium is right.", "RETRY", 0)
-act("S4.2", "-", "Slider / knob", "E-KNOB-FRONT", S, "", "High for more than 4 min", "Incorrect", "Fatal",
-    "", "Smoke! The tofu and oil have burnt. Bitter, acrid and not servable.", "GAME_OVER", -100, "ending = FATAL-BURNT")
+    "", "Too hot. The oil smoked before the tofu went in.", "RETRY", 0)
 act("S4.2", 2, "Drag", "I-OIL", RP, "T-SKILLET", "2 tbsp olive oil", "Correct", "Perfect",
     "", "Heat the pan first.", "NEXT", 0)
 act("S4.2", 3, "Timer", "E-PAN-OIL", S, "", "Wait until the oil shimmers (about 1 min)", "Correct", "Perfect",
@@ -521,17 +521,17 @@ act("S4.2", 3, "Timer", "E-PAN-OIL", S, "", "Wait until the oil shimmers (about 
 
 act("S4.3", 1, "Drag", "I-TOFU", S, "T-SKILLET", "Tofu cubes in a single layer", "Correct", "Perfect",
     "", "", "NEXT", 0, "tofu_in_pan = true")
-act("S4.3", "-", "Timer", "E-TIMER", RP, "", "Leave undisturbed 1 min", "Incorrect", "Recoverable",
+act("S4.3", "-", "Timer", "E-TIMER", S, "", "Leave undisturbed 1 min", "Incorrect", "Recoverable",
     "", "Not yet. The crust needs about 3 minutes to form.", "RETRY", 0)
-act("S4.3", 2, "Timer", "E-TIMER", RP, "", "Leave undisturbed 3 min", "Correct", "Perfect",
+act("S4.3", 2, "Timer", "E-TIMER", S, "", "Leave undisturbed 3 min", "Correct", "Perfect",
     "", "Get the tofu into the pan first.", "NEXT", 0)
-act("S4.3", "-", "Timer", "E-TIMER", RP, "", "Leave undisturbed 6 min", "Incorrect", "Recoverable",
+act("S4.3", "-", "Timer", "E-TIMER", S, "", "Leave undisturbed 6 min", "Incorrect", "Recoverable",
     "", "Too long on one side. The cubes will scorch. 3 minutes is enough.", "RETRY", 0)
 act("S4.3", 3, "Drag", "T-TONGS", RP, "T-SKILLET", "Turn the cubes over", "Correct", "Perfect",
     "", "Let the crust form first.", "NEXT", 0)
 act("S4.3", "-", "Drag", "T-TONGS", RP, "T-SKILLET", "Toss in the first minute", "Incorrect", "Degraded",
     "", "Too soon! The crust tore and stuck to the pan. Let it sit next time.", "NEXT", -5, "tofu_torn = true")
-act("S4.3", 4, "Timer", "E-TIMER", RP, "", "Leave for another 3-4 min", "Correct", "Perfect",
+act("S4.3", 4, "Timer", "E-TIMER", S, "", "Leave for another 3-4 min", "Correct", "Perfect",
     "", "Turn the cubes first.", "NEXT", 0)
 act("S4.3", 5, "Drag", "I-SOY", RP, "T-SKILLET", "1 tsp soy sauce", "Correct", "Perfect",
     "", "The soy goes in at the end, with the paprika.", "NEXT", 0)
@@ -552,18 +552,18 @@ act("S4.4", "-", "Click", "T-SKILLET", S, "", "Leave the tofu in the pan", "Inco
     "", "In the sauce it will soak up liquid and go soft. Crispy tofu was the request!", "NEXT", -5, "tofu_state = soggy")
 
 act("S5.2", 1, "Drag", "T-BOWL", S, "E-COUNTER", "Bowl onto the counter", "Correct", "Perfect", "", "", "NEXT", 0)
-act("S5.2", 2, "Repeat click", "I-EGGS", RP, "T-BOWL", "Crack 2 whole eggs into the bowl (×2)", "Correct", "Perfect",
+act("S5.2", 2, "Repeat click", "I-EGGS", RP, "T-BOWL", "Crack 2 whole eggs into the bowl", "Correct", "Perfect",
     "", "Get the bowl onto the counter first.", "NEXT", 0)
-act("S5.2", 3, "Repeat click", "I-EGGS", RP, "E-WHITES-CUP", "Separate: whites into the cup, yolk into the bowl (×3)", "Correct", "Perfect",
+act("S5.2", 3, "Repeat click", "I-EGGS", RP, "E-WHITES-CUP", "Separate: whites into the cup, yolk into the bowl", "Correct", "Perfect",
     "Lovely golden yolks.", "Whole eggs first, then the extra yolks.", "NEXT", 0, "yolks_added = 3")
 act("S5.2", "-", "Click", "I-EGGS", RP, "", "Separate: whites and yolks into the bowl", "Incorrect", "Recoverable",
     "", "The whites go into the cup. Only the yolks go in the bowl.", "RETRY", -3)
 act("S5.2", "-", "Click", "I-EGGS", RP, "", "Shell fragment falls in", "Incorrect", "Recoverable",
     "", "A bit of shell got in. Scoop it out with a larger piece of shell, it works like a magnet.", "NEXT", 0)
 
-act("S5.4", 1, "Hold", "I-PECORINO", RP, "T-BOWL", "Grate 150 g on the chosen side (scale shows grams)", "Correct", "Perfect",
+act("S5.4", 1, "Hold", "I-PECORINO", RP, "T-BOWL", "Grate 150 g on the chosen side", "Correct", "Perfect",
     "", "", "NEXT", 0, "cheese_g = 150")
-act("S5.4", 2, "Repeat click", "I-PEPPER", RP, "T-BOWL", "Crack about ½ tbsp pepper (about 12 twists)", "Correct", "Perfect",
+act("S5.4", 2, "Repeat click", "I-PEPPER", RP, "T-BOWL", "Crack about ½ tbsp pepper", "Correct", "Perfect",
     "", "Grate the cheese in first.", "NEXT", 0)
 act("S5.4", 3, "Hold", "T-BOWL", S, "T-BOWL", "Whisk until a thick, smooth paste", "Correct", "Perfect",
     "Thick and smooth. It will loosen with pasta water later.", "Add the cheese and pepper before whisking.", "NEXT", 0, "egg_paste = ready")
@@ -636,15 +636,14 @@ act("S8.3", "-", "Timer", "E-TIMER", RP, "", "Wait more than 60 s before serving
 
 # ---------------------------------------------------------------- Chef tips
 TIPS = [
-    ("T-1.1", "S1.1", "What the order tells you", "Notice how the order shapes the dish: dietary needs change the ingredients, and a request like 'Roman-style' (so no cream) changes the method.", "Got it"),
-    ("T-1.3", "S1.3", "Five ingredients, no shortcuts", "Real carbonara is pasta, eggs, pecorino, black pepper and a cured meat. Today tofu takes the meat's place. Creaminess comes from technique, not cream.", "Let's shop"),
-    ("T-2.1", "S2.1", "Dry tofu, crisp tofu", "Tofu is mostly water. Press it under a weight and it browns instead of steaming. Use the time to start your pasta water.", "Start pressing"),
-    ("T-2.4", "S2.4", "Same size, same cook", "Cut 1 cm cubes. Even pieces brown at the same rate, so none burn while others stay pale.", "Start cutting"),
-    ("T-2.5", "S2.5", "Borrow guanciale's flavour", "Guanciale is salty, smoky and savoury. A splash of soy and a pinch of smoked paprika get the tofu part of the way there. Go easy on salt: pecorino is very salty.", "Season"),
-    ("T-3.1", "S3.1", "Water first", "A big pot of water takes about 10 minutes to boil. Get it going now, and the rest of the prep fits around it.", "To the sink"),
+    ("T-1.1", "S1.1", "Assessing Customer's Request", "Notice how the order shapes the dish: dietary needs change the ingredients, and a request like 'Roman-style' changes the method.", "Got it"),
+    ("T-1.3", "S1.3", "Deciding the Ingredients", "Real carbonara is pasta, eggs, pecorino, black pepper and a cured meat. Today tofu takes the meat's place. Creaminess comes from technique and not the cream.", "Let's shop"),
+    ("T-2.1", "S2.1", "Preparing the Tofu", "Tofu is mostly water. Press it under a weight to remove the moisture from it before cooking.", "Start pressing"),
+    ("T-2.4", "S2.4", "Cutting the Tofu", "Cut 1 cm cubes. Even pieces brown at the same rate ensuring that the customer has a consistent experience when eating the tofu.", "Start cutting"),
+    ("T-2.5", "S2.5", "Borrowing guanciale's flavour", "Guanciale is salty, smoky and savoury. A splash of soy and a pinch of smoked paprika get the tofu part of the way there. Go easy on salt: pecorino is very salty.", "Season"),
+    ("T-3.1", "S3.1", "Boiling the Water", "A big pot of water takes about 10 minutes to boil. Get it going now, and the rest of the prep fits around it.", "To the sink"),
     ("T-4.1", "S4.1", "Not every rule transfers", "Guanciale goes into a cold pan so its fat melts out slowly. Tofu has no fat to give. Think about what tofu needs instead.", "Choose"),
-    ("T-4.3", "S4.3", "Hands off!", "Once the tofu is in the hot oil, leave it alone for about 3 minutes. The crust needs time to form. Move it too early and it tears and sticks.", "Fire up"),
-    ("T-4.4", "S4.4", "Save that oil", "The oil in the pan now tastes of crispy, smoky tofu. It becomes the fat in your sauce, so don't pour it away.", "Got it"),
+    ("T-4.4", "S4.4", "Reusing the Oil", "The oil in the pan now tastes of crispy, smoky tofu. It becomes the fat in your sauce, so don't pour it away.", "Got it"),
     ("T-5.2", "S5.2", "Yolks for richness", "Extra yolks make the sauce golden, rich and more forgiving, because yolks set at a higher temperature than whites.", "Crack on"),
     ("T-5.3", "S5.3", "Finer is better", "The finer the cheese, the faster and more evenly it melts into the egg. Coarse shreds go stringy and clump.", "Grate"),
     ("T-6.1", "S6.1", "Season the water, gently", "Pasta water should taste seasoned, not like the sea. In carbonara, go lighter: the water ends up in a sauce full of salty pecorino.", "Salt it"),
@@ -686,7 +685,7 @@ ITEMS = [
     ("T-TRAY", "Baking tray (decoy)", "Right panel", "Sheet pan", "Select (incorrect)"),
     ("E-BOARD", "Cutting board", "Scene", "Wooden board on the counter", "Drop target"),
     ("E-CUT-GUIDES", "Cutting guides", "Scene", "Dashed lines projected on the tofu; sets A, B, C (correct) and X (decoy)", "Click a line set to cut"),
-    ("E-WEIGHT", "Heavy pan (weight)", "Right panel", "Spare cast-iron pan used as a press", "Drag on top of tofu"),
+    ("E-WEIGHT", "Heavy Skillet", "Right panel", "Spare cast-iron pan used as a press", "Drag on top of tofu"),
     ("E-SINK", "Sink", "Scene", "Sink to the left of the stove", "Drop target"),
     ("E-TAP", "Tap", "Scene", "Mixer tap", "Hold to fill"),
     ("T-LID", "Pot lid", "Scene", "The large pot's lid, resting on the counter", "Drag onto the pot"),

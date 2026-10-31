@@ -268,9 +268,8 @@ const VISUALS = {
   'A-3.2-04': () => { w.backHeat = 3; },
   'A-3.2-05': () => { w.lidOn = true; },
   'A-4.2-02': () => { s.heat = 2; },
-  'A-4.2-04': async () => { s.heat = 3; await ff(300, 40); },                     // high, too long: smoke
-  'A-4.2-05': () => { w.oil = true; },
-  'A-4.2-06': () => ff(60),
+  'A-4.2-04': () => { w.oil = true; },
+  'A-4.2-05': () => ff(60),
   'A-4.3-01': () => { w.tofuStage = 'pan'; s.tofuInPan = true; },
   'A-4.3-03': () => ff(180),
   'A-4.3-05': () => { w.tossT = 1; w.flips += 1; },
@@ -458,7 +457,10 @@ function itemCard(id, extra = '') {
 function interactionLabel(a) {
   return { 'Hold': 'Hold', 'Repeat click': `Tap ×${repeatCount(a)}`, 'Timer': 'Wait', 'Slider / knob': 'Turn', 'Drag': 'Move', 'Click': 'Click' }[a.interaction] || a.interaction;
 }
+// Taps needed when the label doesn't say (×n).
+const REPEAT = { 'A-5.2-02': 2, 'A-5.2-03': 3 };
 function repeatCount(a) {
+  if (REPEAT[a.id]) return REPEAT[a.id];
   const m = /×\s?(\d+)/.exec(a.param);
   return m ? Number(m[1]) : 3;
 }
@@ -530,7 +532,7 @@ function renderRight() {
       (acts.length ? '' : '<p class="muted">Nothing left to do with this.</p>') + '</div>';
   } else if (sub.type === 'Procedure' && !engine.ready) {
     // Things already in the kitchen are clicked there (pins); only the rest get cards.
-    const sources = pickables().filter((id) => !onScreen(id));
+    const sources = pickables().filter((id) => !onScreen(id) && !(PROMPTED[sub.id]?.includes(id) && !ui.dismissed?.has(id)));
     html = sources.length ? `<div class="cards grid">${sources.map((id) => itemCard(id)).join('')}</div>` : '';
   }
   right.innerHTML = html;
@@ -761,7 +763,9 @@ right.addEventListener('click', async (e) => {
     renderAction();
     return renderRight();
   }
-  if (e.target.closest('[data-back]')) { ui.mode = 'items'; ui.pending = null; ui.selected = new Set(); renderAction(); return renderRight(); }
+  if (e.target.closest('[data-back]')) {
+    if (ui.mode === 'actions' && PROMPTED[sub.id]?.includes(ui.source)) (ui.dismissed ||= new Set()).add(ui.source);   // closed it: offer it as a card
+    ui.mode = 'items'; ui.pending = null; ui.selected = new Set(); renderAction(); return renderRight(); }
   const src = e.target.closest('[data-source]');
   if (src) return pickSource(src.dataset.source);
   const act = e.target.closest('[data-act]');
@@ -853,7 +857,7 @@ function pickSource(id) {
   }
   ui.source = id;
   const acts = choices().filter((a) => a.source === id);
-  if (acts.length === 1 && acts[0].interaction === 'Click' && !needsTarget(acts[0])) {
+  if (acts.length === 1 && acts[0].interaction === 'Click' && !needsTarget(acts[0]) && acts[0].order !== '-') {
     return perform(acts[0]);                   // only one thing to do with it (open the tofu pack): just do it
   }
   if (acts.length > 1 && acts.every((a) => a.interaction === 'Click' && a.target && a.target === acts[0].target)) {
@@ -896,6 +900,15 @@ pins.addEventListener('click', (e) => {
   pickSource(id);
 });
 
+// Options the kitchen offers by itself when they're due (storyboard: "Options for the timer appear"):
+// the shimmer wait once the oil is in, the timer once the tofu is in and again after the flip.
+// The timer isn't a panel card in those tasks unless the learner closes its options.
+const PROMPTED = { 'S4.2': ['E-PAN-OIL'], 'S4.3': ['E-TIMER'] };
+function promptNext() {
+  const nx = engine.nextRequired();
+  if (!engine.ready && nx && PROMPTED[engine.sub.id]?.includes(nx.source)) Object.assign(ui, { mode: 'actions', source: nx.source });
+}
+
 async function perform(a) {
   const res = engine.perform(a.id);
   ui.mode = 'items';
@@ -904,6 +917,7 @@ async function perform(a) {
   if (res.outOfOrder) {
     if (a.source === 'E-TAP') w.tapOn = false;
     setFeedback([res.feedback, res.hint ? '' : missesLine()].filter(Boolean), null);
+    promptNext();
     return refresh();
   }
   setFeedback(res.feedback, res.ok ? (res.feedback ? 'Perfect' : null) : res.outcome);
@@ -916,6 +930,7 @@ async function perform(a) {
     ui.locked = false;
   }
   if (res.gameOver) return gameOver();
+  promptNext();
   refresh();
 }
 

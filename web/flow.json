@@ -107,7 +107,7 @@
    "type": "Procedure",
    "required": "Yes",
    "left": "Open the tofu pack to drain the packing water.",
-   "right": "2 Kitchen Towels, Heavy Pan (not usable yet)",
+   "right": "2 Kitchen Towels, Heavy Skillet (not usable yet)",
    "tip": "T-2.1",
    "camera": "Cutting board",
    "passRule": "Action A-2.1-01.",
@@ -141,7 +141,7 @@
    "type": "Procedure",
    "required": "Yes",
    "left": "Draw out moisture from the tofu.",
-   "right": "2 Kitchen Towels, Heavy Pan",
+   "right": "2 Kitchen Towels, Heavy Skillet",
    "tip": "",
    "camera": "Cutting board",
    "passRule": "Actions A-2.2-01 to 03 in order.",
@@ -156,7 +156,7 @@
    "tooEarly": null,
    "wrongSpot": {
     "T-TOWELS": "One towel under the tofu, one on top. Try again.",
-    "E-WEIGHT": "The heavy pan goes on top of the tofu to press it."
+    "E-WEIGHT": "The Heavy Skillet goes on top of the tofu to press it."
    },
    "shortHold": null,
    "wrongDecoys": null
@@ -341,7 +341,7 @@
    "type": "Procedure",
    "required": "Yes",
    "left": "Heat the oil to frying temperature.",
-   "right": "Olive oil, kitchen timer, smoked paprika, tongs (only the oil is usable yet)",
+   "right": "Olive oil, smoked paprika, tongs (only the oil is usable yet)",
    "tip": "",
    "camera": "Stove",
    "passRule": "Actions A-4.2 in order; heat inside the target range.",
@@ -356,13 +356,11 @@
    "tooEarly": {
     "items": [
      "I-TOFU",
-     "E-TIMER",
      "I-PAPRIKA",
      "T-TONGS"
     ],
     "texts": {
      "I-TOFU": "Wait for the shimmer, or the tofu will stick.",
-     "E-TIMER": "Get the oil hot first.",
      "I-PAPRIKA": "Get the oil hot first.",
      "T-TONGS": "Get the oil hot first."
     }
@@ -385,8 +383,8 @@
    "type": "Procedure",
    "required": "Yes",
    "left": "Fry the tofu until crisp and golden on all sides.",
-   "right": "Kitchen timer, tongs, soy sauce, smoked paprika",
-   "tip": "T-4.3",
+   "right": "Tongs, soy sauce, smoked paprika (timer options open in the scene)",
+   "tip": "",
    "camera": "Stove",
    "passRule": "Actions A-4.3 in order; wait times inside the target ranges.",
    "incomplete": "",
@@ -415,7 +413,7 @@
    "title": "Lift out the tofu, keep the oil",
    "type": "Procedure",
    "required": "Yes",
-   "left": "Take the tofu out while keeping the flavoured oil in the pan.",
+   "left": "Take the tofu out.",
    "right": "None (panel hidden)",
    "tip": "T-4.4",
    "camera": "Stove",
@@ -825,7 +823,7 @@
   {
    "id": "O-1.1-a",
    "sub": "S1.1",
-   "label": "2 \u00d7 Roman-style carbonara (no cream), no meat: tofu instead, extra-crispy",
+   "label": "2 \u00d7 Roman-style carbonara, no meat: tofu instead, extra-crispy",
    "item": "",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -837,7 +835,7 @@
   {
    "id": "O-1.1-b",
    "sub": "S1.1",
-   "label": "2 \u00d7 classic carbonara with guanciale",
+   "label": "2 \u00d7 classic carbonara with guanciale, extra-crispy",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -849,7 +847,7 @@
   {
    "id": "O-1.1-c",
    "sub": "S1.1",
-   "label": "2 \u00d7 creamy carbonara with tofu",
+   "label": "2 \u00d7 creamy carbonara with tofu, do not make it crispy",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1053,7 +1051,7 @@
   {
    "id": "O-1.2-b",
    "sub": "S1.2",
-   "label": "Heavy Skillet (Cast Iron)",
+   "label": "Heavy Skillet",
    "item": "T-SKILLET",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -1185,14 +1183,14 @@
   {
    "id": "O-2.3-a",
    "sub": "S2.3",
-   "label": "No pressing, straight to the knife",
+   "label": "1 minute",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Degraded",
    "feedback": "Wet tofu steams and sticks. It'll never get properly crisp.",
    "branch": "NEXT",
    "score": -10,
-   "effect": "tofu_moisture = high; press_minutes = 0"
+   "effect": "tofu_moisture = high; press_minutes = 1"
   },
   {
    "id": "O-2.3-b",
@@ -1221,7 +1219,7 @@
   {
    "id": "O-2.3-d",
    "sub": "S2.3",
-   "label": "2 hours",
+   "label": "45 minutes",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1281,7 +1279,7 @@
   {
    "id": "O-4.1-a",
    "sub": "S4.1",
-   "label": "Cold pan, no oil, then heat up (like guanciale)",
+   "label": "Cold pan, no oil, then heat up",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1293,7 +1291,7 @@
   {
    "id": "O-4.1-b",
    "sub": "S4.1",
-   "label": "Cold pan with oil, then heat up",
+   "label": "Cold pan with oil, then heat up, wait until it shimmers",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1317,7 +1315,7 @@
   {
    "id": "O-4.1-d",
    "sub": "S4.1",
-   "label": "Heat the empty pan on high until it smokes",
+   "label": "Heat the empty pan on high until it smokes, then add 2 tbsp oil",
    "item": "",
    "correctness": "Incorrect",
    "outcome": "Recoverable",
@@ -1377,7 +1375,7 @@
   {
    "id": "O-5.3-a",
    "sub": "S5.3",
-   "label": "Finest star-shaped side (powder)",
+   "label": "Fine star-shaped side (powder)",
    "item": "T-GRATER",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -1659,6 +1657,24 @@
    "task": ""
   },
   {
+   "id": "A-2.1-02",
+   "sub": "S2.1",
+   "order": "-",
+   "interaction": "Click",
+   "source": "I-TOFU",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Squeeze the block hard by hand",
+   "correctness": "Incorrect",
+   "outcome": "Degraded",
+   "okFb": "",
+   "badFb": "Gently! You've cracked it. We'll still get cubes, but some will crumble.",
+   "branch": "NEXT",
+   "score": -5,
+   "effect": "tofu_cracked = true",
+   "task": ""
+  },
+  {
    "id": "A-2.2-01",
    "sub": "S2.2",
    "order": "1",
@@ -1702,7 +1718,7 @@
    "source": "E-WEIGHT",
    "srcLoc": "Right panel",
    "target": "I-TOFU",
-   "param": "Heavy pan on top as a weight",
+   "param": "Heavy skillet on top as a weight",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
@@ -1710,6 +1726,24 @@
    "branch": "NEXT",
    "score": 0,
    "effect": "tofu_pressing = true",
+   "task": ""
+  },
+  {
+   "id": "A-2.2-04",
+   "sub": "S2.2",
+   "order": "-",
+   "interaction": "Click",
+   "source": "I-TOFU",
+   "srcLoc": "Scene",
+   "target": "",
+   "param": "Squeeze the block hard by hand",
+   "correctness": "Incorrect",
+   "outcome": "Degraded",
+   "okFb": "",
+   "badFb": "Gently! You've cracked it. We'll still get cubes, but some will crumble.",
+   "branch": "NEXT",
+   "score": -5,
+   "effect": "tofu_cracked = true",
    "task": ""
   },
   {
@@ -1782,24 +1816,6 @@
    "branch": "NEXT",
    "score": -5,
    "effect": "tofu_cut = chunks",
-   "task": ""
-  },
-  {
-   "id": "A-2.4-05",
-   "sub": "S2.4",
-   "order": "-",
-   "interaction": "Click",
-   "source": "T-KNIFE",
-   "srcLoc": "Right panel",
-   "target": "E-CUT-GUIDES",
-   "param": "Crumble by hand",
-   "correctness": "Incorrect",
-   "outcome": "Degraded",
-   "okFb": "",
-   "badFb": "Crumbles burn quickly and vanish into the pasta. Cubes give you a crisp bite.",
-   "branch": "NEXT",
-   "score": -5,
-   "effect": "tofu_cut = crumbled",
    "task": ""
   },
   {
@@ -1994,7 +2010,7 @@
    "correctness": "Incorrect",
    "outcome": "Recoverable",
    "okFb": "",
-   "badFb": "Too hot. The oil would smoke before the tofu goes in. Medium is right.",
+   "badFb": "Too hot. The oil smoked before the tofu went in.",
    "branch": "RETRY",
    "score": 0,
    "effect": "",
@@ -2002,24 +2018,6 @@
   },
   {
    "id": "A-4.2-04",
-   "sub": "S4.2",
-   "order": "-",
-   "interaction": "Slider / knob",
-   "source": "E-KNOB-FRONT",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "High for more than 4 min",
-   "correctness": "Incorrect",
-   "outcome": "Fatal",
-   "okFb": "",
-   "badFb": "Smoke! The tofu and oil have burnt. Bitter, acrid and not servable.",
-   "branch": "GAME_OVER",
-   "score": -100,
-   "effect": "ending = FATAL-BURNT",
-   "task": ""
-  },
-  {
-   "id": "A-4.2-05",
    "sub": "S4.2",
    "order": "2",
    "interaction": "Drag",
@@ -2037,7 +2035,7 @@
    "task": ""
   },
   {
-   "id": "A-4.2-06",
+   "id": "A-4.2-05",
    "sub": "S4.2",
    "order": "3",
    "interaction": "Timer",
@@ -2078,7 +2076,7 @@
    "order": "-",
    "interaction": "Timer",
    "source": "E-TIMER",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "",
    "param": "Leave undisturbed 1 min",
    "correctness": "Incorrect",
@@ -2096,7 +2094,7 @@
    "order": "2",
    "interaction": "Timer",
    "source": "E-TIMER",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "",
    "param": "Leave undisturbed 3 min",
    "correctness": "Correct",
@@ -2114,7 +2112,7 @@
    "order": "-",
    "interaction": "Timer",
    "source": "E-TIMER",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "",
    "param": "Leave undisturbed 6 min",
    "correctness": "Incorrect",
@@ -2168,7 +2166,7 @@
    "order": "4",
    "interaction": "Timer",
    "source": "E-TIMER",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "",
    "param": "Leave for another 3-4 min",
    "correctness": "Correct",
@@ -2350,7 +2348,7 @@
    "source": "I-EGGS",
    "srcLoc": "Right panel",
    "target": "T-BOWL",
-   "param": "Crack 2 whole eggs into the bowl (\u00d72)",
+   "param": "Crack 2 whole eggs into the bowl",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
@@ -2368,7 +2366,7 @@
    "source": "I-EGGS",
    "srcLoc": "Right panel",
    "target": "E-WHITES-CUP",
-   "param": "Separate: whites into the cup, yolk into the bowl (\u00d73)",
+   "param": "Separate: whites into the cup, yolk into the bowl",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "Lovely golden yolks.",
@@ -2422,7 +2420,7 @@
    "source": "I-PECORINO",
    "srcLoc": "Right panel",
    "target": "T-BOWL",
-   "param": "Grate 150 g on the chosen side (scale shows grams)",
+   "param": "Grate 150 g on the chosen side",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
@@ -2440,7 +2438,7 @@
    "source": "I-PEPPER",
    "srcLoc": "Right panel",
    "target": "T-BOWL",
-   "param": "Crack about \u00bd tbsp pepper (about 12 twists)",
+   "param": "Crack about \u00bd tbsp pepper",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
@@ -3031,42 +3029,42 @@
   "T-1.1": {
    "id": "T-1.1",
    "sub": "S1.1",
-   "title": "What the order tells you",
-   "text": "Notice how the order shapes the dish: dietary needs change the ingredients, and a request like 'Roman-style' (so no cream) changes the method.",
+   "title": "Assessing Customer's Request",
+   "text": "Notice how the order shapes the dish: dietary needs change the ingredients, and a request like 'Roman-style' changes the method.",
    "button": "Got it"
   },
   "T-1.3": {
    "id": "T-1.3",
    "sub": "S1.3",
-   "title": "Five ingredients, no shortcuts",
-   "text": "Real carbonara is pasta, eggs, pecorino, black pepper and a cured meat. Today tofu takes the meat's place. Creaminess comes from technique, not cream.",
+   "title": "Deciding the Ingredients",
+   "text": "Real carbonara is pasta, eggs, pecorino, black pepper and a cured meat. Today tofu takes the meat's place. Creaminess comes from technique and not the cream.",
    "button": "Let's shop"
   },
   "T-2.1": {
    "id": "T-2.1",
    "sub": "S2.1",
-   "title": "Dry tofu, crisp tofu",
-   "text": "Tofu is mostly water. Press it under a weight and it browns instead of steaming. Use the time to start your pasta water.",
+   "title": "Preparing the Tofu",
+   "text": "Tofu is mostly water. Press it under a weight to remove the moisture from it before cooking.",
    "button": "Start pressing"
   },
   "T-2.4": {
    "id": "T-2.4",
    "sub": "S2.4",
-   "title": "Same size, same cook",
-   "text": "Cut 1 cm cubes. Even pieces brown at the same rate, so none burn while others stay pale.",
+   "title": "Cutting the Tofu",
+   "text": "Cut 1 cm cubes. Even pieces brown at the same rate ensuring that the customer has a consistent experience when eating the tofu.",
    "button": "Start cutting"
   },
   "T-2.5": {
    "id": "T-2.5",
    "sub": "S2.5",
-   "title": "Borrow guanciale's flavour",
+   "title": "Borrowing guanciale's flavour",
    "text": "Guanciale is salty, smoky and savoury. A splash of soy and a pinch of smoked paprika get the tofu part of the way there. Go easy on salt: pecorino is very salty.",
    "button": "Season"
   },
   "T-3.1": {
    "id": "T-3.1",
    "sub": "S3.1",
-   "title": "Water first",
+   "title": "Boiling the Water",
    "text": "A big pot of water takes about 10 minutes to boil. Get it going now, and the rest of the prep fits around it.",
    "button": "To the sink"
   },
@@ -3077,17 +3075,10 @@
    "text": "Guanciale goes into a cold pan so its fat melts out slowly. Tofu has no fat to give. Think about what tofu needs instead.",
    "button": "Choose"
   },
-  "T-4.3": {
-   "id": "T-4.3",
-   "sub": "S4.3",
-   "title": "Hands off!",
-   "text": "Once the tofu is in the hot oil, leave it alone for about 3 minutes. The crust needs time to form. Move it too early and it tears and sticks.",
-   "button": "Fire up"
-  },
   "T-4.4": {
    "id": "T-4.4",
    "sub": "S4.4",
-   "title": "Save that oil",
+   "title": "Reusing the Oil",
    "text": "The oil in the pan now tastes of crispy, smoky tofu. It becomes the fat in your sauce, so don't pour it away.",
    "button": "Got it"
   },
@@ -3354,7 +3345,7 @@
   },
   "E-WEIGHT": {
    "id": "E-WEIGHT",
-   "name": "Heavy pan (weight)",
+   "name": "Heavy Skillet",
    "location": "Right panel",
    "description": "Spare cast-iron pan used as a press",
    "interactions": "Drag on top of tofu"
