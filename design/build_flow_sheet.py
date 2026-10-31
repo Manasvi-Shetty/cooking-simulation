@@ -636,7 +636,7 @@ act("S8.3", "-", "Timer", "E-TIMER", RP, "", "Wait more than 60 s before serving
 
 # ---------------------------------------------------------------- Chef tips
 TIPS = [
-    ("T-1.1", "S1.1", "Read the ticket twice", "Before anything touches a pan, read the order twice. Dietary needs change the ingredients, and a request like 'Roman-style' (so no cream) changes the method.", "Got it"),
+    ("T-1.1", "S1.1", "What the order tells you", "Notice how the order shapes the dish: dietary needs change the ingredients, and a request like 'Roman-style' (so no cream) changes the method.", "Got it"),
     ("T-1.3", "S1.3", "Five ingredients, no shortcuts", "Real carbonara is pasta, eggs, pecorino, black pepper and a cured meat. Today tofu takes the meat's place. Creaminess comes from technique, not cream.", "Let's shop"),
     ("T-2.1", "S2.1", "Dry tofu, crisp tofu", "Tofu is mostly water. Press it under a weight and it browns instead of steaming. Use the time to start your pasta water.", "Start pressing"),
     ("T-2.4", "S2.4", "Same size, same cook", "Cut 1 cm cubes. Even pieces brown at the same rate, so none burn while others stay pale.", "Start cutting"),

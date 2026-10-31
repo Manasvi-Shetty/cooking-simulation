@@ -3031,8 +3031,8 @@
   "T-1.1": {
    "id": "T-1.1",
    "sub": "S1.1",
-   "title": "Read the ticket twice",
-   "text": "Before anything touches a pan, read the order twice. Dietary needs change the ingredients, and a request like 'Roman-style' (so no cream) changes the method.",
+   "title": "What the order tells you",
+   "text": "Notice how the order shapes the dish: dietary needs change the ingredients, and a request like 'Roman-style' (so no cream) changes the method.",
    "button": "Got it"
   },
   "T-1.3": {
