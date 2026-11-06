@@ -442,7 +442,6 @@ function renderPop(fb) {
   pop.innerHTML = `
     <div class="chef-face" aria-hidden="true">${CHEF_SVG}</div>
     <div class="fb-bubble"><div class="fb-body">
-      <span class="chef-name">NONNA PINA</span>
       ${fb?.head ? `<p class="fb-head">${esc(fb.head)}</p>` : ''}
       ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p${SUBTEXT.test(t) ? ' class="fb-sub"' : ''}>${esc(t)}</p>`)).join('')}
     </div>
