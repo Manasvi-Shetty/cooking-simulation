@@ -424,7 +424,7 @@ function renderPop(fb) {
   if (!lines.length && ready) lines.push(sub.type === 'Procedure' ? 'All done here. Nicely worked.' : 'That’s it. On to the next one.');
   if (ui.hint) lines.push(`Hint: ${engine.item(ui.hint.source).name} → ${ui.hint.param}`);
   if (!lines.length || ui.locked) { pop.hidden = true; return; }
-  const key = JSON.stringify([lines, fb?.outcome, ready]);
+  const key = JSON.stringify([lines, fb?.outcome, fb?.head, ready]);
   if (key === popKey && !pop.hidden) return;          // unchanged: leave it (and its timer) alone
   popKey = key;
   pop.className = `fb-pop ${fb?.outcome || ''}`;
@@ -432,6 +432,7 @@ function renderPop(fb) {
     <div class="chef-face" aria-hidden="true">P</div>
     <div class="fb-body">
       <span class="chef-name">NONNA PINA</span>
+      ${fb?.head ? `<p class="fb-head">${esc(fb.head)}</p>` : ''}
       ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p${SUBTEXT.test(t) ? ' class="fb-sub"' : ''}>${esc(t)}</p>`)).join('')}
     </div>
     <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button>`;
@@ -599,7 +600,12 @@ function placePins() {
 }
 
 // ---------- interaction ----------
-function setFeedback(text, outcome) { ui.feedback = text ? { text, outcome } : null; }
+// Each popup opens with a verdict line: "That's right!" for a good answer, "Not quite." for a miss, and
+// "That's not it." when the tries run out and the right answer is filled in.
+const HEAD = { right: 'That’s right!', wrong: 'Not quite.', auto: 'That’s not it.' };
+function setFeedback(text, outcome, head) {
+  ui.feedback = text ? { text, outcome, head: head ?? (['Perfect', 'Acceptable'].includes(outcome) ? HEAD.right : HEAD.wrong) } : null;
+}
 
 // The pressing time: the timer fast-forwards through it, then the pan lifts off before Nonna speaks.
 async function finishPressing(minutes) {
@@ -625,10 +631,10 @@ async function checkSingle(id) {
   const press = /press_minutes = (\d+)/.exec(o.effect || '');
   if (press) await finishPressing(Number(press[1]));
   applyOptionEffect(o);
-  setFeedback([o.feedback, chancesLine()].filter(Boolean), o.outcome);
+  setFeedback([o.feedback, chancesLine()].filter(Boolean), o.outcome, o.correctness === 'Incorrect' ? HEAD.wrong : HEAD.right);
   if (res.reveal) {
     res.reveal.forEach((rid) => { ui.optState[rid] = 'auto'; ui.selected.add(rid); });   // shown as picked for the learner
-    setFeedback(o.feedback, o.outcome);
+    setFeedback(o.feedback, o.outcome, HEAD.auto);
   }
   if (res.gameOver) return gameOver();
   return refresh();
@@ -713,7 +719,7 @@ function doCheck() {
       lines.push('Here’s the full list. Let’s keep going.');
     }
     if (!res.reveal) lines.push(chancesLine());
-    setFeedback(lines.filter(Boolean), res.wrong.length ? 'Recoverable' : null);
+    setFeedback(lines.filter(Boolean), res.wrong.length ? 'Recoverable' : null, res.reveal ? HEAD.auto : HEAD.wrong);
   }
   ui.checkLocked = !res.pass;     // stays disabled until the picks change
   return refresh();
