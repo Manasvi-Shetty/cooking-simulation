@@ -628,7 +628,7 @@ async function checkSingle(id) {
   setFeedback([o.feedback, chancesLine()].filter(Boolean), o.outcome);
   if (res.reveal) {
     res.reveal.forEach((rid) => { ui.optState[rid] = 'auto'; ui.selected.add(rid); });   // shown as picked for the learner
-    setFeedback([o.feedback, 'Here’s the right answer. Let’s keep going.'], o.outcome);
+    setFeedback(o.feedback, o.outcome);
   }
   if (res.gameOver) return gameOver();
   return refresh();
