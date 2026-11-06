@@ -467,10 +467,13 @@ function repeatCount(a) {
   return m ? Number(m[1]) : 3;
 }
 
+// Verdict icons: drawn strokes rather than text glyphs, so they look the same on every system.
+const ICON_X = '<svg class="vicon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg>';
+const ICON_OK = '<svg class="vicon" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3L9.5 3.8"/></svg>';
 const VERDICT = {
-  right: '<span class="verdict ok">✓ Correct</span>',
-  auto: '<span class="verdict auto">✓ Autocorrected</span>',   // filled in by the system after the last try
-  wrong: '<span class="verdict bad">✗ Wrong</span>',
+  right: `<span class="verdict ok">${ICON_OK}Correct</span>`,
+  auto: `<span class="verdict auto">${ICON_OK}Autocorrected</span>`,   // filled in by the system after the last try
+  wrong: `<span class="verdict bad">${ICON_X}Incorrect</span>`,
 };
 
 function renderRight() {
@@ -523,7 +526,7 @@ function renderRight() {
         const st = ui.optState?.[a.id] || '', sel = ui.selected.has(a.id);
         return `<button class="card opt multi ${st} ${sel ? 'selected' : ''}" data-pick="${esc(a.id)}" aria-pressed="${sel}" ${st ? 'disabled' : ''}>
           <span class="tick" aria-hidden="true">${sel || st === 'right' ? '✓' : ''}</span><span class="card-label">${esc(a.param)}</span>
-          ${st === 'right' ? '<span class="verdict ok">✓ Correct</span>' : st === 'wrong' ? '<span class="verdict bad">✗ Wrong</span>' : ''}</button>`;
+          ${st === 'right' ? `<span class="verdict ok">${ICON_OK}Correct</span>` : st === 'wrong' ? `<span class="verdict bad">${ICON_X}Incorrect</span>` : ''}</button>`;
       }).join('') + '</div>';
   } else if (ui.mode === 'actions') {
     const acts = choices().filter((a) => a.source === ui.source);
