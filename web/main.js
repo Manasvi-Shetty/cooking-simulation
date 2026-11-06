@@ -431,7 +431,7 @@ function renderPop(fb) {
   pop.innerHTML = `
     <div class="chef-face" aria-hidden="true">P</div>
     <div class="fb-body">
-      <span class="chef-name">NONNA PINA ${fb?.outcome ? chip(fb.outcome, fb.outcome) : ''}</span>
+      <span class="chef-name">NONNA PINA</span>
       ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p${SUBTEXT.test(t) ? ' class="fb-sub"' : ''}>${esc(t)}</p>`)).join('')}
     </div>
     <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button>`;
