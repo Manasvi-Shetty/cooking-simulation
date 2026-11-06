@@ -1026,7 +1026,7 @@ function next() {
 function showTip(tip) {
   $('#tip-title').textContent = tip.title;
   $('#tip-text').textContent = tip.text;
-  $('#tip-ok').textContent = tip.button || 'Got it';
+  $('#tip-ok').textContent = 'OK';                     // every coach tip closes with OK
   $('#tip').hidden = false;
   $('#tip-ok').focus();
 }
