@@ -414,6 +414,8 @@ document.addEventListener('click', (e) => {
 // popup holds the Continue button; otherwise it can be dismissed and fades on its own.
 let popOpenedAt = 0;
 let popKey = '';
+// Chances left, tries before a hint, the hint itself: shown as smaller, quieter subtext under Nonna's words.
+const SUBTEXT = /^(You have \d+ more chances?\.|One more wrong move|\d+ more tries|Hint:|Here’s the (right answer|full list))/;
 function renderPop(fb) {
   const pop = $('#fb-pop');
   const sub = engine.sub;
@@ -430,7 +432,7 @@ function renderPop(fb) {
     <div class="chef-face" aria-hidden="true">P</div>
     <div class="fb-body">
       <span class="chef-name">NONNA PINA ${fb?.outcome ? chip(fb.outcome, fb.outcome) : ''}</span>
-      ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p>${esc(t)}</p>`)).join('')}
+      ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p${SUBTEXT.test(t) ? ' class="fb-sub"' : ''}>${esc(t)}</p>`)).join('')}
     </div>
     <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button>`;
   pop.hidden = false;
@@ -904,9 +906,13 @@ pins.addEventListener('click', (e) => {
 // the shimmer wait once the oil is in, the timer once the tofu is in and again after the flip.
 // The timer isn't a panel card in those tasks unless the learner closes its options.
 const PROMPTED = { 'S4.2': ['E-PAN-OIL'], 'S4.3': ['E-TIMER'] };
-function promptNext() {
+// Moves that leave the tool in hand for its next drop (the slotted spoon carries the tofu to the plate).
+const KEEP_HELD = new Set(['A-4.4-02']);
+function promptNext(a) {
   const nx = engine.nextRequired();
-  if (!engine.ready && nx && PROMPTED[engine.sub.id]?.includes(nx.source)) Object.assign(ui, { mode: 'actions', source: nx.source });
+  if (engine.ready || !nx) return;
+  if (PROMPTED[engine.sub.id]?.includes(nx.source)) Object.assign(ui, { mode: 'actions', source: nx.source });
+  else if (KEEP_HELD.has(a?.id) && nx.source === a.source && needsTarget(nx)) Object.assign(ui, { mode: 'target', pending: [nx] });
 }
 
 async function perform(a) {
@@ -930,7 +936,7 @@ async function perform(a) {
     ui.locked = false;
   }
   if (res.gameOver) return gameOver();
-  promptNext();
+  promptNext(a);
   refresh();
 }
 
