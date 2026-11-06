@@ -416,6 +416,17 @@ let popOpenedAt = 0;
 let popKey = '';
 // Chances left, tries before a hint, the hint itself: shown as smaller, quieter subtext under Nonna's words.
 const SUBTEXT = /^(You have \d+ more chances?\.|One more wrong move|\d+ more tries|Hint:|Here’s the (right answer|full list))/;
+// Nonna's avatar: a chef in a toque (drawn here so it matches in every popup).
+const CHEF_SVG = `<svg viewBox="0 0 40 40" aria-hidden="true">
+  <circle cx="20" cy="27" r="9.5" fill="#f2cba4"/>
+  <path d="M11 17.5h18v3.2H11z" fill="#efe6d6"/>
+  <circle cx="14" cy="12.5" r="4.6" fill="#fffaf0"/><circle cx="20" cy="9.6" r="5.4" fill="#fffaf0"/><circle cx="26" cy="12.5" r="4.6" fill="#fffaf0"/>
+  <path d="M11.2 12.5h17.6v5.2H11.2z" fill="#fffaf0"/>
+  <circle cx="16.6" cy="25.6" r="1.1" fill="#2a1b04"/><circle cx="23.4" cy="25.6" r="1.1" fill="#2a1b04"/>
+  <path d="M15.4 29.6c1.6-1.3 3.2-1.3 4.6 0 1.4-1.3 3-1.3 4.6 0-1.4 1.6-3.2 1.7-4.6.6-1.4 1.1-3.2 1-4.6-.6z" fill="#7a5a3a"/>
+  <path d="M10.5 40c1.2-3.6 4.8-5.4 9.5-5.4s8.3 1.8 9.5 5.4z" fill="#fffaf0"/>
+</svg>`;
+document.querySelectorAll('.chef-face').forEach((el) => { el.innerHTML = CHEF_SVG; });
 function renderPop(fb) {
   const pop = $('#fb-pop');
   const sub = engine.sub;
@@ -429,13 +440,13 @@ function renderPop(fb) {
   popKey = key;
   pop.className = `fb-pop ${fb?.outcome || ''}`;
   pop.innerHTML = `
-    <div class="chef-face" aria-hidden="true">P</div>
-    <div class="fb-body">
+    <div class="chef-face" aria-hidden="true">${CHEF_SVG}</div>
+    <div class="fb-bubble"><div class="fb-body">
       <span class="chef-name">NONNA PINA</span>
       ${fb?.head ? `<p class="fb-head">${esc(fb.head)}</p>` : ''}
       ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p${SUBTEXT.test(t) ? ' class="fb-sub"' : ''}>${esc(t)}</p>`)).join('')}
     </div>
-    <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button>`;
+    <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button></div>`;
   pop.hidden = false;
   pop.dataset.dismissable = '1';
   popOpenedAt = performance.now();
