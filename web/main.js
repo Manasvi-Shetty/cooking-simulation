@@ -467,8 +467,9 @@ function itemCard(id, extra = '') {
     <span class="card-label">${esc(label)}</span></button>`;
 }
 
-function interactionLabel(a) {
-  return { 'Hold': 'Hold', 'Repeat click': `Tap ×${repeatCount(a)}`, 'Timer': 'Wait', 'Slider / knob': 'Turn', 'Drag': 'Move', 'Click': 'Click' }[a.interaction] || a.interaction;
+// Options carry no type pills; only the ones you hold or tap repeatedly get a plain hint line.
+function actHint(a) {
+  return { 'Hold': 'Press and hold', 'Repeat click': 'Tap repeatedly' }[a.interaction] || '';
 }
 // Taps needed when the label doesn't say (×n).
 const REPEAT = { 'A-5.2-02': 2, 'A-5.2-03': 3 };
@@ -544,7 +545,7 @@ function renderRight() {
     html = `<button class="link" data-back>← All items</button>
       <span class="eyebrow">${esc(engine.item(ui.source).name)}: what do you do?</span><div class="cards">` +
       acts.map((a) => `<button class="card act" data-act="${esc(a.id)}" data-kind="${esc(a.interaction)}" data-need="${a.interaction === 'Repeat click' ? repeatCount(a) : 1}">
-        <span class="card-label">${esc(a.param)}</span><span class="badge">${esc(interactionLabel(a))}</span><span class="fill" aria-hidden="true"></span></button>`).join('') +
+        <span class="card-label">${esc(a.param)}</span>${actHint(a) ? `<span class="card-hint">${actHint(a)}</span>` : ''}<span class="fill" aria-hidden="true"></span></button>`).join('') +
       (acts.length ? '' : '<p class="muted">Nothing left to do with this.</p>') + '</div>';
   } else if (sub.type === 'Procedure' && !engine.ready) {
     // Things already in the kitchen are clicked there (pins); only the rest get cards.
@@ -847,13 +848,13 @@ function handleActClick(el) {
   const a = FLOW.actions.find((x) => x.id === el.dataset.act);
   if (a.interaction === 'Hold') {
     if (el.dataset.held === '1') return;
-    el.querySelector('.badge').textContent = 'Press and hold';
+    el.querySelector('.card-hint').textContent = 'Press and hold this option';
     return;
   }
   if (a.interaction === 'Repeat click') {
     const need = Number(el.dataset.need), n = Number(el.dataset.count || 0) + 1;
     el.dataset.count = n;
-    el.querySelector('.badge').textContent = `${n} / ${need}`;
+    el.querySelector('.card-hint').textContent = `Tap repeatedly · ${n} of ${need}`;
     el.querySelector('.fill').style.width = `${(n / need) * 100}%`;
     if (n < need) return;
   }
