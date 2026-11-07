@@ -597,16 +597,37 @@ function renderPins() {
   pins.innerHTML = pinList.map((p) => `<button class="pin ${p.kind}" data-pin="${esc(p.id)}"><span>${esc(engine.item(p.id).name)}</span></button>`).join('');
 }
 const tmp = new THREE.Vector3();
+// Screen furniture a hotspot must never sit under or be cut off by.
+const PIN_OBSTACLES = ['#left', '#right', '#menu-btn', '#views', '#action-btn', '#fb-pop'];
 function placePins() {
   const r = canvas.getBoundingClientRect();
+  const M = 8;
+  const blocks = PIN_OBSTACLES.map((q) => $(q)).filter((el) => el && !el.hidden && el.getClientRects().length)
+    .map((el) => el.getBoundingClientRect()).filter((b) => b.width && b.height)
+    .map((b) => ({ x0: b.left - r.left - M, y0: b.top - r.top - M, x1: b.right - r.left + M, y1: b.bottom - r.top + M }));
   pins.querySelectorAll('.pin').forEach((el) => {
     const a = props.anchors[el.dataset.pin];
     if (!a) return;
     tmp.copy(a).project(camera);
     const off = tmp.z > 1 || Math.abs(tmp.x) > 1.05 || Math.abs(tmp.y) > 1.05;
     el.hidden = off;
+    if (off) return;
     // The ring sits on the spot: centred across the pin (label included), its middle 11px down.
-    el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * r.width}px, ${(-tmp.y * 0.5 + 0.5) * r.height}px) translate(-50%, -11px)`;
+    // Near an edge or a panel, the whole pin is nudged in so none of it is cut off or covered.
+    const w = el.offsetWidth, h = el.offsetHeight;
+    const clampX = (x) => Math.min(Math.max(x, M + w / 2), r.width - M - w / 2);
+    const clampY = (y) => Math.min(Math.max(y, M + 11), r.height - M - h + 11);
+    let x = clampX((tmp.x * 0.5 + 0.5) * r.width), y = clampY((-tmp.y * 0.5 + 0.5) * r.height);
+    const hits = (px, py) => blocks.filter((b) => px + w / 2 > b.x0 + 0.5 && px - w / 2 < b.x1 - 0.5 && py - 11 + h > b.y0 + 0.5 && py - 11 < b.y1 - 0.5);
+    if (hits(x, y).length) {
+      // Candidates: just clear of each panel it touches, on every side; take the nearest that's clear of all of them.
+      const cands = blocks.flatMap((b) => [[b.x1 + w / 2, y], [b.x0 - w / 2, y], [x, b.y1 + 11], [x, b.y0 - h + 11]])
+        .map(([cx, cy]) => [clampX(cx), clampY(cy)])
+        .filter(([cx, cy]) => !hits(cx, cy).length)
+        .sort((p, q) => Math.hypot(p[0] - x, p[1] - y) - Math.hypot(q[0] - x, q[1] - y));
+      if (cands.length) [x, y] = cands[0];
+    }
+    el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -11px)`;
   });
 }
 
