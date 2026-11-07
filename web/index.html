@@ -298,8 +298,10 @@
                       border: 1px solid var(--line); background: none; font-size: 13.5px; }
   #jump-list button:hover, #jump-list button:focus-visible { background: rgba(246, 232, 210, 0.08); }
   #jump-list button b { font: 600 12px var(--font-mono); color: var(--yolk); min-width: 30px; }
-  #tip .card-sheet { width: min(460px, 100%); border-color: rgba(240, 181, 62, 0.5); }
-  #tip h2 { font-size: 28px; }
+  #tip .card-sheet { width: min(540px, 100%); border-color: rgba(240, 181, 62, 0.5); }
+  #tip h2 { font-size: 24px; white-space: nowrap; }     /* the title stays on one line */
+  #tip-ok { justify-self: center; min-width: 120px; }
+  @media (max-width: 560px) { #tip h2 { white-space: normal; font-size: 22px; } }
   #tip p { font-size: 17px; line-height: 1.55; }
   .tip-head { display: flex; gap: 12px; align-items: center; }
 
@@ -404,7 +406,7 @@
     <div class="tip-head"><div class="chef-face" aria-hidden="true"></div><span class="eyebrow">Nonna Pina's tip</span></div>
     <h2 id="tip-title"></h2>
     <p id="tip-text"></p>
-    <button class="cta" id="tip-ok">Got it</button>
+    <button class="cta" id="tip-ok">OK</button>
   </div>
 </div>
 
