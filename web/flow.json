@@ -422,11 +422,11 @@
    "mixedMissing": "",
    "tooEarly": null,
    "wrongSpot": {
-    "T-SLOTTED": "Put the tofu on the resting plate so it stays crisp."
+    "T-SKILLET": "Put the tofu on the resting plate so it stays crisp."
    },
    "shortHold": null,
    "wrongDecoys": {
-    "T-SLOTTED": [
+    "T-SKILLET": [
      "E-COUNTER"
     ]
    }
@@ -2230,11 +2230,11 @@
    "id": "A-4.4-01",
    "sub": "S4.4",
    "order": "1",
-   "interaction": "Slider / knob",
+   "interaction": "Click",
    "source": "E-KNOB-FRONT",
    "srcLoc": "Scene",
    "target": "",
-   "param": "Off",
+   "param": "Turn the burner off",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
@@ -2249,39 +2249,21 @@
    "sub": "S4.4",
    "order": "2",
    "interaction": "Drag",
-   "source": "T-SLOTTED",
-   "srcLoc": "Scene",
-   "target": "T-SKILLET",
-   "param": "Lift the tofu out (oil drains back)",
-   "correctness": "Correct",
-   "outcome": "Perfect",
-   "okFb": "",
-   "badFb": "Heat off first.",
-   "branch": "NEXT",
-   "score": 0,
-   "effect": "",
-   "task": ""
-  },
-  {
-   "id": "A-4.4-03",
-   "sub": "S4.4",
-   "order": "3",
-   "interaction": "Drag",
-   "source": "T-SLOTTED",
+   "source": "T-SKILLET",
    "srcLoc": "Scene",
    "target": "E-PLATE",
-   "param": "Tofu onto the resting plate",
+   "param": "Tofu onto the resting plate (slotted spoon)",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "Set aside. It goes back in at the very end.",
-   "badFb": "Lift the tofu out of the skillet first.",
+   "badFb": "Heat off first.",
    "branch": "NEXT",
    "score": 0,
    "effect": "tofu_reserved = true",
    "task": ""
   },
   {
-   "id": "A-4.4-04",
+   "id": "A-4.4-03",
    "sub": "S4.4",
    "order": "-",
    "interaction": "Drag",
@@ -2296,24 +2278,6 @@
    "branch": "NEXT",
    "score": -5,
    "effect": "fat_flavour = plain",
-   "task": ""
-  },
-  {
-   "id": "A-4.4-05",
-   "sub": "S4.4",
-   "order": "-",
-   "interaction": "Click",
-   "source": "T-SKILLET",
-   "srcLoc": "Scene",
-   "target": "",
-   "param": "Leave the tofu in the pan",
-   "correctness": "Incorrect",
-   "outcome": "Degraded",
-   "okFb": "",
-   "badFb": "In the sauce it will soak up liquid and go soft. Crispy tofu was the request!",
-   "branch": "NEXT",
-   "score": -5,
-   "effect": "tofu_state = soggy",
    "task": ""
   },
   {

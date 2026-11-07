@@ -301,7 +301,7 @@ WRONG_SPOT = {
     "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The Heavy Skillet goes on top of the tofu to press it.",
     "S4.2": "I-OIL [T-POT]: The oil goes into the skillet.",
     "S4.3": "I-TOFU [T-POT]: The tofu goes into the hot skillet.",
-    "S4.4": "T-SLOTTED [E-COUNTER]: Put the tofu on the resting plate so it stays crisp.",
+    "S4.4": "T-SKILLET [E-COUNTER]: Put the tofu on the resting plate so it stays crisp.",
     "S6.2": "I-SALT [T-SKILLET]: That goes into the boiling pot. | I-SPAGHETTI [T-SKILLET]: That goes into the boiling pot.",
     "S7.1": "T-TONGS [E-PLATE]: The pasta goes into the skillet with the flavoured oil.",
     "S8.2": "T-TONGS [E-PLATE]: The pasta goes into the serving bowls.",
@@ -539,16 +539,12 @@ act("S4.3", 6, "Drag", "I-PAPRIKA", RP, "T-SKILLET", "A pinch of smoked paprika"
 act("S4.3", "-", "Drag", "I-PAPRIKA", RP, "T-SKILLET", "Paprika at the start of frying", "Incorrect", "Degraded",
     "", "Paprika burns fast and turns bitter. Add it in the last 30 seconds.", "NEXT", -5, "paprika_bitter = true")
 
-act("S4.4", 1, "Slider / knob", "E-KNOB-FRONT", S, "", "Off", "Correct", "Perfect",
+act("S4.4", 1, "Click", "E-KNOB-FRONT", S, "", "Turn the burner off", "Correct", "Perfect",
     "", "", "NEXT", 0)
-act("S4.4", 2, "Drag", "T-SLOTTED", S, "T-SKILLET", "Lift the tofu out (oil drains back)", "Correct", "Perfect",
-    "", "Heat off first.", "NEXT", 0)
-act("S4.4", 3, "Drag", "T-SLOTTED", S, "E-PLATE", "Tofu onto the resting plate", "Correct", "Perfect",
-    "Set aside. It goes back in at the very end.", "Lift the tofu out of the skillet first.", "NEXT", 0, "tofu_reserved = true")
+act("S4.4", 2, "Drag", "T-SKILLET", S, "E-PLATE", "Tofu onto the resting plate (slotted spoon)", "Correct", "Perfect",
+    "Set aside. It goes back in at the very end.", "Heat off first.", "NEXT", 0, "tofu_reserved = true")
 act("S4.4", "-", "Drag", "T-SKILLET", S, "E-SINK", "Pour the oil away", "Incorrect", "Recoverable",
     "", "That oil was flavour! Add 1 tbsp fresh oil to the pan, but the sauce will taste a little flatter.", "NEXT", -5, "fat_flavour = plain")
-act("S4.4", "-", "Click", "T-SKILLET", S, "", "Leave the tofu in the pan", "Incorrect", "Degraded",
-    "", "In the sauce it will soak up liquid and go soft. Crispy tofu was the request!", "NEXT", -5, "tofu_state = soggy")
 
 act("S5.2", 1, "Drag", "T-BOWL", S, "E-COUNTER", "Bowl onto the counter", "Correct", "Perfect", "", "", "NEXT", 0)
 act("S5.2", 2, "Repeat click", "I-EGGS", S, "T-BOWL", "Crack 2 whole eggs into the bowl", "Correct", "Perfect",

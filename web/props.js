@@ -622,7 +622,8 @@ export class Props {
     return (this.items[id] || []).filter(Boolean);
   }
 
-  // Send a tool along a path of stops ({ at: [x, y, z], work, toward, upright, hold }) and back home.
+  // Send a tool along a path of stops ({ at: [x, y, z], work, toward, upright, hold, before, after }) and
+  // back home. before/after run as the work at that stop starts and ends.
   // Returns { arrived, done }: arrived when it reaches its first stop (run the effect then), done when
   // it is home again (or parked, for hold).
   useTool(id, stops, { instant = false } = {}) {
@@ -642,7 +643,7 @@ export class Props {
       const dir = s.toward ? V(s.toward).sub(at).setY(0).normalize() : null;
       go(above(at), 0.55, { dir, up: s.upright ? 1 : cur.up });
       go(at, 0.25, { dir });
-      segs.push({ from: cur, to: cur, dur: s.dur ?? 0.9, work: s.work, dir, first: i === 0 });
+      segs.push({ from: cur, to: cur, dur: s.dur ?? 0.9, work: s.work, dir, first: i === 0, before: s.before, after: s.after });
       if (s.hold) { go(above(at, 0.07), 0.3, { dir }); return; }
       go(above(at), 0.25, { dir });
     });
@@ -665,8 +666,10 @@ export class Props {
       an.t += dt;
       while (sg && an.t >= sg.dur) {
         if (sg.work && sg.first) an.arrivedRes();
+        sg.after?.();
         an.t -= sg.dur; an.i += 1; sg = an.segs[an.i];
         if (sg?.work && sg.first) an.arrivedRes();
+        sg?.before?.();
       }
       if (!sg) { an.arrivedRes(); an.doneRes(); delete this.toolAnims[id]; sg = an.segs.at(-1); an.t = sg.dur; }
       const k = ease(clamp(an.t / sg.dur));

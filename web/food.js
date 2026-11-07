@@ -396,13 +396,22 @@ export class Food {
     if (s.pastaIn) this.pastaT = Math.min(1, this.pastaT + dt / 1.1);
     const k = ease(this.pastaT);
     const stage = w.tofuStage;
-    const key = { cubes: 'boardPos', pan: 'floorPos', plate: 'platePos', pile: 'pilePos' }[stage];
-    const follow = 1 - Math.exp(-dt * 6);
+    const key = { cubes: 'boardPos', pan: 'floorPos', plate: 'platePos', pile: 'pilePos', spoon: 'floorPos' }[stage];
+    // In the slotted spoon: a tight heap riding on the spoon's bowl.
+    if (stage === 'spoon' && !this._panMid) {
+      const n = this.guanciale.length;
+      this._panMid = this.guanciale.reduce((m, g) => m.add(g.floorPos), new THREE.Vector3()).multiplyScalar(1 / n);
+    }
+    const follow = 1 - Math.exp(-dt * (stage === 'spoon' ? 40 : 6));
     w.tossT = Math.max(0, w.tossT - dt);
     this.guanciale.forEach((g, i) => {
       g.mesh.visible = !!key;
       if (!key) return;
-      const target = g[key];
+      let target = g[key];
+      if (stage === 'spoon' && w.spoonAt) {
+        const o = g.floorPos.clone().sub(this._panMid).multiplyScalar(0.3);
+        target = new THREE.Vector3(w.spoonAt.x + o.x, w.spoonAt.y + 0.014 + (i % 3) * 0.007, w.spoonAt.z + o.z);
+      }
       const jump = stage === 'pan' && w.tossT > 0 ? Math.max(0, Math.sin((w.tossT * 2.5 + i * 0.07) * Math.PI)) * 0.025 : 0;
       g.mesh.position.x += (target.x - g.mesh.position.x) * follow;
       g.mesh.position.z += (target.z - g.mesh.position.z) * follow;

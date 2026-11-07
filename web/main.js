@@ -279,8 +279,9 @@ const VISUALS = {
   'A-4.3-08': () => { w.season = 0.5; },
   'A-4.3-09': () => { w.season = 1; return ff(30); },
   'A-4.4-01': () => { s.heat = 0; },
-  'A-4.4-03': () => { w.tofuStage = 'plate'; s.tofuInPan = false; s.guancialeDone = true; },
-  'A-4.4-04': async () => { w.oil = false; await sleep(700); w.oil = true; },
+  // The slotted spoon carries the tofu (TOOL_PATHS); on a step jump it just lands on the plate.
+  'A-4.4-02': () => { if (jumping) w.tofuStage = 'plate'; s.tofuInPan = false; s.guancialeDone = true; },
+  'A-4.4-03': async () => { w.oil = false; await sleep(700); w.oil = true; },
   'A-5.2-02': () => { w.bowlStage = 'eggs'; w.wholeEggs = 2; },
   'A-5.2-03': () => { w.yolks = 3; },
   'A-5.4-01': () => { w.cheeseIn = true; },
@@ -308,8 +309,10 @@ const tool = (id, ...stops) => () => props.useTool(id, stops);
 const TOOL_PATHS = {
   'A-4.3-05': tool('T-TONGS', { at: PAN_C, work: 'dip' }),
   'A-4.3-06': tool('T-TONGS', { at: PAN_C, work: 'stir' }),
-  'A-4.4-02': tool('T-SLOTTED', { at: [0, 0.075, -0.03], work: 'dip', hold: true }),
-  'A-4.4-03': tool('T-SLOTTED', { at: [SPOTS.plate.x, 0.05, SPOTS.plate.z], work: 'tip', toward: [SPOTS.plate.x - 0.1, 0, SPOTS.plate.z] }),
+  // Scoop: the tofu rides in the spoon; tip: it slides onto the resting plate.
+  'A-4.4-02': tool('T-SLOTTED',
+    { at: [0, 0.075, -0.03], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
+    { at: [SPOTS.plate.x, 0.06, SPOTS.plate.z], work: 'tip', toward: [SPOTS.plate.x - 0.1, 0, SPOTS.plate.z], before: () => { w.tofuStage = 'plate'; } }),
   'A-5.2-01': tool('T-BOWL', { at: [B.x, 0, B.z], dur: 0.2 }),
   'A-5.4-01': tool('I-PECORINO', { at: [B.x + 0.03, 0.09, B.z], work: 'grate', dur: 1.4 }),
   'A-5.4-02': tool('I-PEPPER', { at: [B.x, 0.17, B.z], work: 'twist', dur: 1.2 }),
@@ -935,8 +938,8 @@ pins.addEventListener('click', (e) => {
 // the shimmer wait once the oil is in, the timer once the tofu is in and again after the flip.
 // The timer isn't a panel card in those tasks unless the learner closes its options.
 const PROMPTED = { 'S4.2': ['E-PAN-OIL'], 'S4.3': ['E-TIMER'] };
-// Moves that leave the tool in hand for its next drop (the slotted spoon carries the tofu to the plate).
-const KEEP_HELD = new Set(['A-4.4-02']);
+// Moves that leave the tool in hand for its next drop.
+const KEEP_HELD = new Set();
 function promptNext(a) {
   const nx = engine.nextRequired();
   if (engine.ready || !nx) return;
