@@ -208,7 +208,7 @@ function freshState() {
   w = {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
     potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
-    oil: false, tossT: 0, flips: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, cheeseIn: false, mugFull: false,
+    oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, cheeseIn: false, mugFull: false,
     plated: 0, peppered: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
     onCounter: new Set(),   // committed + whatever is ticked right now
@@ -275,7 +275,8 @@ const VISUALS = {
   'A-4.3-05': () => { w.tossT = 1; w.flips += 1; },
   'A-4.3-06': () => { w.tossT = 1; },
   'A-4.3-07': () => ff(180),
-  'A-4.3-09': () => ff(30),
+  'A-4.3-08': () => { w.season = 0.5; },
+  'A-4.3-09': () => { w.season = 1; return ff(30); },
   'A-4.4-01': () => { s.heat = 0; },
   'A-4.4-03': () => { w.tofuStage = 'plate'; s.tofuInPan = false; s.guancialeDone = true; },
   'A-4.4-04': async () => { w.oil = false; await sleep(700); w.oil = true; },

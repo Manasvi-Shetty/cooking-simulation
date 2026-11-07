@@ -175,11 +175,11 @@ export class Food {
     tex.needsUpdate = true;
 
     this.gU = {
-      uRender: { value: 0 }, uBrown: { value: 0 }, uBurn: { value: 0 },
+      uRender: { value: 0 }, uBrown: { value: 0 }, uBurn: { value: 0 }, uSeason: { value: 0 },
       // Tofu: pale cream raw, golden as it dries and fries, deep brown crust, black if burnt.
       cMeatRaw: { value: C('#ece3cc') }, cMeatCooked: { value: C('#dcb46a') },
       cFatRaw: { value: C('#f1e9d6') }, cFatCooked: { value: C('#e2bd72') },
-      cBrown: { value: C('#b06a2a') }, cBurnt: { value: C('#1b120c') },
+      cBrown: { value: C('#e0a64a') }, cSeason: { value: C('#8a4a22') }, cBurnt: { value: C('#1b120c') },
     };
     const mat = new THREE.MeshPhysicalMaterial({ map: tex, bumpMap: tex, bumpScale: 0.5, roughness: 0.6, clearcoat: 0.15,
       sheen: 0.35, sheenColor: C('#fff4dc'), sheenRoughness: 0.6 });
@@ -187,8 +187,8 @@ export class Food {
       Object.assign(shader.uniforms, this.gU);
       shader.fragmentShader = shader.fragmentShader
         .replace('#include <common>', `#include <common>
-          uniform float uRender, uBrown, uBurn;
-          uniform vec3 cMeatRaw, cMeatCooked, cFatRaw, cFatCooked, cBrown, cBurnt;`)
+          uniform float uRender, uBrown, uBurn, uSeason;
+          uniform vec3 cMeatRaw, cMeatCooked, cFatRaw, cFatCooked, cBrown, cBurnt, cSeason;`)
         .replace('#include <map_fragment>', `
           vec4 gTex = texture2D( map, vMapUv );
           float fat = 0.0;                                  // tofu has no fat layers
@@ -196,7 +196,8 @@ export class Food {
           float edge = gTex.g;
           vec3 gcol = mix( mix( cMeatRaw, cMeatCooked, uRender ), mix( cFatRaw, cFatCooked, uRender ), fat );
           float b = clamp( uBrown * ( 0.55 + 0.9 * edge ), 0.0, 1.0 );
-          gcol = mix( gcol, cBrown * ( 0.6 + 0.4 * fat ), b * 0.85 );
+          gcol = mix( gcol, cBrown, b * 0.8 );              // frying alone only takes it to golden
+          gcol = mix( gcol, cSeason, clamp( uSeason * ( 0.45 + 0.35 * edge ), 0.0, 1.0 ) );   // soy + paprika glaze
           gcol = mix( gcol, cBurnt, clamp( uBurn * ( 0.6 + 0.8 * edge ), 0.0, 1.0 ) );
           gcol *= 1.0 - 0.18 * pit;                         // pores sit a little darker
           diffuseColor.rgb = gcol;`)
@@ -389,6 +390,9 @@ export class Food {
     this.gU.uRender.value = s.render;
     this.gU.uBrown.value = Math.min(1, s.brown);
     this.gU.uBurn.value = s.burn;
+    const seasonTarget = w.season || 0;           // 0.5 after soy, 1 after paprika
+    this.seasonT = (this.seasonT ?? 0) + (seasonTarget - (this.seasonT ?? 0)) * Math.min(1, dt * 2.5);
+    this.gU.uSeason.value = this.seasonT;
     if (s.pastaIn) this.pastaT = Math.min(1, this.pastaT + dt / 1.1);
     const k = ease(this.pastaT);
     const stage = w.tofuStage;
@@ -470,7 +474,10 @@ export class Food {
 
     // Steam from hot food; smoke when the guanciale chars.
     const steam = w.served ? 0 : s.pastaIn ? smooth(55, 90, s.foodTemp) : (stage === 'pan' ? smooth(120, 200, s.panTemp) * 0.35 : 0);
-    const smoke = smooth(0.12, 0.5, s.burn);
+    this.seasonPuff = Math.max(0, (this.seasonPuff ?? 0) - dt / 4);
+    if ((w.season || 0) > (this.lastSeason ?? 0)) this.seasonPuff = 1;   // a smoky waft as the soy and paprika hit the pan
+    this.lastSeason = w.season || 0;
+    const smoke = Math.max(smooth(0.12, 0.5, s.burn), stage === 'pan' ? this.seasonPuff * 0.6 : 0);
     this.puffs.forEach((p) => {
       const u = p.userData;
       u.phase = (u.phase + dt * u.speed) % 1;
