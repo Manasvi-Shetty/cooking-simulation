@@ -298,15 +298,9 @@
    "multiWrong": "",
    "mixedMissing": "",
    "tooEarly": null,
-   "wrongSpot": {
-    "T-POT": "That's not where it boils. Put it on the back burner."
-   },
+   "wrongSpot": null,
    "shortHold": null,
-   "wrongDecoys": {
-    "T-POT": [
-     "E-COUNTER"
-    ]
-   }
+   "wrongDecoys": null
   },
   {
    "step": 4,
@@ -1876,10 +1870,10 @@
    "id": "A-3.2-01",
    "sub": "S3.2",
    "order": "1",
-   "interaction": "Drag",
+   "interaction": "Click",
    "source": "T-POT",
    "srcLoc": "Scene",
-   "target": "E-BURNER-BACK",
+   "target": "",
    "param": "Pot onto the back burner",
    "correctness": "Correct",
    "outcome": "Perfect",

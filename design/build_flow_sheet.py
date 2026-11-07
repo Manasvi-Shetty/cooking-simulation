@@ -298,7 +298,6 @@ TOO_EARLY = {
 }
 WRONG_SPOT = {
     "S3.1": "T-POT [E-BURNER-BACK E-COUNTER]: The pot needs to go under the tap. Put it in the sink.",
-    "S3.2": "T-POT [E-COUNTER]: That's not where it boils. Put it on the back burner.",
     "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The Heavy Skillet goes on top of the tofu to press it.",
     "S4.2": "I-OIL [T-POT]: The oil goes into the skillet.",
     "S4.3": "I-TOFU [T-POT]: The tofu goes into the hot skillet.",
@@ -497,7 +496,7 @@ act("S3.1", 2, "Click", "E-TAP", S, "", "Fill to about 3 litres (fill line)", "C
 act("S3.1", "-", "Click", "E-TAP", S, "", "Fill only to 1 litre", "Incorrect", "Recoverable",
     "", "Too little. The water would drop off the boil and the pasta would stick. Fill it to the line.", "RETRY", -3)
 
-act("S3.2", 1, "Drag", "T-POT", S, "E-BURNER-BACK", "Pot onto the back burner", "Correct", "Perfect",
+act("S3.2", 1, "Click", "T-POT", S, "", "Pot onto the back burner", "Correct", "Perfect",
     "", "", "NEXT", 0)
 act("S3.2", "-", "Slider / knob", "E-KNOB-BACK", S, "", "Low", "Incorrect", "Recoverable",
     "", "Full heat for the pasta water.", "RETRY", 0)
