@@ -561,9 +561,9 @@ act("S5.2", "-", "Click", "I-EGGS", S, "", "Separate: whites and yolks into the 
 act("S5.2", "-", "Click", "I-EGGS", S, "", "Shell fragment falls in", "Incorrect", "Recoverable",
     "", "A bit of shell got in. Scoop it out with a larger piece of shell, it works like a magnet.", "NEXT", 0)
 
-act("S5.4", 1, "Hold", "I-PECORINO", RP, "T-BOWL", "Grate 150 g on the chosen side", "Correct", "Perfect",
+act("S5.4", 1, "Hold", "I-PECORINO", S, "T-BOWL", "Grate 150 g on the chosen side", "Correct", "Perfect",
     "", "", "NEXT", 0, "cheese_g = 150")
-act("S5.4", 2, "Repeat click", "I-PEPPER", RP, "T-BOWL", "Crack about ½ tbsp pepper", "Correct", "Perfect",
+act("S5.4", 2, "Repeat click", "I-PEPPER", S, "T-BOWL", "Crack about ½ tbsp pepper", "Correct", "Perfect",
     "", "Grate the cheese in first.", "NEXT", 0)
 act("S5.4", 3, "Hold", "T-BOWL", S, "T-BOWL", "Whisk until a thick, smooth paste", "Correct", "Perfect",
     "Thick and smooth. It will loosen with pasta water later.", "Add the cheese and pepper before whisking.", "NEXT", 0, "egg_paste = ready")
@@ -622,9 +622,9 @@ act("S7.4", "-", "Click", "E-PLATE-BTN", S, "", "Plate while grainy (curds 0.3-0
 act("S8.2", 1, "Drag", "E-PLATE", S, "T-SKILLET", "Fold most of the tofu back in", "Correct", "Perfect", "", "", "NEXT", 0)
 act("S8.2", 2, "Drag", "T-TONGS", S, "E-BOWLS", "Twirl a nest into each bowl (×2)", "Correct", "Perfect",
     "", "Fold the tofu back into the pasta first.", "NEXT", 0)
-act("S8.2", 3, "Repeat click", "I-PEPPER", RP, "E-BOWLS", "Crack pepper over each bowl", "Correct", "Perfect",
+act("S8.2", 3, "Repeat click", "I-PEPPER", S, "E-BOWLS", "Crack pepper over each bowl", "Correct", "Perfect",
     "", "Nests first, then the toppings.", "NEXT", 0)
-act("S8.2", 4, "Hold", "I-PECORINO", RP, "E-BOWLS", "Dust with pecorino (plus reserved crispy tofu on top)", "Correct", "Perfect",
+act("S8.2", 4, "Hold", "I-PECORINO", S, "E-BOWLS", "Dust with pecorino (plus reserved crispy tofu on top)", "Correct", "Perfect",
     "Beautiful. Ready to go out.", "Nests first, then the toppings.", "NEXT", 0)
 act("S8.2", "-", "Click", "E-PLATE", S, "", "Fold all the tofu back in", "Incorrect", "Recoverable",
     "", "Keep a few crispy pieces back for the top.", "RETRY", -3)
@@ -660,8 +660,8 @@ ITEMS = [
     ("I-SPAGHETTI", "Spaghetti, 300 g", "Right panel", "Dried bronze-cut spaghetti in a paper pack", "Select; drag into pot"),
     ("I-TOFU", "Extra-firm tofu, 280 g", "Both", "Block in a water-filled pack; becomes a pressed block, then 1 cm cubes, then golden cubes", "Select; drag; cut; fry"),
     ("I-EGGS", "Eggs", "Scene", "Carton of 6 brown eggs", "Select; crack; separate"),
-    ("I-PECORINO", "Pecorino Romano, 150 g", "Right panel", "Wedge with black rind", "Select; grate"),
-    ("I-PEPPER", "Black peppercorns / pepper mill", "Right panel", "Wooden pepper mill", "Select; repeat-click to grind"),
+    ("I-PECORINO", "Pecorino Romano, 150 g", "Scene", "Wedge with black rind", "Select; grate"),
+    ("I-PEPPER", "Black peppercorns / pepper mill", "Scene", "Wooden pepper mill", "Select; grind"),
     ("I-SALT", "Coarse salt", "Right panel", "Salt cellar with a measuring spoon", "Select; drag"),
     ("I-OIL", "Olive oil", "Right panel", "Bottle with pour spout", "Select; drag (2 tbsp)"),
     ("I-SOY", "Soy sauce", "Right panel", "Small bottle", "Select; drag"),

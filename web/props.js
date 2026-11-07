@@ -279,6 +279,24 @@ export class Props {
       std('#e8f1f4', 0.05, 0, { transmission: 0.9, transparent: true, opacity: 0.5, side: THREE.DoubleSide })), false);
     cup.position.copy(SPOTS.whitesCup).setY(0.025);
     this.items['T-BOWL'] = [cup];
+    // Balloon whisk lying beside the egg bowl (it comes out with the bowl).
+    const whisk = new THREE.Group();
+    const wHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.007, 0.11, 16), std('#2b2b2b', 0.5));
+    wHandle.position.y = 0.145;
+    whisk.add(wHandle);
+    for (let i = 0; i < 4; i++) {
+      const loop = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.0012, 6, 32), this.steel || std('#c9ccd0', 0.28, 1));
+      loop.scale.set(0.75, 1.5, 1);
+      loop.position.y = 0.045;
+      loop.rotation.y = (i * Math.PI) / 4;
+      whisk.add(loop);
+    }
+    whisk.position.set(b.x - 0.1, 0.024, b.z + 0.05);
+    whisk.rotation.set(0, 0.6, Math.PI / 2);
+    whisk.traverse((m) => { m.castShadow = m.receiveShadow = true; });
+    this.root.add(whisk);
+    this.whisk = whisk;
+    this.items['T-BOWL'].push(whisk);
     this.whites = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.029, 32).rotateX(-Math.PI / 2),
       std('#f3f0e2', 0.1, 0, { transparent: true, opacity: 0.6 })), false);
     this.whites.position.copy(SPOTS.whitesCup).setY(0.012);
@@ -531,6 +549,7 @@ export class Props {
     this.root.add(pec);
     hide([cheese]);
     this.followers = [[pec, cheese], [knife, this.items['T-KNIFE'][0]]];
+    this.pecModel = pec;
     // Sink (sunken through the opening cut in the counter) and the induction hob.
     const sink = model('sink');
     sink.position.copy(SPOTS.sink);
@@ -579,6 +598,8 @@ export class Props {
       'E-BELL': v(SPOTS.bell.x, 0.07, SPOTS.bell.z),
       'T-SLOTTED': v(SPOTS.slotted.x, 0.027, SPOTS.slotted.z),
       'T-TONGS': v(SPOTS.tongs.x + 0.11, 0.027, SPOTS.tongs.z),
+      'I-PECORINO': v(0.86, 0.045, -0.16),
+      'I-PEPPER': v(0.4, 0.14, -0.33),
       'I-EGGS': v((SPOTS.eggs[0].x + SPOTS.eggs[1].x) / 2, 0.045, (SPOTS.eggs[0].z + SPOTS.eggs[1].z) / 2),
     };
   }
@@ -591,7 +612,102 @@ export class Props {
     return this.items[id] ? w.committed.has(id) || w.onCounter.has(id) : null;   // null: no model to check
   }
 
+  // ---------- tools in use ----------
+  // What travels when a tool is used: the tool and anything riding in it. The first entry is the pivot.
+  _toolSet(id) {
+    if (id === 'T-MUG') return [...this.items['T-MUG'], this.mugWater];
+    if (id === 'T-BOWL') return [this.bowlModel, this.bowlFill, ...this.yolks, this.cheese].filter(Boolean);
+    if (id === 'WHISK') return [this.whisk];
+    if (id === 'I-PECORINO') return [this.pecModel].filter(Boolean);
+    return (this.items[id] || []).filter(Boolean);
+  }
+
+  // Send a tool along a path of stops ({ at: [x, y, z], work, toward, upright, hold }) and back home.
+  // Returns { arrived, done }: arrived when it reaches its first stop (run the effect then), done when
+  // it is home again (or parked, for hold).
+  useTool(id, stops, { instant = false } = {}) {
+    const set = this._toolSet(id);
+    if (!set.length || instant) return { arrived: Promise.resolve(), done: Promise.resolve() };
+    set.forEach((o) => { if (!o.userData.toolHome) o.userData.toolHome = { p: o.position.clone(), q: o.quaternion.clone() }; });
+    const home = set[0].userData.toolHome.p;
+    const prev = this.toolPose?.[id] || { p: home.clone(), tilt: 0, up: 0 };
+    const V = (a) => (a.isVector3 ? a.clone() : new THREE.Vector3(...a));
+    const segs = [];
+    let cur = { ...prev, p: prev.p.clone() };
+    const go = (p, dur, extra = {}) => { const n = { p: V(p), tilt: extra.tilt ?? 0, up: extra.up ?? cur.up, dir: extra.dir || cur.dir }; segs.push({ from: cur, to: n, dur, ...extra }); cur = n; };
+    const above = (p, h = 0.09) => V(p).setY(Math.max(V(p).y, home.y) + h);
+    go(above(cur.p, 0.08), 0.25, { up: stops.some((s) => s.upright) ? 1 : 0 });
+    stops.forEach((s, i) => {
+      const at = V(s.at);
+      const dir = s.toward ? V(s.toward).sub(at).setY(0).normalize() : null;
+      go(above(at), 0.55, { dir, up: s.upright ? 1 : cur.up });
+      go(at, 0.25, { dir });
+      segs.push({ from: cur, to: cur, dur: s.dur ?? 0.9, work: s.work, dir, first: i === 0 });
+      if (s.hold) { go(above(at, 0.07), 0.3, { dir }); return; }
+      go(above(at), 0.25, { dir });
+    });
+    if (!stops.at(-1)?.hold) {
+      go(above(home), 0.55, { up: 0 });
+      go(home, 0.25, { up: 0 });
+    }
+    let arrivedRes, doneRes;
+    const arrived = new Promise((r) => { arrivedRes = r; }), done = new Promise((r) => { doneRes = r; });
+    (this.toolAnims ||= {})[id] = { set, home, segs, i: 0, t: 0, arrivedRes, doneRes };
+    (this.toolPose ||= {})[id] = cur;
+    return { arrived, done };
+  }
+
+  _updateTools(dt) {
+    const ease = (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
+    const qa = new THREE.Quaternion(), qb = new THREE.Quaternion(), up = new THREE.Quaternion(), Y = new THREE.Vector3(0, 1, 0);
+    for (const [id, an] of Object.entries(this.toolAnims || {})) {
+      let sg = an.segs[an.i];
+      an.t += dt;
+      while (sg && an.t >= sg.dur) {
+        if (sg.work && sg.first) an.arrivedRes();
+        an.t -= sg.dur; an.i += 1; sg = an.segs[an.i];
+        if (sg?.work && sg.first) an.arrivedRes();
+      }
+      if (!sg) { an.arrivedRes(); an.doneRes(); delete this.toolAnims[id]; sg = an.segs.at(-1); an.t = sg.dur; }
+      const k = ease(clamp(an.t / sg.dur));
+      const p = sg.from.p.clone().lerp(sg.to.p, k);
+      let tilt = sg.from.tilt + (sg.to.tilt - sg.from.tilt) * k, twist = 0;
+      const u = sg.from.up + (sg.to.up - sg.from.up) * k;
+      const w = Math.sin(Math.PI * clamp(an.t / sg.dur));   // work envelope
+      const ph = (an.t / sg.dur) * Math.PI * 2;
+      if (sg.work === 'dip') p.y -= 0.02 * Math.abs(Math.sin(ph * 1.5));
+      if (sg.work === 'stir') { p.x += 0.022 * w * Math.cos(ph * 3); p.z += 0.022 * w * Math.sin(ph * 3); }
+      if (sg.work === 'grate') p.y += 0.02 * w * Math.sin(ph * 4);
+      if (sg.work === 'twist') twist = ph * 2;
+      if (sg.work === 'pour') tilt = 1.25 * w;
+      if (sg.work === 'tip') tilt = 0.6 * w;
+      const dir = sg.dir || sg.to.dir || sg.from.dir;
+      if (dir && tilt) qa.setFromAxisAngle(new THREE.Vector3(dir.z, 0, -dir.x).normalize(), tilt); else qa.identity();
+      qb.setFromAxisAngle(Y, twist);
+      qa.multiply(qb);
+      an.set.forEach((o, n) => {
+        const h = o.userData.toolHome;
+        const rel = h.p.clone().sub(an.home).applyQuaternion(qa);
+        o.position.copy(p).add(rel);
+        if (n === 0 && u > 0) { up.copy(h.q).slerp(new THREE.Quaternion(), u); o.quaternion.copy(qa).multiply(up); }
+        else o.quaternion.copy(qa).multiply(h.q);
+      });
+    }
+  }
+
+  // Put every tool straight back (used when jumping between steps).
+  resetTools() {
+    for (const id of Object.keys(this.toolAnims || {})) { this.toolAnims[id].arrivedRes(); this.toolAnims[id].doneRes(); }
+    this.toolAnims = {};
+    this.toolPose = {};
+    ['T-TONGS', 'T-SLOTTED', 'T-MUG', 'T-BOWL', 'WHISK', 'I-PEPPER', 'I-PECORINO'].forEach((id) => this._toolSet(id).forEach((o) => {
+      const h = o.userData.toolHome;
+      if (h) { o.position.copy(h.p); o.quaternion.copy(h.q); }
+    }));
+  }
+
   update(w, dt, t) {
+    this._updateTools(dt);
     this.followers?.forEach(([m, stand]) => { m.visible = stand.visible; });
     this._updateContacts();
     this.pastaMaterial.color.copy(this.sourcePasta.color);

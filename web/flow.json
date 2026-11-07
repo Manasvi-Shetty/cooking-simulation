@@ -2418,7 +2418,7 @@
    "order": "1",
    "interaction": "Hold",
    "source": "I-PECORINO",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-BOWL",
    "param": "Grate 150 g on the chosen side",
    "correctness": "Correct",
@@ -2436,7 +2436,7 @@
    "order": "2",
    "interaction": "Repeat click",
    "source": "I-PEPPER",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "T-BOWL",
    "param": "Crack about \u00bd tbsp pepper",
    "correctness": "Correct",
@@ -2940,7 +2940,7 @@
    "order": "3",
    "interaction": "Repeat click",
    "source": "I-PEPPER",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "E-BOWLS",
    "param": "Crack pepper over each bowl",
    "correctness": "Correct",
@@ -2958,7 +2958,7 @@
    "order": "4",
    "interaction": "Hold",
    "source": "I-PECORINO",
-   "srcLoc": "Right panel",
+   "srcLoc": "Scene",
    "target": "E-BOWLS",
    "param": "Dust with pecorino (plus reserved crispy tofu on top)",
    "correctness": "Correct",
@@ -3171,16 +3171,16 @@
   "I-PECORINO": {
    "id": "I-PECORINO",
    "name": "Pecorino Romano, 150 g",
-   "location": "Right panel",
+   "location": "Scene",
    "description": "Wedge with black rind",
    "interactions": "Select; grate"
   },
   "I-PEPPER": {
    "id": "I-PEPPER",
    "name": "Black peppercorns / pepper mill",
-   "location": "Right panel",
+   "location": "Scene",
    "description": "Wooden pepper mill",
-   "interactions": "Select; repeat-click to grind"
+   "interactions": "Select; grind"
   },
   "I-SALT": {
    "id": "I-SALT",

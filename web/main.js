@@ -69,23 +69,9 @@ const VIEWS = {
   'Peek in the pan': V([0.06, 0.34, 0.19], [0, 0.06, 0.005]),
   'Sink': V([-0.84, 0.55, 0.52], [-0.84, 0.04, -0.06]),
   'Serving': V([0, 0.4, 0.82], [0, 0.04, 0.44]),
-  // Opening framings (not view buttons): each shows everything its step needs, at 1280 px and wider.
-  'Sink and counter': V([-0.52, 0.94, 1.11], [-0.52, 0.05, 0.2]),
-  'Sink and burner': V([-0.7, 0.55, 0.59], [-0.7, 0.05, 0.08]),
-  'Board and stove': V([0.38, 0.71, 1.08], [0.31, 0.05, 0.29]),
-  'Stove and plate': V([-0.02, 0.62, 1.03], [-0.07, 0.05, 0.34]),
-  'Pot and stove': V([-0.28, 0.55, 0.7], [-0.32, 0.05, 0.11]),
-  'Whole stove': V([0.08, 0.94, 1.37], [-0.01, 0.05, 0.3]),
-  'Mug and bowl': V([0.37, 0.34, 0.47], [0.34, 0.05, 0.12]),
-  'Bowl and pan': V([0.31, 0.41, 0.64], [0.28, 0.05, 0.21]),
-  'Serving and stove': V([-0.05, 0.55, 1.03], [-0.1, 0.05, 0.42]),
-  'Serving and bell': V([0.33, 0.68, 1.42], [0.27, 0.05, 0.66]),
 };
 // Pasta-pot substeps use the Stove view in the sheet; the pot sits on its own burner, so frame that.
-const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.3': 'Pot',
-  'S3.1': 'Sink and counter', 'S3.2': 'Sink and burner', 'S4.3': 'Board and stove', 'S4.4': 'Stove and plate',
-  'S6.2': 'Pot and stove', 'S7.1': 'Whole stove', 'S7.2': 'Mug and bowl', 'S7.4': 'Bowl and pan',
-  'S8.2': 'Serving and stove', 'S8.3': 'Serving and bell' };
+const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.2': 'Pot', 'S6.3': 'Pot', 'S7.1': 'Stove wide' };
 const VIEW_BUTTONS = ['Kitchen', 'Counter', 'Cutting board', 'Pot', 'Stove', 'Peek in the pan', 'Sink', 'Serving'];
 let view = 'Overview';
 const camPos = VIEWS.Overview.pos.clone(), camLook = VIEWS.Overview.look.clone(), goal = new THREE.Vector3();
@@ -211,6 +197,7 @@ const named = (...names) => names.map((n) => gltf.scene.getObjectByName(n)).filt
 props.items['T-SKILLET'] = named('Skillet', 'Handle', 'HelperHandle');
 props.items['I-EGGS'] = named('Egg0', 'Egg1');
 props.items['T-BOWL'].push(...named('Bowl'));
+props.bowlModel = bowlObj;
 resize();
 
 // ---------- state ----------
@@ -313,6 +300,34 @@ const VISUALS = {
   'A-8.2-03': () => { w.peppered = true; },
   'A-8.3-01': () => { w.bellT = 1.2; },
 };
+// Tools travel to where they're used, do their job and go home (props.useTool). The effect in
+// VISUALS plays once the tool arrives.
+const B = SPOTS.eggBowl;
+const PAN_C = [0, 0.075, -0.03], POT_C = [-0.62, 0.17, -0.08], BOWL_L = [-0.14, 0.09, 0.5], BOWL_R = [0.14, 0.09, 0.5];
+const tool = (id, ...stops) => () => props.useTool(id, stops);
+const TOOL_PATHS = {
+  'A-4.3-05': tool('T-TONGS', { at: PAN_C, work: 'dip' }),
+  'A-4.3-06': tool('T-TONGS', { at: PAN_C, work: 'stir' }),
+  'A-4.4-02': tool('T-SLOTTED', { at: [0, 0.075, -0.03], work: 'dip', hold: true }),
+  'A-4.4-03': tool('T-SLOTTED', { at: [SPOTS.plate.x, 0.05, SPOTS.plate.z], work: 'tip', toward: [SPOTS.plate.x - 0.1, 0, SPOTS.plate.z] }),
+  'A-5.2-01': tool('T-BOWL', { at: [B.x, 0, B.z], dur: 0.2 }),
+  'A-5.4-01': tool('I-PECORINO', { at: [B.x + 0.03, 0.09, B.z], work: 'grate', dur: 1.4 }),
+  'A-5.4-02': tool('I-PEPPER', { at: [B.x, 0.17, B.z], work: 'twist', dur: 1.2 }),
+  'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
+  'A-6.2-03': tool('T-TONGS', { at: POT_C, work: 'stir', dur: 1.2 }),
+  'A-7.1-01': tool('T-MUG', { at: [POT_C[0], 0.12, POT_C[2]], work: 'dip' }),
+  'A-7.1-03': tool('T-TONGS', { at: POT_C, work: 'dip' }, { at: PAN_C, work: 'dip' }),
+  'A-7.1-04': tool('T-TONGS', { at: PAN_C, work: 'stir', dur: 1.2 }),
+  'A-7.2-01': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 1.2 }),
+  'A-7.2-02': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
+  'A-7.2-04': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 0.6 }),
+  'A-7.4-01': tool('T-BOWL', { at: [0.17, 0.12, 0.03], work: 'pour', toward: PAN_C, dur: 1.3 }),
+  'A-7.4-05': tool('T-MUG', { at: [0.14, 0.13, 0.04], work: 'pour', toward: PAN_C, dur: 0.8 }),
+  'A-8.2-02': tool('T-TONGS', { at: PAN_C, work: 'dip' }, { at: BOWL_L, work: 'twist' }, { at: PAN_C, work: 'dip' }, { at: BOWL_R, work: 'twist' }),
+  'A-8.2-03': tool('I-PEPPER', { at: [BOWL_L[0], 0.2, BOWL_L[2]], work: 'twist' }, { at: [BOWL_R[0], 0.2, BOWL_R[2]], work: 'twist' }),
+  'A-8.2-04': tool('I-PECORINO', { at: [BOWL_L[0], 0.12, BOWL_L[2]], work: 'grate' }, { at: [BOWL_R[0], 0.12, BOWL_R[2]], work: 'grate' }),
+};
+
 // Effects of MCQ answers that change the kitchen.
 function applyOptionEffect(o) {
   const e = o.effect || '';
@@ -483,15 +498,8 @@ function itemCard(id, extra = '') {
 }
 
 // Options carry no type pills; only the ones you hold or tap repeatedly get a plain hint line.
-function actHint(a) {
-  return { 'Hold': 'Press and hold', 'Repeat click': 'Tap repeatedly' }[a.interaction] || '';
-}
-// Taps needed when the label doesn't say (×n).
-const REPEAT = { 'A-5.2-02': 2, 'A-5.2-03': 3 };
-function repeatCount(a) {
-  if (REPEAT[a.id]) return REPEAT[a.id];
-  const m = /×\s?(\d+)/.exec(a.param);
-  return m ? Number(m[1]) : 3;
+function actHint() {
+  return '';   // every option is a single click
 }
 
 // Verdict icons: drawn strokes rather than text glyphs, so they look the same on every system.
@@ -559,7 +567,7 @@ function renderRight() {
     const acts = choices().filter((a) => a.source === ui.source);
     html = `<button class="link" data-back>← All items</button>
       <span class="eyebrow">${esc(engine.item(ui.source).name)}: what do you do?</span><div class="cards">` +
-      acts.map((a) => `<button class="card act" data-act="${esc(a.id)}" data-kind="${esc(a.interaction)}" data-need="${a.interaction === 'Repeat click' ? repeatCount(a) : 1}">
+      acts.map((a) => `<button class="card act" data-act="${esc(a.id)}" data-kind="${esc(a.interaction)}" data-need="1">
         <span class="card-label">${esc(a.param)}</span>${actHint(a) ? `<span class="card-hint">${actHint(a)}</span>` : ''}<span class="fill" aria-hidden="true"></span></button>`).join('') +
       (acts.length ? '' : '<p class="muted">Nothing left to do with this.</p>') + '</div>';
   } else if (sub.type === 'Procedure' && !engine.ready) {
@@ -835,45 +843,9 @@ right.addEventListener('click', async (e) => {
   if (liveBtn) return liveAction(liveBtn.dataset.live);
 });
 
-// Hold-to-act and tap-repeatedly interactions on action cards.
-let holdTimer = null;
-right.addEventListener('pointerdown', (e) => {
-  const act = e.target.closest('[data-act][data-kind="Hold"]');
-  if (!act || ui.locked) return;
-  const a = FLOW.actions.find((x) => x.id === act.dataset.act);
-  if (a.source === 'E-TAP') w.tapOn = true;
-  act.classList.add('holding');
-  holdStart = { a, t: performance.now() };
-  holdTimer = setTimeout(() => { holdStart = null; act.classList.remove('holding'); act.dataset.held = '1'; choose(a); }, 1100);
-});
-let holdStart = null;
-const cancelHold = () => {
-  clearTimeout(holdTimer);
-  // Let go too soon (the pecorino before 150 g): Nonna says to keep going.
-  const short = holdStart && engine.sub.shortHold?.[holdStart.a.source];
-  if (short && performance.now() - holdStart.t > 150) { setFeedback(short, null); renderPop(ui.feedback); }
-  holdStart = null;
-  document.querySelectorAll('.holding').forEach((el) => el.classList.remove('holding'));
-  if (!engine.done.has('A-3.1-02')) w.tapOn = false;
-};
-right.addEventListener('pointerup', cancelHold);
-right.addEventListener('pointerleave', cancelHold);
-
 function handleActClick(el) {
   const a = FLOW.actions.find((x) => x.id === el.dataset.act);
-  if (a.interaction === 'Hold') {
-    if (el.dataset.held === '1') return;
-    el.querySelector('.card-hint').textContent = 'Press and hold this option';
-    return;
-  }
-  if (a.interaction === 'Repeat click') {
-    const need = Number(el.dataset.need), n = Number(el.dataset.count || 0) + 1;
-    el.dataset.count = n;
-    el.querySelector('.card-hint').textContent = `Tap repeatedly · ${n} of ${need}`;
-    el.querySelector('.fill').style.width = `${(n / need) * 100}%`;
-    if (n < need) return;
-  }
-  choose(a);
+  choose(a);   // every option is a single click
 }
 
 const needsTarget = (a) => ['Drag', 'Click'].includes(a.interaction) && a.target && a.target !== a.source && props.anchors[a.target];
@@ -985,11 +957,14 @@ async function perform(a) {
   }
   setFeedback(res.feedback, res.ok ? (res.feedback ? 'Perfect' : null) : res.outcome);
   const fx = VISUALS[a.id];
+  const moving = TOOL_PATHS[a.id]?.();
   ffLabel = a.task || a.param;
-  if (fx) {
+  if (fx || moving) {
     ui.locked = true;
     refresh();
-    await fx();
+    if (moving) await moving.arrived;
+    await fx?.();
+    if (moving) await moving.done;
     ui.locked = false;
   }
   if (res.gameOver) return gameOver();
@@ -1044,6 +1019,7 @@ function updateTop() {
 // ---------- substep lifecycle ----------
 function enter(id) {
   const sub = engine.enter(id);
+  props.resetTools();   // every tool starts a substep at home
   ui = { mode: 'items', source: null, pending: null, selected: new Set(), feedback: null, hint: null, locked: false, optState: {} };
   $('#fb-pop').hidden = true;
   popKey = '';
