@@ -25,7 +25,7 @@ export const SPOTS = {
   tongs: new THREE.Vector3(-0.2, 0.012, 0.232),
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
   bell: new THREE.Vector3(0.62, 0, 0.45),
-  eggs: [new THREE.Vector3(0.76, 0, -0.24), new THREE.Vector3(0.82, 0, -0.16)],
+  eggs: [new THREE.Vector3(0.66, 0, -0.28), new THREE.Vector3(0.73, 0, -0.3)],
 };
 
 // The sink's opening (matches blender/export_props.py p_sink): centre, half-size, corner radius.
