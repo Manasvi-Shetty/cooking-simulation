@@ -69,9 +69,23 @@ const VIEWS = {
   'Peek in the pan': V([0.06, 0.34, 0.19], [0, 0.06, 0.005]),
   'Sink': V([-0.84, 0.55, 0.52], [-0.84, 0.04, -0.06]),
   'Serving': V([0, 0.4, 0.82], [0, 0.04, 0.44]),
+  // Opening framings (not view buttons): each shows everything its step needs, at 1280 px and wider.
+  'Sink and counter': V([-0.52, 0.94, 1.11], [-0.52, 0.05, 0.2]),
+  'Sink and burner': V([-0.7, 0.55, 0.59], [-0.7, 0.05, 0.08]),
+  'Board and stove': V([0.38, 0.71, 1.08], [0.31, 0.05, 0.29]),
+  'Stove and plate': V([-0.02, 0.62, 1.03], [-0.07, 0.05, 0.34]),
+  'Pot and stove': V([-0.28, 0.55, 0.7], [-0.32, 0.05, 0.11]),
+  'Whole stove': V([0.08, 0.94, 1.37], [-0.01, 0.05, 0.3]),
+  'Mug and bowl': V([0.37, 0.34, 0.47], [0.34, 0.05, 0.12]),
+  'Bowl and pan': V([0.31, 0.41, 0.64], [0.28, 0.05, 0.21]),
+  'Serving and stove': V([-0.05, 0.55, 1.03], [-0.1, 0.05, 0.42]),
+  'Serving and bell': V([0.33, 0.68, 1.42], [0.27, 0.05, 0.66]),
 };
 // Pasta-pot substeps use the Stove view in the sheet; the pot sits on its own burner, so frame that.
-const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.2': 'Pot', 'S6.3': 'Pot', 'S7.1': 'Stove wide' };
+const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.3': 'Pot',
+  'S3.1': 'Sink and counter', 'S3.2': 'Sink and burner', 'S4.3': 'Board and stove', 'S4.4': 'Stove and plate',
+  'S6.2': 'Pot and stove', 'S7.1': 'Whole stove', 'S7.2': 'Mug and bowl', 'S7.4': 'Bowl and pan',
+  'S8.2': 'Serving and stove', 'S8.3': 'Serving and bell' };
 const VIEW_BUTTONS = ['Kitchen', 'Counter', 'Cutting board', 'Pot', 'Stove', 'Peek in the pan', 'Sink', 'Serving'];
 let view = 'Overview';
 const camPos = VIEWS.Overview.pos.clone(), camLook = VIEWS.Overview.look.clone(), goal = new THREE.Vector3();

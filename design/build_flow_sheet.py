@@ -527,9 +527,9 @@ act("S4.3", 2, "Timer", "E-TIMER", S, "", "Leave undisturbed 3 min", "Correct", 
     "", "Get the tofu into the pan first.", "NEXT", 0)
 act("S4.3", "-", "Timer", "E-TIMER", S, "", "Leave undisturbed 6 min", "Incorrect", "Recoverable",
     "", "Too long on one side. The cubes will scorch. 3 minutes is enough.", "RETRY", 0)
-act("S4.3", 3, "Drag", "T-TONGS", RP, "T-SKILLET", "Turn the cubes over", "Correct", "Perfect",
+act("S4.3", 3, "Drag", "T-TONGS", S, "T-SKILLET", "Turn the cubes over", "Correct", "Perfect",
     "", "Let the crust form first.", "NEXT", 0)
-act("S4.3", "-", "Drag", "T-TONGS", RP, "T-SKILLET", "Toss in the first minute", "Incorrect", "Degraded",
+act("S4.3", "-", "Drag", "T-TONGS", S, "T-SKILLET", "Toss in the first minute", "Incorrect", "Degraded",
     "", "Too soon! The crust tore and stuck to the pan. Let it sit next time.", "NEXT", -5, "tofu_torn = true")
 act("S4.3", 4, "Timer", "E-TIMER", S, "", "Leave for another 3-4 min", "Correct", "Perfect",
     "", "Turn the cubes first.", "NEXT", 0)
@@ -552,13 +552,13 @@ act("S4.4", "-", "Click", "T-SKILLET", S, "", "Leave the tofu in the pan", "Inco
     "", "In the sauce it will soak up liquid and go soft. Crispy tofu was the request!", "NEXT", -5, "tofu_state = soggy")
 
 act("S5.2", 1, "Drag", "T-BOWL", S, "E-COUNTER", "Bowl onto the counter", "Correct", "Perfect", "", "", "NEXT", 0)
-act("S5.2", 2, "Repeat click", "I-EGGS", RP, "T-BOWL", "Crack 2 whole eggs into the bowl", "Correct", "Perfect",
+act("S5.2", 2, "Repeat click", "I-EGGS", S, "T-BOWL", "Crack 2 whole eggs into the bowl", "Correct", "Perfect",
     "", "Get the bowl onto the counter first.", "NEXT", 0)
-act("S5.2", 3, "Repeat click", "I-EGGS", RP, "E-WHITES-CUP", "Separate: whites into the cup, yolk into the bowl", "Correct", "Perfect",
+act("S5.2", 3, "Repeat click", "I-EGGS", S, "E-WHITES-CUP", "Separate: whites into the cup, yolk into the bowl", "Correct", "Perfect",
     "Lovely golden yolks.", "Whole eggs first, then the extra yolks.", "NEXT", 0, "yolks_added = 3")
-act("S5.2", "-", "Click", "I-EGGS", RP, "", "Separate: whites and yolks into the bowl", "Incorrect", "Recoverable",
+act("S5.2", "-", "Click", "I-EGGS", S, "", "Separate: whites and yolks into the bowl", "Incorrect", "Recoverable",
     "", "The whites go into the cup. Only the yolks go in the bowl.", "RETRY", -3)
-act("S5.2", "-", "Click", "I-EGGS", RP, "", "Shell fragment falls in", "Incorrect", "Recoverable",
+act("S5.2", "-", "Click", "I-EGGS", S, "", "Shell fragment falls in", "Incorrect", "Recoverable",
     "", "A bit of shell got in. Scoop it out with a larger piece of shell, it works like a magnet.", "NEXT", 0)
 
 act("S5.4", 1, "Hold", "I-PECORINO", RP, "T-BOWL", "Grate 150 g on the chosen side", "Correct", "Perfect",
@@ -573,7 +573,7 @@ act("S5.4", "-", "Drag", "I-SALT", RP, "T-BOWL", "Add salt to the eggs", "Incorr
 act("S6.2", 1, "Drag", "I-SALT", RP, "T-POT", "Salt as chosen", "Correct", "Perfect", "", "", "NEXT", 0)
 act("S6.2", 2, "Drag", "I-SPAGHETTI", RP, "T-POT", "300 g spaghetti", "Correct", "Perfect",
     "", "Salt the water first.", "NEXT", 0, "pasta_in = true")
-act("S6.2", 3, "Repeat click", "T-TONGS", RP, "T-POT", "Stir during the first minute", "Correct", "Perfect",
+act("S6.2", 3, "Repeat click", "T-TONGS", S, "T-POT", "Stir during the first minute", "Correct", "Perfect",
     "No sticking.", "Get the spaghetti in first.", "NEXT", 0)
 act("S6.2", "-", "Drag", "I-OIL", RP, "T-POT", "Oil in the water", "Incorrect", "Recoverable",
     "", "Oil just floats on top. Stirring is what stops sticking. And oily pasta won't hold the sauce.", "NEXT", -2)
@@ -620,7 +620,7 @@ act("S7.4", "-", "Click", "E-PLATE-BTN", S, "", "Plate while grainy (curds 0.3-0
     "", "A few curds formed. Tasty, but not silky.", "NEXT", -10)
 
 act("S8.2", 1, "Drag", "E-PLATE", S, "T-SKILLET", "Fold most of the tofu back in", "Correct", "Perfect", "", "", "NEXT", 0)
-act("S8.2", 2, "Drag", "T-TONGS", RP, "E-BOWLS", "Twirl a nest into each bowl (×2)", "Correct", "Perfect",
+act("S8.2", 2, "Drag", "T-TONGS", S, "E-BOWLS", "Twirl a nest into each bowl (×2)", "Correct", "Perfect",
     "", "Fold the tofu back into the pasta first.", "NEXT", 0)
 act("S8.2", 3, "Repeat click", "I-PEPPER", RP, "E-BOWLS", "Crack pepper over each bowl", "Correct", "Perfect",
     "", "Nests first, then the toppings.", "NEXT", 0)
@@ -659,7 +659,7 @@ TIPS = [
 ITEMS = [
     ("I-SPAGHETTI", "Spaghetti, 300 g", "Right panel", "Dried bronze-cut spaghetti in a paper pack", "Select; drag into pot"),
     ("I-TOFU", "Extra-firm tofu, 280 g", "Both", "Block in a water-filled pack; becomes a pressed block, then 1 cm cubes, then golden cubes", "Select; drag; cut; fry"),
-    ("I-EGGS", "Eggs", "Right panel", "Carton of 6 brown eggs", "Select; crack; separate"),
+    ("I-EGGS", "Eggs", "Scene", "Carton of 6 brown eggs", "Select; crack; separate"),
     ("I-PECORINO", "Pecorino Romano, 150 g", "Right panel", "Wedge with black rind", "Select; grate"),
     ("I-PEPPER", "Black peppercorns / pepper mill", "Right panel", "Wooden pepper mill", "Select; repeat-click to grind"),
     ("I-SALT", "Coarse salt", "Right panel", "Salt cellar with a measuring spoon", "Select; drag"),
@@ -678,7 +678,7 @@ ITEMS = [
     ("T-GRATER", "Box grater", "Right panel", "Four sides: star (fine), medium, large, slicer", "Select; choose side"),
     ("T-BOWL", "Mixing bowl and whisk", "Both", "Ceramic bowl", "Select; whisk (hold)"),
     ("T-SLOTTED", "Slotted spoon", "Right panel", "Steel slotted spoon", "Select; drag"),
-    ("T-TONGS", "Tongs", "Right panel", "Steel tongs", "Select; drag; toss"),
+    ("T-TONGS", "Tongs", "Scene", "Steel tongs", "Select; drag; toss"),
     ("T-MUG", "Ladle and mug", "Right panel", "Ladle and a ceramic mug for pasta water", "Select; drag; pour"),
     ("T-COLANDER", "Colander (decoy)", "Right panel", "Steel colander", "Select (incorrect)"),
     ("T-BLENDER", "Blender (decoy)", "Right panel", "Countertop blender", "Select (incorrect)"),

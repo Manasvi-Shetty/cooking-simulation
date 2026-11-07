@@ -579,6 +579,7 @@ export class Props {
       'E-BELL': v(SPOTS.bell.x, 0.07, SPOTS.bell.z),
       'T-SLOTTED': v(SPOTS.slotted.x, 0.027, SPOTS.slotted.z),
       'T-TONGS': v(SPOTS.tongs.x + 0.11, 0.027, SPOTS.tongs.z),
+      'I-EGGS': v((SPOTS.eggs[0].x + SPOTS.eggs[1].x) / 2, 0.045, (SPOTS.eggs[0].z + SPOTS.eggs[1].z) / 2),
     };
   }
 
