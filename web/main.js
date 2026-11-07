@@ -444,8 +444,8 @@ function renderPop(fb) {
     <div class="fb-bubble"><div class="fb-body">
       ${fb?.head ? `<p class="fb-head">${esc(fb.head)}</p>` : ''}
       ${lines.map((t) => (t.b ? `<p><b>${esc(t.b)}:</b><br>${esc(t.t)}</p>` : `<p${SUBTEXT.test(t) ? ' class="fb-sub"' : ''}>${esc(t)}</p>`)).join('')}
-    </div>
-    <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button></div>`;
+    </div></div>
+    <button class="pop-close" id="pop-close" aria-label="Dismiss">×</button>`;
   pop.hidden = false;
   pop.dataset.dismissable = '1';
   popOpenedAt = performance.now();

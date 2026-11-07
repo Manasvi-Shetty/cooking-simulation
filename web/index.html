@@ -260,29 +260,28 @@
   .fb-pop {
     position: absolute; top: calc(var(--gutter) + 46px); left: calc(50% + var(--stage-x)); transform: translateX(-50%); z-index: 7;
     width: min(500px, calc(100% - var(--panel-w) - 4 * var(--gutter))); box-sizing: border-box;
-    display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: start;
-    animation: pop-in 0.3s both;
+    display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: start;
+    padding: 14px 12px 14px 14px; border-radius: 14px; background: var(--panel-solid); border: 1px solid var(--line);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45); animation: pop-in 0.3s both;
   }
-  /* Nonna speaks in a chat bubble, its tail pointing at her avatar. */
+  /* Inside the popup, Nonna speaks in a chat bubble whose tail points at her avatar. */
   .fb-bubble {
-    position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start;
-    padding: 12px 14px 13px 16px; border-radius: 4px 16px 16px 16px; background: var(--panel-solid); border: 1px solid var(--line);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    position: relative; padding: 10px 14px 11px; border-radius: 4px 14px 14px 14px; background: #2a241e;
   }
   .fb-bubble::before {
-    content: ''; position: absolute; left: -7px; top: 14px; width: 12px; height: 12px; background: var(--panel-solid);
-    border-left: 1px solid; border-bottom: 1px solid; border-color: inherit; transform: rotate(45deg);
+    content: ''; position: absolute; left: -6px; top: 12px; width: 12px; height: 12px; background: #2a241e;
+    transform: rotate(45deg); border-radius: 2px;
   }
   @keyframes pop-in { from { opacity: 0.001; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
   #action-btn { position: absolute; right: max(var(--gutter), env(safe-area-inset-right, 0px)); bottom: max(var(--gutter), env(safe-area-inset-bottom, 0px));
                 padding: 13px 28px; font-size: 16px; z-index: 6; }
   #action-btn:disabled { opacity: 1; cursor: not-allowed; background: var(--panel-solid); color: var(--muted);
                          border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
-  .fb-pop.Perfect .fb-bubble, .fb-pop.Acceptable .fb-bubble { border-color: color-mix(in srgb, var(--good) 55%, transparent); }
-  .fb-pop.Recoverable .fb-bubble { border-color: color-mix(in srgb, var(--warn) 60%, transparent); }
-  .fb-pop.Degraded .fb-bubble { border-color: color-mix(in srgb, var(--degrade) 65%, transparent); }
-  .fb-pop.Fatal .fb-bubble { border-color: var(--bad); }
-  .fb-pop .chef-face { width: 44px; height: 44px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
+  .fb-pop.Perfect, .fb-pop.Acceptable { border-color: color-mix(in srgb, var(--good) 55%, transparent); }
+  .fb-pop.Recoverable { border-color: color-mix(in srgb, var(--warn) 60%, transparent); }
+  .fb-pop.Degraded { border-color: color-mix(in srgb, var(--degrade) 65%, transparent); }
+  .fb-pop.Fatal { border-color: var(--bad); }
+  .fb-pop .chef-face { width: 44px; height: 44px; }
   .fb-pop .fb-head { font-weight: 700; font-size: 16px; }
   .fb-pop .fb-sub { font-size: 13px; color: var(--muted); }   /* #b8ab98 on the panel: about 8:1 contrast */
   .fb-body { display: grid; gap: 4px; min-width: 0; }
@@ -323,7 +322,7 @@
     #views { bottom: 10px; max-width: calc(100% - 32px); overflow-x: auto; }
     #order { align-items: flex-end; justify-content: center; padding-bottom: 92px; }
     .start-corner { right: 16px; bottom: 24px; }
-    .fb-pop { top: 54px; width: calc(100% - 32px); grid-template-columns: 36px minmax(0, 1fr); }
+    .fb-pop { top: 54px; width: calc(100% - 32px); grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; }
     .fb-pop .chef-face { width: 36px; height: 36px; }
     .fb-pop .cta { grid-column: 1 / -1; justify-self: end; }
     #action-btn { bottom: 64px; }
