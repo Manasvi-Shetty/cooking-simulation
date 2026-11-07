@@ -584,7 +584,7 @@ export class Props {
       'E-TAP': v(s.x, 0.3, s.z - 0.14),
       'E-BURNER-BACK': v(h.x, 0.03, h.z),
       'E-KNOB-BACK': v(h.x, 0.04, h.z + 0.18),
-      'E-KNOB-FRONT': v(0.24, 0.06, 0.19),
+      'E-KNOB-FRONT': v(0.24, 0.045, 0.19),   // top of the HeatKnob
       'E-PAN-OIL': v(-0.04, 0.07, 0.04),
       'T-SKILLET': v(0, 0.11, -0.03),
       'T-POT': v(0, 0, 0),                      // follows the pot; set in update()
