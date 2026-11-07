@@ -21,8 +21,8 @@ export const SPOTS = {
   potCounter: new THREE.Vector3(-0.15, 0, 0.27),       // where the pasta pot waits before it's filled
   plate: new THREE.Vector3(-0.42, 0, 0.3),
   mug: new THREE.Vector3(0.42, 0, 0.3),
-  slotted: new THREE.Vector3(0.06, 0, 0.31),
-  tongs: new THREE.Vector3(0.04, 0, 0.37),
+  slotted: new THREE.Vector3(-0.12, 0.012, 0.175),   // on the cooktop, in front of the burner grate
+  tongs: new THREE.Vector3(-0.2, 0.012, 0.232),
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
   bell: new THREE.Vector3(0.62, 0, 0.45),
   eggs: [new THREE.Vector3(0.76, 0, -0.24), new THREE.Vector3(0.82, 0, -0.16)],
@@ -302,7 +302,7 @@ export class Props {
     handle.rotation.z = -Math.PI / 2;
     this.items['T-MUG'] = [mugBody, handle];
 
-    // Slotted spoon and tongs rest on the counter just in front of the stove.
+    // Slotted spoon and tongs rest on the cooktop, in front of the burner grate (in the Stove view).
     const sp = SPOTS.slotted, tg = SPOTS.tongs;
     const spoon = new THREE.Group();
     const spHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.0055, 0.2, 12).rotateZ(Math.PI / 2), this.steel);
@@ -317,8 +317,8 @@ export class Props {
       slot.position.set(0, 0.0112, i * 0.011);
       spoon.add(slot);
     }
-    spoon.position.set(sp.x, 0, sp.z);
-    spoon.rotation.y = 0.05;
+    spoon.position.copy(sp);
+    spoon.rotation.y = 0;
     spoon.traverse((m) => { m.castShadow = m.receiveShadow = true; });
     this.root.add(spoon);
     this.items['T-SLOTTED'] = [spoon];
@@ -335,8 +335,8 @@ export class Props {
     const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.016, 16), this.darkSteel);
     hinge.position.set(0.215, 0.008, 0);
     tongs.add(hinge);
-    tongs.position.set(tg.x, 0, tg.z);
-    tongs.rotation.y = -0.04;
+    tongs.position.copy(tg);
+    tongs.rotation.y = 0;
     tongs.traverse((m) => { m.castShadow = m.receiveShadow = true; });
     this.root.add(tongs);
     this.items['T-TONGS'] = [tongs];
@@ -577,8 +577,8 @@ export class Props {
       'T-MUG': v(SPOTS.mug.x, 0.1, SPOTS.mug.z),
       'E-BOWLS': v(0, 0.07, SPOTS.bowls[0].z),
       'E-BELL': v(SPOTS.bell.x, 0.07, SPOTS.bell.z),
-      'T-SLOTTED': v(SPOTS.slotted.x, 0.015, SPOTS.slotted.z),
-      'T-TONGS': v(SPOTS.tongs.x + 0.11, 0.015, SPOTS.tongs.z),
+      'T-SLOTTED': v(SPOTS.slotted.x, 0.027, SPOTS.slotted.z),
+      'T-TONGS': v(SPOTS.tongs.x + 0.11, 0.027, SPOTS.tongs.z),
     };
   }
 
