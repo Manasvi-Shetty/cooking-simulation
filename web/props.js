@@ -21,6 +21,8 @@ export const SPOTS = {
   potCounter: new THREE.Vector3(-0.15, 0, 0.27),       // where the pasta pot waits before it's filled
   plate: new THREE.Vector3(-0.42, 0, 0.3),
   mug: new THREE.Vector3(0.42, 0, 0.3),
+  slotted: new THREE.Vector3(0.06, 0, 0.31),
+  tongs: new THREE.Vector3(0.04, 0, 0.37),
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
   bell: new THREE.Vector3(0.62, 0, 0.45),
   eggs: [new THREE.Vector3(0.76, 0, -0.24), new THREE.Vector3(0.82, 0, -0.16)],
@@ -299,6 +301,45 @@ export class Props {
     handle.position.set(m.x + 0.034, 0.04, m.z);
     handle.rotation.z = -Math.PI / 2;
     this.items['T-MUG'] = [mugBody, handle];
+
+    // Slotted spoon and tongs rest on the counter just in front of the stove.
+    const sp = SPOTS.slotted, tg = SPOTS.tongs;
+    const spoon = new THREE.Group();
+    const spHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.0055, 0.2, 12).rotateZ(Math.PI / 2), this.steel);
+    spHandle.position.set(0.13, 0.006, 0);
+    const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.034, 28, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), this.steel);
+    bowl.scale.set(1.25, 0.28, 1);
+    bowl.rotation.x = Math.PI;
+    bowl.position.y = 0.0105;
+    spoon.add(spHandle, bowl);
+    for (let i = -1; i <= 1; i++) {
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.001, 0.0035), std('#2a2a2a', 0.6));
+      slot.position.set(0, 0.0112, i * 0.011);
+      spoon.add(slot);
+    }
+    spoon.position.set(sp.x, 0, sp.z);
+    spoon.rotation.y = 0.05;
+    spoon.traverse((m) => { m.castShadow = m.receiveShadow = true; });
+    this.root.add(spoon);
+    this.items['T-SLOTTED'] = [spoon];
+
+    const tongs = new THREE.Group();
+    for (const s of [-1, 1]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.004, 0.012), this.steel);
+      arm.position.set(0.11, 0.004 + (s > 0 ? 0.005 : 0), s * 0.012);
+      arm.rotation.y = -s * 0.07;
+      const tip = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.006, 0.016), std('#2d2d2d', 0.7));
+      tip.position.set(0.012, 0.004 + (s > 0 ? 0.005 : 0), s * 0.004);
+      tongs.add(arm, tip);
+    }
+    const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.016, 16), this.darkSteel);
+    hinge.position.set(0.215, 0.008, 0);
+    tongs.add(hinge);
+    tongs.position.set(tg.x, 0, tg.z);
+    tongs.rotation.y = -0.04;
+    tongs.traverse((m) => { m.castShadow = m.receiveShadow = true; });
+    this.root.add(tongs);
+    this.items['T-TONGS'] = [tongs];
     this.mugWater = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.029, 32).rotateX(-Math.PI / 2), std('#d9d2bd', 0.05, 0, { clearcoat: 1 })), false);
     this.mugWater.position.set(m.x, 0.06, m.z);
 
@@ -536,8 +577,8 @@ export class Props {
       'T-MUG': v(SPOTS.mug.x, 0.1, SPOTS.mug.z),
       'E-BOWLS': v(0, 0.07, SPOTS.bowls[0].z),
       'E-BELL': v(SPOTS.bell.x, 0.07, SPOTS.bell.z),
-      'T-SLOTTED': v(-0.06, 0.09, 0.06),
-      'T-TONGS': v(0.05, 0.09, 0.06),
+      'T-SLOTTED': v(SPOTS.slotted.x, 0.015, SPOTS.slotted.z),
+      'T-TONGS': v(SPOTS.tongs.x + 0.11, 0.015, SPOTS.tongs.z),
     };
   }
 
