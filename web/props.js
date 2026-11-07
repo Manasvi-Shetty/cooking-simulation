@@ -703,9 +703,16 @@ export class Props {
   }
 
   // An egg's contents falling from where it was cracked into a vessel (arc: passed across to another).
-  drop({ from, to, yolk = true, white = true, arc = false, delay = 0 }) {
+  // shred: a strand of grated cheese instead (keep: it stays where it lands).
+  drop({ from, to, yolk = true, white = true, arc = false, delay = 0, shred = false, keep = false }) {
     const V = (a) => (a.isVector3 ? a.clone() : new THREE.Vector3(...a));
     const g = new THREE.Group();
+    if (shred) {
+      yolk = white = false;
+      const s = new THREE.Mesh(Props.shredGeo ||= new THREE.BoxGeometry(0.007, 0.0016, 0.0016), Props.shredMat ||= std('#f4ecd2', 0.8));
+      s.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+      g.add(s);
+    }
     if (white) {
       const wm = new THREE.Mesh(new THREE.SphereGeometry(0.017, 16, 10), std('#f3f0e2', 0.1, 0, { transparent: true, opacity: 0.75 }));
       wm.scale.set(1.15, 0.7, 1.15);
@@ -719,7 +726,7 @@ export class Props {
     g.position.copy(V(from));
     g.visible = delay <= 0;
     this.root.add(g);
-    return new Promise((res) => (this.drops ||= []).push({ g, a: V(from), b: V(to), t: -delay, dur: arc ? 0.55 : 0.35, arc, res }));
+    return new Promise((res) => (this.drops ||= []).push({ g, a: V(from), b: V(to), t: -delay, dur: arc ? 0.55 : 0.35, arc, keep, res }));
   }
 
   _updateDrops(dt) {
@@ -731,7 +738,7 @@ export class Props {
       d.g.position.lerpVectors(d.a, d.b, d.arc ? k : k * k);
       if (d.arc) d.g.position.y += Math.sin(Math.PI * k) * 0.05;
       if (k < 1) return true;
-      this.root.remove(d.g);
+      if (d.keep) (this.kept ||= []).push(d.g); else this.root.remove(d.g);
       d.res();
       return false;
     });
@@ -744,7 +751,9 @@ export class Props {
     this.toolPose = {};
     (this.drops || []).forEach((d) => { this.root.remove(d.g); d.res(); });
     this.drops = [];
-    ['T-TONGS', 'T-SLOTTED', 'T-MUG', 'T-BOWL', 'WHISK', 'I-PEPPER', 'I-PECORINO', 'EGG0', 'EGG1', 'EGG2', 'EGG3', 'EGG4'].forEach((id) => this._toolSet(id).forEach((o) => {
+    (this.kept || []).forEach((g) => this.root.remove(g));
+    this.kept = [];
+    ['T-TONGS', 'T-SLOTTED', 'T-MUG', 'T-BOWL', 'WHISK', 'I-PEPPER', 'I-PECORINO', 'T-GRATER', 'EGG0', 'EGG1', 'EGG2', 'EGG3', 'EGG4'].forEach((id) => this._toolSet(id).forEach((o) => {
       const h = o.userData.toolHome;
       if (h) { o.position.copy(h.p); o.quaternion.copy(h.q); }
     }));

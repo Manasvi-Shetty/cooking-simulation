@@ -290,7 +290,7 @@ const VISUALS = {
   // Eggs are cracked one by one (TOOL_PATHS crackEggs); on a step jump they're simply in.
   'A-5.2-02': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', wholeEggs: 2, eggsUsed: 2 }); },
   'A-5.2-03': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', yolks: 3, whitesN: 3, eggsUsed: 5 }); },
-  'A-5.4-01': () => { w.cheeseIn = true; },
+  'A-5.4-01': () => { if (jumping) w.cheeseIn = true; },   // otherwise once the grating is done (grate)
   'A-5.4-03': () => { w.bowlStage = 'paste'; },
   'A-6.2-02': () => { w.pastaInPot = true; },
   'A-7.1-01': () => { w.mugFull = true; s.savedWater = true; },
@@ -316,6 +316,23 @@ const tool = (id, ...stops) => () => props.useTool(id, stops);
 // contents fall in. Whole eggs drop into the bowl; for separated ones the white falls into the cup and
 // the yolk is passed across to the bowl.
 const CUP = SPOTS.whitesCup;
+// Grating: the box grater is held over each spot while the pecorino is rubbed up and down its face,
+// and strands of cheese fall in. spots are where the strands land.
+const grate = (spots, { keep = false, onEnd } = {}) => () => {
+  const r = () => Math.random() - 0.5;
+  const g = props.useTool('T-GRATER', spots.map(([x, y, z]) => ({ at: [x, y + 0.11, z], dur: 1.5 })));
+  const c = props.useTool('I-PECORINO', spots.map(([x, y, z], k) => ({
+    at: [x + 0.05, y + 0.07, z], work: 'grate', dur: 1.4,
+    before: () => {
+      for (let n = 0; n < 18; n++) {
+        props.drop({ from: [x + 0.01 + r() * 0.02, y + 0.05, z + r() * 0.03], to: [x + r() * 0.05, y, z + r() * 0.05],
+          shred: true, keep, delay: 0.1 + n * 0.07 });
+      }
+    },
+    after: k === spots.length - 1 ? onEnd : undefined,
+  })));
+  return { arrived: c.arrived, done: Promise.all([g.done, c.done]) };
+};
 const crackEggs = (first, n, separate) => () => {
   let arrivedRes;
   const arrived = new Promise((r) => { arrivedRes = r; });
@@ -352,7 +369,7 @@ const TOOL_PATHS = {
   'A-5.2-01': tool('T-BOWL', { at: [B.x, 0, B.z], dur: 0.2 }),
   'A-5.2-02': crackEggs(0, 2, false),
   'A-5.2-03': crackEggs(2, 3, true),
-  'A-5.4-01': tool('I-PECORINO', { at: [B.x + 0.03, 0.09, B.z], work: 'grate', dur: 1.4 }),
+  'A-5.4-01': grate([[B.x, 0.026, B.z]], { onEnd: () => { w.cheeseIn = true; } }),
   'A-5.4-02': tool('I-PEPPER', { at: [B.x, 0.17, B.z], work: 'twist', dur: 1.2 }),
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
   'A-6.2-03': tool('T-TONGS', { at: POT_C, work: 'stir', dur: 1.2 }),
@@ -366,7 +383,7 @@ const TOOL_PATHS = {
   'A-7.4-05': tool('T-MUG', { at: [0.14, 0.13, 0.04], work: 'pour', toward: PAN_C, dur: 0.8 }),
   'A-8.2-02': tool('T-TONGS', { at: PAN_C, work: 'dip' }, { at: BOWL_L, work: 'twist' }, { at: PAN_C, work: 'dip' }, { at: BOWL_R, work: 'twist' }),
   'A-8.2-03': tool('I-PEPPER', { at: [BOWL_L[0], 0.2, BOWL_L[2]], work: 'twist' }, { at: [BOWL_R[0], 0.2, BOWL_R[2]], work: 'twist' }),
-  'A-8.2-04': tool('I-PECORINO', { at: [BOWL_L[0], 0.12, BOWL_L[2]], work: 'grate' }, { at: [BOWL_R[0], 0.12, BOWL_R[2]], work: 'grate' }),
+  'A-8.2-04': grate([[BOWL_L[0], 0.05, BOWL_L[2]], [BOWL_R[0], 0.05, BOWL_R[2]]], { keep: true }),
 };
 
 // Effects of MCQ answers that change the kitchen.
