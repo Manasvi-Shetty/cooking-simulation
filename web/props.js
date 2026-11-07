@@ -25,7 +25,9 @@ export const SPOTS = {
   tongs: new THREE.Vector3(-0.2, 0.012, 0.232),
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
   bell: new THREE.Vector3(0.62, 0, 0.45),
-  eggs: [new THREE.Vector3(0.66, 0, -0.28), new THREE.Vector3(0.73, 0, -0.3)],
+  // Five eggs (2 whole + 3 separated): a front row of three, two staggered behind.
+  eggs: [new THREE.Vector3(0.64, 0, -0.25), new THREE.Vector3(0.71, 0, -0.26), new THREE.Vector3(0.78, 0, -0.25),
+    new THREE.Vector3(0.675, 0, -0.325), new THREE.Vector3(0.745, 0, -0.33)],
 };
 
 // The sink's opening (matches blender/export_props.py p_sink): centre, half-size, corner radius.
@@ -600,7 +602,7 @@ export class Props {
       'T-TONGS': v(SPOTS.tongs.x + 0.11, 0.027, SPOTS.tongs.z),
       'I-PECORINO': v(0.86, 0.045, -0.16),
       'I-PEPPER': v(0.4, 0.14, -0.33),
-      'I-EGGS': v((SPOTS.eggs[0].x + SPOTS.eggs[1].x) / 2, 0.045, (SPOTS.eggs[0].z + SPOTS.eggs[1].z) / 2),
+      'I-EGGS': v(0.71, 0.045, -0.28),   // middle of the five eggs
     };
   }
 
@@ -619,6 +621,7 @@ export class Props {
     if (id === 'T-BOWL') return [this.bowlModel, this.bowlFill, ...this.yolks, this.cheese].filter(Boolean);
     if (id === 'WHISK') return [this.whisk];
     if (id === 'I-PECORINO') return [this.pecModel].filter(Boolean);
+    if (/^EGG\d$/.test(id)) return [this.eggs?.[+id[3]]].filter(Boolean);
     return (this.items[id] || []).filter(Boolean);
   }
 
@@ -684,6 +687,7 @@ export class Props {
       if (sg.work === 'twist') twist = ph * 2;
       if (sg.work === 'pour') tilt = 1.25 * w;
       if (sg.work === 'tip') tilt = 0.6 * w;
+      if (sg.work === 'crack') p.y -= 0.014 * Math.max(0, Math.sin(ph * 2));   // two taps on the rim
       const dir = sg.dir || sg.to.dir || sg.from.dir;
       if (dir && tilt) qa.setFromAxisAngle(new THREE.Vector3(dir.z, 0, -dir.x).normalize(), tilt); else qa.identity();
       qb.setFromAxisAngle(Y, twist);
@@ -698,12 +702,49 @@ export class Props {
     }
   }
 
+  // An egg's contents falling from where it was cracked into a vessel (arc: passed across to another).
+  drop({ from, to, yolk = true, white = true, arc = false, delay = 0 }) {
+    const V = (a) => (a.isVector3 ? a.clone() : new THREE.Vector3(...a));
+    const g = new THREE.Group();
+    if (white) {
+      const wm = new THREE.Mesh(new THREE.SphereGeometry(0.017, 16, 10), std('#f3f0e2', 0.1, 0, { transparent: true, opacity: 0.75 }));
+      wm.scale.set(1.15, 0.7, 1.15);
+      g.add(wm);
+    }
+    if (yolk) {
+      const y = new THREE.Mesh(new THREE.SphereGeometry(0.011, 16, 12), std('#f08a12', 0.08, 0, { clearcoat: 1 }));
+      y.position.y = white ? 0.005 : 0;
+      g.add(y);
+    }
+    g.position.copy(V(from));
+    g.visible = delay <= 0;
+    this.root.add(g);
+    return new Promise((res) => (this.drops ||= []).push({ g, a: V(from), b: V(to), t: -delay, dur: arc ? 0.55 : 0.35, arc, res }));
+  }
+
+  _updateDrops(dt) {
+    this.drops = (this.drops || []).filter((d) => {
+      d.t += dt;
+      if (d.t < 0) return true;
+      d.g.visible = true;
+      const k = Math.min(1, d.t / d.dur);
+      d.g.position.lerpVectors(d.a, d.b, d.arc ? k : k * k);
+      if (d.arc) d.g.position.y += Math.sin(Math.PI * k) * 0.05;
+      if (k < 1) return true;
+      this.root.remove(d.g);
+      d.res();
+      return false;
+    });
+  }
+
   // Put every tool straight back (used when jumping between steps).
   resetTools() {
     for (const id of Object.keys(this.toolAnims || {})) { this.toolAnims[id].arrivedRes(); this.toolAnims[id].doneRes(); }
     this.toolAnims = {};
     this.toolPose = {};
-    ['T-TONGS', 'T-SLOTTED', 'T-MUG', 'T-BOWL', 'WHISK', 'I-PEPPER', 'I-PECORINO'].forEach((id) => this._toolSet(id).forEach((o) => {
+    (this.drops || []).forEach((d) => { this.root.remove(d.g); d.res(); });
+    this.drops = [];
+    ['T-TONGS', 'T-SLOTTED', 'T-MUG', 'T-BOWL', 'WHISK', 'I-PEPPER', 'I-PECORINO', 'EGG0', 'EGG1', 'EGG2', 'EGG3', 'EGG4'].forEach((id) => this._toolSet(id).forEach((o) => {
       const h = o.userData.toolHome;
       if (h) { o.position.copy(h.p); o.quaternion.copy(h.q); }
     }));
@@ -711,6 +752,7 @@ export class Props {
 
   update(w, dt, t) {
     this._updateTools(dt);
+    this._updateDrops(dt);
     this.followers?.forEach(([m, stand]) => { m.visible = stand.visible; });
     this._updateContacts();
     this.pastaMaterial.color.copy(this.sourcePasta.color);
@@ -794,7 +836,7 @@ export class Props {
     this.bowlFill.material.color.set(fillColor);
     this.bowlFill.position.y = stage === 'tempered' ? 0.028 : 0.02;
     this.cheese.visible = stage === 'eggs' && w.cheeseIn;
-    this.whites.visible = w.yolks > 0;
+    this.whites.visible = (w.whitesN || 0) > 0;
 
     this.mugWater.visible = w.mugFull;
     this.nests.forEach((n, i) => {
@@ -809,5 +851,6 @@ export class Props {
       const on = w.onCounter.has(id);
       objs.forEach((o) => { o.visible = on; });
     }
+    this.eggs?.forEach((o, i) => { if (i < (w.eggsUsed || 0)) o.visible = false; });   // cracked: gone
   }
 }

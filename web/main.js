@@ -183,7 +183,11 @@ scene.add(gltf.scene);
 const bowlObj = gltf.scene.getObjectByName('Bowl');
 if (bowlObj) bowlObj.position.set(SPOTS.eggBowl.x, bowlObj.position.y, SPOTS.eggBowl.z);
 ['Sphere', 'Sphere001', 'Sphere002'].forEach((n) => { const o = gltf.scene.getObjectByName(n); if (o) o.visible = false; });
-['Egg0', 'Egg1'].forEach((n, i) => { const o = gltf.scene.getObjectByName(n); if (o) o.position.set(SPOTS.eggs[i].x, o.position.y, SPOTS.eggs[i].z); });
+// Five eggs: the set's two plus three copies.
+const named = (...names) => names.map((n) => gltf.scene.getObjectByName(n)).filter(Boolean);
+const eggObjs = named('Egg0', 'Egg1');
+for (let i = 2; eggObjs[0] && i < 5; i++) { const e = eggObjs[0].clone(); e.name = 'Egg' + i; e.rotation.y += i * 0.9; eggObjs[0].parent.add(e); eggObjs.push(e); }
+eggObjs.forEach((o, i) => o.position.set(SPOTS.eggs[i].x, o.position.y, SPOTS.eggs[i].z));
 const knob = gltf.scene.getObjectByName('HeatKnob');
 const grip = gltf.scene.getObjectByName('HeatKnobGrip');
 if (knob && grip) knob.attach(grip);
@@ -191,11 +195,12 @@ if (knob && grip) knob.attach(grip);
 const food = new Food(scene, { bundles: small ? 60 : 95 });
 const props = new Props(scene, { pastaMaterial: food.pastaMat, tofuMaterial: food.tofuMaterial });
 if (propsGltf) props.useModels(propsGltf.scene);
-['Bowl', 'Egg0', 'Egg1', 'Cooktop'].forEach((n) => { const o = gltf.scene.getObjectByName(n); if (o) props.addContact(o, { opacity: 0.5 }); });
+['Bowl', 'Cooktop'].forEach((n) => { const o = gltf.scene.getObjectByName(n); if (o) props.addContact(o, { opacity: 0.5 }); });
+eggObjs.forEach((o) => props.addContact(o, { opacity: 0.5 }));
 // Kitchen pieces from the Blender set that also only appear once brought to the counter.
-const named = (...names) => names.map((n) => gltf.scene.getObjectByName(n)).filter(Boolean);
 props.items['T-SKILLET'] = named('Skillet', 'Handle', 'HelperHandle');
-props.items['I-EGGS'] = named('Egg0', 'Egg1');
+props.items['I-EGGS'] = eggObjs;
+props.eggs = eggObjs;
 props.items['T-BOWL'].push(...named('Bowl'));
 props.bowlModel = bowlObj;
 resize();
@@ -209,7 +214,7 @@ function freshState() {
   w = {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
     potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
-    oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, cheeseIn: false, mugFull: false,
+    oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, whitesN: 0, eggsUsed: 0, cheeseIn: false, mugFull: false,
     plated: 0, peppered: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
     onCounter: new Set(),   // committed + whatever is ticked right now
@@ -282,8 +287,9 @@ const VISUALS = {
   // The slotted spoon carries the tofu (TOOL_PATHS); on a step jump it just lands on the plate.
   'A-4.4-02': () => { if (jumping) w.tofuStage = 'plate'; s.tofuInPan = false; s.guancialeDone = true; },
   'A-4.4-03': async () => { w.oil = false; await sleep(700); w.oil = true; },
-  'A-5.2-02': () => { w.bowlStage = 'eggs'; w.wholeEggs = 2; },
-  'A-5.2-03': () => { w.yolks = 3; },
+  // Eggs are cracked one by one (TOOL_PATHS crackEggs); on a step jump they're simply in.
+  'A-5.2-02': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', wholeEggs: 2, eggsUsed: 2 }); },
+  'A-5.2-03': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', yolks: 3, whitesN: 3, eggsUsed: 5 }); },
   'A-5.4-01': () => { w.cheeseIn = true; },
   'A-5.4-03': () => { w.bowlStage = 'paste'; },
   'A-6.2-02': () => { w.pastaInPot = true; },
@@ -306,6 +312,36 @@ const VISUALS = {
 const B = SPOTS.eggBowl;
 const PAN_C = [0, 0.075, -0.03], POT_C = [-0.62, 0.17, -0.08], BOWL_L = [-0.14, 0.09, 0.5], BOWL_R = [0.14, 0.09, 0.5];
 const tool = (id, ...stops) => () => props.useTool(id, stops);
+// Eggs go one at a time to the vessel, tap twice on the rim and break open: the shell is gone and the
+// contents fall in. Whole eggs drop into the bowl; for separated ones the white falls into the cup and
+// the yolk is passed across to the bowl.
+const CUP = SPOTS.whitesCup;
+const crackEggs = (first, n, separate) => () => {
+  let arrivedRes;
+  const arrived = new Promise((r) => { arrivedRes = r; });
+  const done = (async () => {
+    for (let i = first; i < first + n; i++) {
+      const at = separate ? [CUP.x, 0.12, CUP.z] : [B.x + 0.03, 0.12, B.z];
+      const landed = [];
+      const spot = (j) => [B.x + Math.cos(j * 1.26) * 0.022, 0.026, B.z + Math.sin(j * 1.26) * 0.022];
+      const open = () => {
+        w.eggsUsed = Math.max(w.eggsUsed, i + 1);
+        if (!separate) {
+          landed.push(props.drop({ from: at, to: spot(w.wholeEggs) }).then(() => { w.bowlStage = 'eggs'; w.wholeEggs += 1; }));
+        } else {
+          landed.push(props.drop({ from: at, to: [CUP.x, 0.016, CUP.z], yolk: false }).then(() => { w.whitesN += 1; }));
+          landed.push(props.drop({ from: at, to: spot(w.wholeEggs + w.yolks), white: false, arc: true, delay: 0.3 })
+            .then(() => { w.bowlStage = 'eggs'; w.yolks += 1; }));
+        }
+      };
+      const m = props.useTool('EGG' + i, [{ at, work: 'crack', dur: 0.6, hold: true, after: open }]);
+      if (i === first) m.arrived.then(arrivedRes);
+      await m.done;
+      await Promise.all(landed);
+    }
+  })();
+  return { arrived, done };
+};
 const TOOL_PATHS = {
   'A-4.3-05': tool('T-TONGS', { at: PAN_C, work: 'dip' }),
   'A-4.3-06': tool('T-TONGS', { at: PAN_C, work: 'stir' }),
@@ -314,6 +350,8 @@ const TOOL_PATHS = {
     { at: [0, 0.075, -0.03], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
     { at: [SPOTS.plate.x, 0.06, SPOTS.plate.z], work: 'tip', toward: [SPOTS.plate.x - 0.1, 0, SPOTS.plate.z], before: () => { w.tofuStage = 'plate'; } }),
   'A-5.2-01': tool('T-BOWL', { at: [B.x, 0, B.z], dur: 0.2 }),
+  'A-5.2-02': crackEggs(0, 2, false),
+  'A-5.2-03': crackEggs(2, 3, true),
   'A-5.4-01': tool('I-PECORINO', { at: [B.x + 0.03, 0.09, B.z], work: 'grate', dur: 1.4 }),
   'A-5.4-02': tool('I-PEPPER', { at: [B.x, 0.17, B.z], work: 'twist', dur: 1.2 }),
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
