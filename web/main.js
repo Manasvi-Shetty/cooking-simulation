@@ -288,8 +288,8 @@ const VISUALS = {
   'A-4.4-02': () => { if (jumping) w.tofuStage = 'plate'; s.tofuInPan = false; s.guancialeDone = true; },
   'A-4.4-03': async () => { w.oil = false; await sleep(700); w.oil = true; },
   // Eggs are cracked one by one (TOOL_PATHS crackEggs); on a step jump they're simply in.
-  'A-5.2-02': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', wholeEggs: 2, eggsUsed: 2 }); },
-  'A-5.2-03': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', yolks: 3, whitesN: 3, eggsUsed: 5 }); },
+  'A-5.2-01': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', wholeEggs: 2, eggsUsed: 2 }); },
+  'A-5.2-02': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', yolks: 3, whitesN: 3, eggsUsed: 5 }); },
   'A-5.4-01': () => { if (jumping) w.cheeseIn = true; },   // otherwise once the grating is done (grate)
   'A-5.4-03': () => { w.bowlStage = 'paste'; },
   'A-6.2-02': () => { w.pastaInPot = true; },
@@ -366,9 +366,8 @@ const TOOL_PATHS = {
   'A-4.4-02': tool('T-SLOTTED',
     { at: [0, 0.075, -0.03], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
     { at: [SPOTS.plate.x, 0.06, SPOTS.plate.z], work: 'tip', toward: [SPOTS.plate.x - 0.1, 0, SPOTS.plate.z], before: () => { w.tofuStage = 'plate'; } }),
-  'A-5.2-01': tool('T-BOWL', { at: [B.x, 0, B.z], dur: 0.2 }),
-  'A-5.2-02': crackEggs(0, 2, false),
-  'A-5.2-03': crackEggs(2, 3, true),
+  'A-5.2-01': crackEggs(0, 2, false),
+  'A-5.2-02': crackEggs(2, 3, true),
   'A-5.4-01': grate([[B.x, 0.026, B.z]], { onEnd: () => { w.cheeseIn = true; } }),
   'A-5.4-02': tool('I-PEPPER', { at: [B.x, 0.17, B.z], work: 'twist', dur: 1.2 }),
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),

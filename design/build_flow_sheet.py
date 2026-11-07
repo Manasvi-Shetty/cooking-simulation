@@ -546,10 +546,9 @@ act("S4.4", 2, "Drag", "T-SKILLET", S, "E-PLATE", "Tofu onto the resting plate (
 act("S4.4", "-", "Drag", "T-SKILLET", S, "E-SINK", "Pour the oil away", "Incorrect", "Recoverable",
     "", "That oil was flavour! Add 1 tbsp fresh oil to the pan, but the sauce will taste a little flatter.", "NEXT", -5, "fat_flavour = plain")
 
-act("S5.2", 1, "Drag", "T-BOWL", S, "E-COUNTER", "Bowl onto the counter", "Correct", "Perfect", "", "", "NEXT", 0)
-act("S5.2", 2, "Repeat click", "I-EGGS", S, "T-BOWL", "Crack 2 whole eggs into the bowl", "Correct", "Perfect",
-    "", "Get the bowl onto the counter first.", "NEXT", 0)
-act("S5.2", 3, "Repeat click", "I-EGGS", S, "E-WHITES-CUP", "Separate: whites into the cup, yolk into the bowl", "Correct", "Perfect",
+act("S5.2", 1, "Repeat click", "I-EGGS", S, "T-BOWL", "Crack 2 whole eggs into the bowl", "Correct", "Perfect",
+    "", "", "NEXT", 0)
+act("S5.2", 2, "Repeat click", "I-EGGS", S, "E-WHITES-CUP", "Separate: whites into the cup, yolk into the bowl", "Correct", "Perfect",
     "Lovely golden yolks.", "Whole eggs first, then the extra yolks.", "NEXT", 0, "yolks_added = 3")
 act("S5.2", "-", "Click", "I-EGGS", S, "", "Separate: whites and yolks into the bowl", "Incorrect", "Recoverable",
     "", "The whites go into the cup. Only the yolks go in the bowl.", "RETRY", -3)
