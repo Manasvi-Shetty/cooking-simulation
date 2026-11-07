@@ -605,7 +605,8 @@ function placePins() {
     tmp.copy(a).project(camera);
     const off = tmp.z > 1 || Math.abs(tmp.x) > 1.05 || Math.abs(tmp.y) > 1.05;
     el.hidden = off;
-    el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * r.width}px, ${(-tmp.y * 0.5 + 0.5) * r.height}px)`;
+    // The ring sits on the spot: centred across the pin (label included), its middle 11px down.
+    el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * r.width}px, ${(-tmp.y * 0.5 + 0.5) * r.height}px) translate(-50%, -11px)`;
   });
 }
 
