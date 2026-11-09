@@ -577,7 +577,7 @@ act("S6.2", "-", "Click", "I-SPAGHETTI", RP, "", "Snap the spaghetti in half", "
 
 act("S7.1", 1, "Drag", "T-MUG", S, "T-POT", "Ladle about 1 cup of pasta water into the mug", "Correct", "Perfect",
     "", "", "NEXT", 0, "water_saved_ml = 240")
-act("S7.1", 2, "Slider / knob", "E-KNOB-FRONT", S, "", "Lowest flame", "Correct", "Perfect",
+act("S7.1", 2, "Click", "E-KNOB-FRONT", S, "", "Turn the flame to lowest", "Correct", "Perfect",
     "", "", "NEXT", 0)
 act("S7.1", 3, "Drag", "T-TONGS", S, "T-SKILLET", "Lift the pasta from pot to pan (water clinging)", "Correct", "Perfect",
     "", "Save the water and lower the flame before you move the pasta.", "NEXT", 0, "pasta_in_pan = true")

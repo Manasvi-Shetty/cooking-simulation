@@ -292,6 +292,14 @@ const VISUALS = {
   'A-5.2-02': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', yolks: 3, whitesN: 3, eggsUsed: 5 }); },
   'A-5.4-01': () => { if (jumping) w.cheeseIn = true; },   // otherwise once the grating is done (grate)
   'A-5.4-03': () => { w.bowlStage = 'paste'; },
+  // Salt: a shower of coarse grains falls into the boiling water.
+  'A-6.2-01': () => {
+    if (jumping) return;
+    const r = () => Math.random() - 0.5;
+    return Promise.all(Array.from({ length: 24 }, (_, n) => props.drop({
+      from: [POT_C[0] + r() * 0.03, 0.34, POT_C[2] + r() * 0.03], to: [POT_C[0] + r() * 0.1, 0.15, POT_C[2] + r() * 0.1],
+      shred: true, color: '#f7f7f2', delay: n * 0.03 })));
+  },
   'A-6.2-02': () => { w.pastaInPot = true; },
   'A-7.1-01': () => { w.mugFull = true; s.savedWater = true; },
   'A-7.1-02': () => { s.heat = 1; },
@@ -302,7 +310,7 @@ const VISUALS = {
   'A-7.4-01': () => { w.bowlStage = 'empty'; Sim.addEggs(s); live = true; },
   'A-7.4-04': () => { s.heat = s.heat > 0 ? 0 : 1; },
   'A-7.4-05': () => { Sim.splashWater(s); },
-  'A-8.2-01': () => { w.tofuStage = 'pile'; },
+  'A-8.2-01': () => { if (jumping) w.tofuStage = 'pile'; },   // otherwise the slotted spoon carries it (TOOL_PATHS)
   'A-8.2-02': () => { s.heat = 0; w.plated = 2; w.served = true; w.tofuStage = 'served'; },
   'A-8.2-03': () => { w.peppered = true; },
   'A-8.3-01': () => { w.bellT = 1.2; },
@@ -380,6 +388,10 @@ const TOOL_PATHS = {
   'A-7.2-04': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 0.6 }),
   'A-7.4-01': tool('T-BOWL', { at: [0.17, 0.12, 0.03], work: 'pour', toward: PAN_C, dur: 1.3 }),
   'A-7.4-05': tool('T-MUG', { at: [0.14, 0.13, 0.04], work: 'pour', toward: PAN_C, dur: 0.8 }),
+  // Same as 4.4 in reverse: the slotted spoon scoops the tofu off the resting plate and tips it into the pasta.
+  'A-8.2-01': tool('T-SLOTTED',
+    { at: [SPOTS.plate.x, 0.06, SPOTS.plate.z], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
+    { at: [PAN_C[0], 0.11, PAN_C[2]], work: 'tip', toward: [PAN_C[0] - 0.1, 0, PAN_C[2]], before: () => { w.tofuStage = 'pile'; } }),
   'A-8.2-02': tool('T-TONGS', { at: PAN_C, work: 'dip' }, { at: BOWL_L, work: 'twist' }, { at: PAN_C, work: 'dip' }, { at: BOWL_R, work: 'twist' }),
   'A-8.2-03': tool('I-PEPPER', { at: [BOWL_L[0], 0.2, BOWL_L[2]], work: 'twist' }, { at: [BOWL_R[0], 0.2, BOWL_R[2]], work: 'twist' }),
   'A-8.2-04': grate([[BOWL_L[0], 0.05, BOWL_L[2]], [BOWL_R[0], 0.05, BOWL_R[2]]], { keep: true }),

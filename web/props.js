@@ -704,12 +704,14 @@ export class Props {
 
   // An egg's contents falling from where it was cracked into a vessel (arc: passed across to another).
   // shred: a strand of grated cheese instead (keep: it stays where it lands).
-  drop({ from, to, yolk = true, white = true, arc = false, delay = 0, shred = false, keep = false }) {
+  // color: a different colour for the strand (salt grains).
+  drop({ from, to, yolk = true, white = true, arc = false, delay = 0, shred = false, keep = false, color }) {
     const V = (a) => (a.isVector3 ? a.clone() : new THREE.Vector3(...a));
     const g = new THREE.Group();
     if (shred) {
       yolk = white = false;
-      const s = new THREE.Mesh(Props.shredGeo ||= new THREE.BoxGeometry(0.007, 0.0016, 0.0016), Props.shredMat ||= std('#f4ecd2', 0.8));
+      const s = new THREE.Mesh(color ? (Props.grainGeo ||= new THREE.BoxGeometry(0.0025, 0.0025, 0.0025)) : (Props.shredGeo ||= new THREE.BoxGeometry(0.007, 0.0016, 0.0016)),
+        color ? (Props.grainMat ||= std(color, 0.4)) : (Props.shredMat ||= std('#f4ecd2', 0.8)));
       s.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
       g.add(s);
     }
