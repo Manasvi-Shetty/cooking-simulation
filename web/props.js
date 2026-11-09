@@ -309,8 +309,10 @@ export class Props {
       loop.rotation.y = (i * Math.PI) / 4;
       whisk.add(loop);
     }
-    whisk.position.set(b.x - 0.1, 0.024, b.z + 0.05);
-    whisk.rotation.set(0, 0.6, Math.PI / 2);
+    // Lies straight along the front of the bowl, loops on the left and handle to the right, clear of the
+    // cooktop (so it only shows in the Counter view) and of the whites cup.
+    whisk.position.set(b.x - 0.085, 0.024, b.z + 0.13);
+    whisk.rotation.set(0, 0, -Math.PI / 2);
     whisk.traverse((m) => { m.castShadow = m.receiveShadow = true; });
     this.root.add(whisk);
     this.whisk = whisk;
