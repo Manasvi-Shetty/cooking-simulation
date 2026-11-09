@@ -65,7 +65,7 @@ const VIEWS = {
   'Cutting board': V([0.66, 0.42, 0.42], [0.66, 0.02, 0.09]),
   'Stove': V([0.07, 0.55, 0.58], [0.04, 0.05, 0.05]),     // front knob and the tongs in frame, knob clear of the Continue button at 1280 px
   'Pot': V([-0.5, 0.82, 0.98], [-0.52, 0.04, 0.1]),       // hob, pot, its lid and the tongs
-  'Stove wide': V([-0.3, 0.62, 0.62], [-0.3, 0.05, -0.04]),
+  'Stove wide': V([-0.24, 0.86, 0.92], [-0.24, 0.1, -0.06]),   // pot and pan both in frame, with room above for the tongs
   'Peek in the pan': V([0.06, 0.34, 0.19], [0, 0.06, 0.005]),
   'Sink': V([-0.84, 0.55, 0.52], [-0.84, 0.04, -0.06]),
   'Serving': V([-0.05, 0.55, 0.95], [-0.05, 0.04, 0.4]),   // resting plate on the left, both bowls
@@ -416,10 +416,18 @@ const TOOL_PATHS = {
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
   'A-6.2-03': tool('T-TONGS', T_AT(POT_IN, 'stir', { dur: 1.2, jaw: [0.35, 0.35] })),
   'A-7.1-01': tool('T-MUG', { at: [POT_C[0], 0.12, POT_C[2]], work: 'dip' }),
-  // Grip a bunch of pasta in the pot (it hangs from the tips), carry it over and let it go in the pan.
-  'A-7.1-03': tool('T-TONGS',
-    T_AT(POT_IN, 'dip', { jaw: GRAB, after: () => { w.pastaInPot = false; w.tongsPasta = true; } }),
-    T_AT(PAN_C, 'dip', { jaw: RELEASE, before: () => { w.tongsPasta = false; Sim.addPasta(s); } })),
+  // Pot to pan, framed so both are in view: three times the tongs open into the pot, close on a big
+  // handful of pasta (it hangs from the tips), lift it high over the pot's rim, carry it across, lower it
+  // into the pan and open to leave it there. The pot is empty after the third handful.
+  'A-7.1-03': () => {
+    setView('Stove wide');
+    return props.useTool('T-TONGS', [[0, 0], [0.025, 0.02], [-0.025, -0.015]].flatMap(([dx, dz], k) => [
+      T_AT([POT_IN[0] + dx, POT_IN[1], POT_IN[2] + dz], 'dip', { dur: 0.8, clear: 0.24, jaw: [1, 0.08, 0, 0.6],
+        after: () => { w.tongsPasta = 'toss'; if (k === 2) w.pastaInPot = false; } }),
+      T_AT([PAN_C[0] - dx, PAN_C[1] + 0.01, PAN_C[2] + dz], 'place', { dur: 0.7, clear: 0.2, jaw: [0.08, 1, 0.1, 0.5],
+        before: () => { if (k === 0) Sim.addPasta(s); }, after: () => { w.tongsPasta = false; } }),
+    ]));
+  },
   // Tossing with tongs: three times the tongs grip a bunch of pasta, lift it high above the pan, shake it
   // and let it fall back; the pasta in the pan jumps as it lands and turns glossy with the oil.
   'A-7.1-04': tool('T-TONGS', ...[[-0.03, 0.02], [0.03, -0.02], [0, 0.01]].flatMap(([dx, dz], k) => {
@@ -441,10 +449,10 @@ const TOOL_PATHS = {
     { at: [PAN_C[0], 0.11, PAN_C[2]], work: 'tip', toward: [PAN_C[0] - 0.1, 0, PAN_C[2]], before: () => { w.tofuStage = 'pile'; } }),
   // Twice: grip pasta in the pan, carry it to a bowl and twirl it into a nest there.
   'A-8.2-02': tool('T-TONGS',
-    T_AT(PAN_C, 'dip', { jaw: GRAB, after: () => { w.tongsPasta = true; } }),
-    T_AT(BOWL_L, 'dip', { jaw: RELEASE, before: () => { w.tongsPasta = false; w.plated = 1; } }),
-    T_AT(PAN_C, 'dip', { jaw: GRAB, after: () => { w.tongsPasta = true; } }),
-    T_AT(BOWL_R, 'dip', { jaw: RELEASE, before: () => { w.tongsPasta = false; w.plated = 2; Object.assign(w, { served: true, tofuStage: 'served' }); } })),
+    T_AT(PAN_C, 'dip', { clear: 0.18, jaw: GRAB, after: () => { w.tongsPasta = true; } }),
+    T_AT(BOWL_L, 'place', { clear: 0.18, jaw: RELEASE, before: () => { w.tongsPasta = false; w.plated = 1; } }),
+    T_AT(PAN_C, 'dip', { clear: 0.18, jaw: GRAB, after: () => { w.tongsPasta = true; } }),
+    T_AT(BOWL_R, 'place', { clear: 0.18, jaw: RELEASE, before: () => { w.tongsPasta = false; w.plated = 2; Object.assign(w, { served: true, tofuStage: 'served' }); } })),
   'A-8.2-03': crackPepper([[BOWL_L[0], 0.06, BOWL_L[2]], [BOWL_R[0], 0.06, BOWL_R[2]]], () => { w.peppered = true; }),
   'A-8.2-04': grate([[BOWL_L[0], 0.05, BOWL_L[2]], [BOWL_R[0], 0.05, BOWL_R[2]]], { keep: true }),
 };

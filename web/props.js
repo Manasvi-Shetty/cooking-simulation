@@ -722,12 +722,13 @@ export class Props {
       const dir = s.toward ? V(s.toward).sub(at).setY(0).normalize() : null;
       // tilt/yaw: held at an angle (tongs); jaw: [open at the start of the work, at its end, (from, to) fractions]
       const jaw = s.jaw || [cur.jaw ?? 0, cur.jaw ?? 0];
-      go(above(at), 0.55, { dir, up: s.upright ? 1 : cur.up, tilt: s.tilt, yaw: s.yaw, jaw: jaw[0] });
+      // clear: how high over the stop the tool travels (higher when carrying food over a rim)
+      go(above(at, s.clear), 0.55, { dir, up: s.upright ? 1 : cur.up, tilt: s.tilt, yaw: s.yaw, jaw: jaw[0] });
       go(at, 0.25, { dir, tilt: s.tilt, yaw: s.yaw, jaw: jaw[0] });
       segs.push({ from: cur, to: cur, dur: s.dur ?? 0.9, work: s.work, dir, first: i === 0, before: s.before, after: s.after, jawW: jaw });
       cur = { ...cur, jaw: jaw[1] };
       if (s.hold) { go(above(at, 0.07), 0.3, { dir }); return; }
-      go(above(at), 0.25, { dir, tilt: s.tilt, yaw: s.yaw });
+      go(above(at, s.clear), 0.25, { dir, tilt: s.tilt, yaw: s.yaw });
     });
     if (!stops.at(-1)?.hold) {
       go(above(home), 0.55, { up: 0, jaw: 0 });
@@ -981,7 +982,7 @@ export class Props {
     this.bowlWater.visible = stage === 'watered';
     // Tongs' jaws: shut (tips touching) at 0, about 7 cm apart at 1.
     this.tongsArms.forEach(([pivot, s]) => { pivot.rotation.z = s * (0.0125 - this.tongsJaw * 0.135); });
-    this.tongsPasta.visible = !!w.tongsPasta;
+    this.tongsPasta.visible = !!w.tongsPasta && this.tongsJaw < 0.4;   // falls away once the jaws open
     this.tongsPasta.scale.setScalar(w.tongsPasta === 'toss' ? 1.9 : 1);   // a big handful when tossing
     // The strands always hang straight down from the tips, however the tongs are tilted.
     if (w.tongsPasta) this.tongsPasta.quaternion.copy(this.tongsPasta.parent.quaternion).invert();
