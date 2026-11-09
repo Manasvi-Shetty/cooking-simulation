@@ -370,11 +370,7 @@ const pourMug = (at, to, dur, onDone) => () => tool('T-MUG', {
   before: () => {
     const d = [to[0] - at[0], 0, to[2] - at[2]], l = Math.hypot(d[0], d[2]) || 1;
     const lip = [at[0] + (d[0] / l) * 0.045, at[1] + 0.05, at[2] + (d[2] / l) * 0.045];
-    const n = Math.round(dur * 30);
-    for (let i = 0; i < n; i++) {
-      props.drop({ from: lip, to: [to[0] + (Math.random() - 0.5) * 0.02, to[1], to[2] + (Math.random() - 0.5) * 0.02],
-        shred: true, color: '#e6e0cc', delay: 0.15 + (i / n) * dur * 0.75 });
-    }
+    props.pourStream({ from: lip, to, delay: dur * 0.2, dur: dur * 0.6 });
   },
   after: onDone,
 })();
@@ -431,7 +427,7 @@ const TOOL_PATHS = {
       T_AT([c[0], c[1] + 0.09, c[2] + 0.08], 'toss', { dur: 0.7, after: () => { w.tongsPasta = false; w.tossT = 0.8; if (k === 0) w.oiled = true; } }),
     ];
   })),
-  'A-7.2-01': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 1.4, () => { w.bowlStage = 'watered'; w.mugLevel = 0.6; }),
+  'A-7.2-01': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 2, () => { w.bowlStage = 'watered'; w.mugLevel = 0.6; }),
   'A-7.2-02': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4, after: () => { w.bowlStage = 'tempered'; } }),
   'A-7.2-04': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 0.8, () => { w.bowlStage = 'tempered'; w.mugLevel = 0.1; }),
   'A-7.4-01': tool('T-BOWL', { at: [0.17, 0.12, 0.03], work: 'pour', toward: PAN_C, dur: 1.3 }),

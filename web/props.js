@@ -777,6 +777,38 @@ export class Props {
     return new Promise((res) => (this.drops ||= []).push({ g, a: V(from), b: V(to), t: -delay, dur: arc ? 0.55 : 0.35, arc, keep, res }));
   }
 
+  // A continuous stream of liquid from a lip down to a surface: it reaches down, keeps running for
+  // `dur` seconds, then its tail falls away.
+  pourStream({ from, to, delay = 0, dur = 1, r = 0.0045, color = '#efeadc' }) {
+    const V = (a) => (a.isVector3 ? a.clone() : new THREE.Vector3(...a));
+    const m = new THREE.Mesh(Props.streamGeo ||= new THREE.CylinderGeometry(1, 0.8, 1, 10, 1, true).translate(0, -0.5, 0),
+      ((Props.streamMats ||= {})[color] ||= std(color, 0.08, 0, { transparent: true, opacity: 0.9, clearcoat: 1 })));
+    m.visible = false;
+    this.root.add(m);
+    (this.streams ||= []).push({ m, a: V(from), b: V(to), t: -delay, dur, r });
+  }
+
+  _updateStreams(dt) {
+    const fall = 0.25, Y = new THREE.Vector3(0, -1, 0), d = new THREE.Vector3(), top = new THREE.Vector3(), bot = new THREE.Vector3();
+    this.streams = (this.streams || []).filter((s) => {
+      s.t += dt;
+      if (s.t < 0) return true;
+      if (s.t > s.dur + fall) { this.root.remove(s.m); return false; }
+      const grow = Math.min(1, s.t / fall), tail = Math.max(0, (s.t - s.dur) / fall);
+      top.lerpVectors(s.a, s.b, tail * tail);
+      bot.lerpVectors(s.a, s.b, grow * grow);
+      d.subVectors(bot, top);
+      const len = d.length();
+      s.m.visible = len > 0.002;
+      if (!s.m.visible) return true;
+      s.m.position.copy(top);
+      s.m.quaternion.setFromUnitVectors(Y, d.normalize());
+      const wob = 1 + 0.12 * Math.sin(s.t * 40);
+      s.m.scale.set(s.r * wob, len, s.r * wob);
+      return true;
+    });
+  }
+
   _updateDrops(dt) {
     this.drops = (this.drops || []).filter((d) => {
       d.t += dt;
@@ -799,6 +831,8 @@ export class Props {
     this.toolPose = {};
     (this.drops || []).forEach((d) => { this.root.remove(d.g); d.res(); });
     this.drops = [];
+    (this.streams || []).forEach((s) => this.root.remove(s.m));
+    this.streams = [];
     (this.kept || []).forEach((g) => this.root.remove(g));
     this.kept = [];
     ['T-TONGS', 'T-SLOTTED', 'T-MUG', 'T-BOWL', 'WHISK', 'I-PEPPER', 'I-PECORINO', 'T-GRATER', 'EGG0', 'EGG1', 'EGG2', 'EGG3', 'EGG4'].forEach((id) => this._toolSet(id).forEach((o) => {
@@ -810,6 +844,7 @@ export class Props {
   update(w, dt, t) {
     this._updateTools(dt);
     this._updateDrops(dt);
+    this._updateStreams(dt);
     this.followers?.forEach(([m, stand]) => { m.visible = stand.visible; });
     this._updateContacts();
     this.pastaMaterial.color.copy(this.sourcePasta.color);
