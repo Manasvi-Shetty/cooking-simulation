@@ -18,11 +18,12 @@ export const SPOTS = {
   whitesCup: new THREE.Vector3(0.64, 0, -0.1),
   hob: new THREE.Vector3(-0.56, 0, -0.08),            // a hand's width clear of the sink
   sink: new THREE.Vector3(-0.98, 0, 0.02),
-  potCounter: new THREE.Vector3(-0.15, 0, 0.27),       // where the pasta pot waits before it's filled
-  plate: new THREE.Vector3(-0.42, 0, 0.3),
+  potCounter: new THREE.Vector3(-0.62, 0, 0.27),        // where the pasta pot waits before it's filled: in front of its hob
+  lid: new THREE.Vector3(-0.88, 0, 0.42),              // the pot's lid, beside the pot (in front of the sink)
+  plate: new THREE.Vector3(-0.3, 0, 0.36),
   mug: new THREE.Vector3(0.42, 0, 0.3),
   slotted: new THREE.Vector3(-0.12, 0.012, 0.175),   // on the cooktop, in front of the burner grate
-  tongs: new THREE.Vector3(-0.2, 0.012, 0.232),
+  tongs: new THREE.Vector3(-0.2, 0.012, 0.2),          // tips at the front; lies front-to-back on the cooktop's left edge (Stove and Pot views)
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
   bell: new THREE.Vector3(0.62, 0, 0.45),
   // Five eggs (2 whole + 3 separated): a front row of three, two staggered behind.
@@ -371,7 +372,7 @@ export class Props {
     hinge.position.set(0.215, 0.008, 0);
     tongs.add(hinge);
     tongs.position.copy(tg);
-    tongs.rotation.y = 0;
+    tongs.rotation.y = Math.PI / 2;
     tongs.traverse((m) => { m.castShadow = m.receiveShadow = true; });
     this.root.add(tongs);
     this.items['T-TONGS'] = [tongs];
@@ -611,7 +612,7 @@ export class Props {
       'E-BOWLS': v(0, 0.07, SPOTS.bowls[0].z),
       'E-BELL': v(SPOTS.bell.x, 0.07, SPOTS.bell.z),
       'T-SLOTTED': v(SPOTS.slotted.x, 0.027, SPOTS.slotted.z),
-      'T-TONGS': v(SPOTS.tongs.x + 0.11, 0.027, SPOTS.tongs.z),
+      'T-TONGS': v(SPOTS.tongs.x, 0.027, SPOTS.tongs.z - 0.11),
       'I-PECORINO': v(0.86, 0.045, -0.16),
       'I-PEPPER': v(0.4, 0.14, -0.33),
       'I-EGGS': v(0.71, 0.045, -0.28),   // middle of the five eggs
@@ -834,7 +835,7 @@ export class Props {
     this.water.visible = w.waterLevel > 0.004;
     this.water.position.y = Math.max(0.007, w.waterLevel);
     this.stream.visible = w.tapOn;
-    this.lid.position.set(w.lidOn ? this.potPos.x : -0.38, w.lidOn ? this.pot.position.y + 0.155 : 0.006, w.lidOn ? this.potPos.z : -0.32);
+    this.lid.position.set(w.lidOn ? this.potPos.x : SPOTS.lid.x, w.lidOn ? this.pot.position.y + 0.155 : 0.006, w.lidOn ? this.potPos.z : SPOTS.lid.z);
     this.lid.rotation.x = w.lidOn ? 0 : 0;
     this.anchors['T-LID'].set(this.lid.position.x, this.lid.position.y + 0.03, this.lid.position.z);
     this.potPasta.visible = w.pastaInPot;

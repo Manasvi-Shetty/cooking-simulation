@@ -63,12 +63,12 @@ const VIEWS = {
   'Kitchen': V([-0.2, 1.75, 2.55], [-0.2, 0.0, -0.05]),
   'Counter': V([0.58, 0.5, 0.44], [0.64, 0.02, -0.06]),
   'Cutting board': V([0.66, 0.42, 0.42], [0.66, 0.02, 0.09]),
-  'Stove': V([0.1, 0.5, 0.5], [0.07, 0.05, 0.05]),        // front knob in frame and clear of the Continue button at 1280 px
-  'Pot': V([-0.54, 0.5, 0.42], [-0.56, 0.07, -0.08]),
+  'Stove': V([0.07, 0.55, 0.58], [0.04, 0.05, 0.05]),     // front knob and the tongs in frame, knob clear of the Continue button at 1280 px
+  'Pot': V([-0.5, 0.82, 0.98], [-0.52, 0.04, 0.1]),       // hob, pot, its lid and the tongs
   'Stove wide': V([-0.3, 0.62, 0.62], [-0.3, 0.05, -0.04]),
   'Peek in the pan': V([0.06, 0.34, 0.19], [0, 0.06, 0.005]),
   'Sink': V([-0.84, 0.55, 0.52], [-0.84, 0.04, -0.06]),
-  'Serving': V([0, 0.4, 0.82], [0, 0.04, 0.44]),
+  'Serving': V([-0.05, 0.55, 0.95], [-0.05, 0.04, 0.4]),   // resting plate on the left, both bowls
 };
 // Pasta-pot substeps use the Stove view in the sheet; the pot sits on its own burner, so frame that.
 const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.2': 'Pot', 'S6.3': 'Pot', 'S7.1': 'Stove wide' };
