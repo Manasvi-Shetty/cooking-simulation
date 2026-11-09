@@ -215,7 +215,7 @@ function freshState() {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
     potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
     oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, whitesN: 0, eggsUsed: 0, cheeseIn: false, mugFull: false,
-    plated: 0, peppered: false, pepperIn: false, served: false, bellT: 0,
+    plated: 0, tongsPasta: false, peppered: false, pepperIn: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
     onCounter: new Set(),   // committed + whatever is ticked right now
   };
@@ -304,7 +304,8 @@ const VISUALS = {
   'A-6.2-02': () => { w.pastaInPot = true; },
   'A-7.1-01': () => { w.mugFull = true; s.savedWater = true; },
   'A-7.1-02': () => { s.heat = 1; },
-  'A-7.1-03': () => { w.pastaInPot = false; Sim.addPasta(s); },
+  // The tongs grip the pasta in the pot and carry it to the pan (TOOL_PATHS); on a step jump it's just there.
+  'A-7.1-03': () => { if (jumping) { w.pastaInPot = false; Sim.addPasta(s); } },
   'A-7.1-04': () => { w.tossT = 0.6; },
   'A-7.1-05': () => { w.waterLevel = 0.01; },
   'A-7.2-03': () => { w.bowlStage = 'tempered'; },
@@ -312,7 +313,7 @@ const VISUALS = {
   'A-7.4-04': () => { s.heat = s.heat > 0 ? 0 : 1; },
   'A-7.4-05': () => { Sim.splashWater(s); },
   'A-8.2-01': () => { if (jumping) w.tofuStage = 'pile'; },   // otherwise the slotted spoon carries it (TOOL_PATHS)
-  'A-8.2-02': () => { s.heat = 0; w.plated = 2; w.served = true; w.tofuStage = 'served'; },
+  'A-8.2-02': () => { s.heat = 0; if (jumping) Object.assign(w, { plated: 2, served: true, tofuStage: 'served' }); },
   'A-8.2-03': () => { if (jumping) w.peppered = true; },
   'A-8.3-01': () => { w.bellT = 1.2; },
 };
@@ -397,7 +398,10 @@ const TOOL_PATHS = {
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
   'A-6.2-03': tool('T-TONGS', { at: POT_C, work: 'stir', dur: 1.2 }),
   'A-7.1-01': tool('T-MUG', { at: [POT_C[0], 0.12, POT_C[2]], work: 'dip' }),
-  'A-7.1-03': tool('T-TONGS', { at: POT_C, work: 'dip' }, { at: PAN_C, work: 'dip' }),
+  // Grip a bunch of pasta in the pot (it hangs from the tips), carry it over and let it go in the pan.
+  'A-7.1-03': tool('T-TONGS',
+    { at: POT_C, work: 'dip', after: () => { w.pastaInPot = false; w.tongsPasta = true; } },
+    { at: PAN_C, work: 'dip', before: () => { w.tongsPasta = false; Sim.addPasta(s); } }),
   'A-7.1-04': tool('T-TONGS', { at: PAN_C, work: 'stir', dur: 1.2 }),
   'A-7.2-01': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 1.2 }),
   'A-7.2-02': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
@@ -408,7 +412,12 @@ const TOOL_PATHS = {
   'A-8.2-01': tool('T-SLOTTED',
     { at: [SPOTS.plate.x, 0.06, SPOTS.plate.z], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
     { at: [PAN_C[0], 0.11, PAN_C[2]], work: 'tip', toward: [PAN_C[0] - 0.1, 0, PAN_C[2]], before: () => { w.tofuStage = 'pile'; } }),
-  'A-8.2-02': tool('T-TONGS', { at: PAN_C, work: 'dip' }, { at: BOWL_L, work: 'twist' }, { at: PAN_C, work: 'dip' }, { at: BOWL_R, work: 'twist' }),
+  // Twice: grip pasta in the pan, carry it to a bowl and twirl it into a nest there.
+  'A-8.2-02': tool('T-TONGS',
+    { at: PAN_C, work: 'dip', after: () => { w.tongsPasta = true; } },
+    { at: BOWL_L, work: 'twist', before: () => { w.tongsPasta = false; w.plated = 1; } },
+    { at: PAN_C, work: 'dip', after: () => { w.tongsPasta = true; } },
+    { at: BOWL_R, work: 'twist', before: () => { w.tongsPasta = false; w.plated = 2; Object.assign(w, { served: true, tofuStage: 'served' }); } }),
   'A-8.2-03': crackPepper([[BOWL_L[0], 0.06, BOWL_L[2]], [BOWL_R[0], 0.06, BOWL_R[2]]], () => { w.peppered = true; }),
   'A-8.2-04': grate([[BOWL_L[0], 0.05, BOWL_L[2]], [BOWL_R[0], 0.05, BOWL_R[2]]], { keep: true }),
 };

@@ -380,6 +380,20 @@ export class Props {
     tongs.traverse((m) => { m.castShadow = m.receiveShadow = true; });
     this.root.add(tongs);
     this.items['T-TONGS'] = [tongs];
+    // A bunch of spaghetti gripped in the tongs' tips, hanging down (shown while the tongs carry pasta).
+    this.tongsPasta = new THREE.Group();
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2, r = 0.004 + (i % 3) * 0.003, len = 0.05 + (i % 5) * 0.008;
+      const pts = [];
+      for (let k = 0; k < 6; k++) {
+        const f = k / 5;
+        pts.push(new THREE.Vector3(Math.cos(a) * r * (1 + f * 1.5), -f * len, Math.sin(a) * r * (1 + f * 1.5) + Math.sin(f * 3 + i) * 0.004));
+      }
+      this.tongsPasta.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, 0.0012, 5, false), this.pastaMaterial));
+    }
+    this.tongsPasta.position.set(0.014, 0.006, 0);
+    this.tongsPasta.visible = false;
+    tongs.add(this.tongsPasta);
     this.mugWater = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.029, 32).rotateX(-Math.PI / 2), std('#d9d2bd', 0.05, 0, { clearcoat: 1 })), false);
     this.mugWater.position.set(m.x, 0.06, m.z);
 
@@ -877,6 +891,7 @@ export class Props {
     this.whites.scale.y = 0.008 * Math.max(1, w.whitesN || 0);   // about 8 mm per white
 
     this.mugWater.visible = w.mugFull;
+    this.tongsPasta.visible = !!w.tongsPasta;
     this.nests.forEach((n, i) => {
       n.visible = w.plated > i;
       n.userData.dust.visible = w.peppered;
