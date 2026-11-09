@@ -262,6 +262,24 @@ export class Props {
     this.stream.position.set(s.x, 0.15, s.z - 0.04);
   }
 
+  // One strand of cooked spaghetti hanging from the tongs' tips: soft and limp, so it waves and kinks
+  // in two directions as it falls, more loosely towards the free end, which curls. r: how far from the
+  // middle of the bunch it hangs; len: its length; drape: it first goes up over the tips (a big load).
+  _limpStrand(i, r, len, thick, drape = false) {
+    const a = i * 2.399 + Math.random() * 0.5, side = i % 2 ? 1 : -1;
+    const f1 = 7 + Math.random() * 6, f2 = 5 + Math.random() * 6, p1 = Math.random() * 6.28, p2 = Math.random() * 6.28;
+    const amp = 0.006 + Math.random() * 0.007, curl = (Math.random() - 0.5) * 0.06;
+    const pts = drape ? [new THREE.Vector3(-side * 0.005, 0.007, Math.sin(a) * 0.006), new THREE.Vector3(0, 0.004, Math.sin(a) * 0.004)] : [];
+    for (let k = 0; k <= 16; k++) {
+      const f = k / 16, spread = r * (1 + f * 1.8), loose = 0.25 + f;
+      pts.push(new THREE.Vector3(
+        (drape ? side * 0.002 : 0) + Math.cos(a) * spread + Math.sin(f * f1 + p1) * amp * loose + curl * f * f * f,
+        -f * len * (1 - 0.08 * Math.sin(f * 5 + p2)),
+        Math.sin(a) * spread + Math.cos(f * f2 + p2) * amp * loose + curl * 0.6 * f * f));
+    }
+    return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, thick, 5, false), this.pastaMaterial);
+  }
+
   // n flecks of cracked black pepper scattered over a disc of radius r, at height y (+ up to dy).
   static pepperSpecks(n, r, y, dy) {
     const m = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std('#16100b', 0.7), n);
@@ -415,31 +433,15 @@ export class Props {
     this.items['T-TONGS'] = [tongs];
     // A bunch of spaghetti gripped in the tongs' tips, hanging down (shown while the tongs carry pasta).
     this.tongsPasta = new THREE.Group();
-    for (let i = 0; i < 16; i++) {
-      const a = (i / 16) * Math.PI * 2, r = 0.004 + (i % 3) * 0.003, len = 0.05 + (i % 5) * 0.008;
-      const pts = [];
-      for (let k = 0; k < 6; k++) {
-        const f = k / 5;
-        pts.push(new THREE.Vector3(Math.cos(a) * r * (1 + f * 1.5), -f * len, Math.sin(a) * r * (1 + f * 1.5) + Math.sin(f * 3 + i) * 0.004));
-      }
-      this.tongsPasta.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, 0.0012, 5, false), this.pastaMaterial));
-    }
+    for (let i = 0; i < 24; i++) this.tongsPasta.add(this._limpStrand(i, 0.004 + (i % 3) * 0.003, 0.06 + Math.random() * 0.03, 0.0012));
     this.tongsPasta.position.set(0.014, 0.006, 0);
     this.tongsPasta.visible = false;
     tongs.add(this.tongsPasta);
     // A big load of spaghetti for moving it from the pot to the pan: a thick bundle pinched in the tips,
     // draped over them and hanging down long on both sides, fanning out towards the ends.
     this.tongsLoad = new THREE.Group();
-    const N = 90;
-    for (let i = 0; i < N; i++) {
-      const a = i * 2.399, r = 0.003 + Math.sqrt((i % 11) / 10) * 0.011, len = 0.1 + ((i * 7) % 13) * 0.005;
-      const side = i % 2 ? 1 : -1, pts = [new THREE.Vector3(-side * 0.004, 0.006, Math.sin(a) * 0.006)];
-      for (let k = 0; k < 7; k++) {
-        const f = k / 6;
-        pts.push(new THREE.Vector3(side * 0.002 + Math.cos(a) * r * (1 + f * 1.8), -f * len,
-          Math.sin(a) * r * (1 + f * 1.8) + Math.sin(f * 4 + i) * 0.006));
-      }
-      this.tongsLoad.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.0013, 5, false), this.pastaMaterial));
+    for (let i = 0; i < 90; i++) {
+      this.tongsLoad.add(this._limpStrand(i, 0.003 + Math.sqrt(Math.random()) * 0.011, 0.1 + Math.random() * 0.07, 0.0013, true));
     }
     this.tongsLoad.position.set(0.014, 0.006, 0);
     this.tongsLoad.visible = false;
