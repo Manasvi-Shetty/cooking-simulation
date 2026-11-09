@@ -214,7 +214,7 @@ function freshState() {
   w = {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
     potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
-    oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, whitesN: 0, eggsUsed: 0, cheeseIn: false, mugFull: false,
+    oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, whitesN: 0, eggsUsed: 0, cheeseIn: false, mugFull: false, mugLevel: 1,
     plated: 0, tongsPasta: false, oiled: false, peppered: false, pepperIn: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
     onCounter: new Set(),   // committed + whatever is ticked right now
@@ -302,16 +302,20 @@ const VISUALS = {
       shred: true, color: '#f7f7f2', delay: n * 0.03 })));
   },
   'A-6.2-02': () => { w.pastaInPot = true; },
-  'A-7.1-01': () => { w.mugFull = true; s.savedWater = true; },
+  'A-7.1-01': () => { w.mugFull = true; w.mugLevel = 1; s.savedWater = true; },
   'A-7.1-02': () => { s.heat = 1; },
   // The tongs grip the pasta in the pot and carry it to the pan (TOOL_PATHS); on a step jump it's just there.
   'A-7.1-03': () => { if (jumping) { w.pastaInPot = false; Sim.addPasta(s); } },
   'A-7.1-04': () => { w.tossT = jumping ? 0 : 1.6; w.oiled = true; },
   'A-7.1-05': () => { w.waterLevel = 0.01; },
+  // Pouring and whisking show in the bowl (TOOL_PATHS); on a step jump they're simply done.
+  'A-7.2-01': () => { if (jumping) Object.assign(w, { bowlStage: 'watered', mugLevel: 0.6 }); },
+  'A-7.2-02': () => { if (jumping) w.bowlStage = 'tempered'; },
   'A-7.2-03': () => { w.bowlStage = 'tempered'; },
+  'A-7.2-04': () => { if (jumping) Object.assign(w, { bowlStage: 'tempered', mugLevel: 0.1 }); },
   'A-7.4-01': () => { w.bowlStage = 'empty'; Sim.addEggs(s); live = true; },
   'A-7.4-04': () => { s.heat = s.heat > 0 ? 0 : 1; },
-  'A-7.4-05': () => { Sim.splashWater(s); },
+  'A-7.4-05': () => { if (jumping) Sim.splashWater(s); },   // otherwise as the water lands (TOOL_PATHS)
   'A-8.2-01': () => { if (jumping) w.tofuStage = 'pile'; },   // otherwise the slotted spoon carries it (TOOL_PATHS)
   'A-8.2-02': () => { s.heat = 0; if (jumping) Object.assign(w, { plated: 2, served: true, tofuStage: 'served' }); },
   'A-8.2-03': () => { if (jumping) w.peppered = true; },
@@ -360,6 +364,20 @@ const crackPepper = (spots, onEnd) => () => {
     after: k === spots.length - 1 ? onEnd : undefined,
   })));
 };
+// Pouring from the mug: tilted at `at` towards `to`, a stream of pasta water runs from the lip into it.
+const pourMug = (at, to, dur, onDone) => () => tool('T-MUG', {
+  at, work: 'pour', toward: to, dur,
+  before: () => {
+    const d = [to[0] - at[0], 0, to[2] - at[2]], l = Math.hypot(d[0], d[2]) || 1;
+    const lip = [at[0] + (d[0] / l) * 0.045, at[1] + 0.05, at[2] + (d[2] / l) * 0.045];
+    const n = Math.round(dur * 30);
+    for (let i = 0; i < n; i++) {
+      props.drop({ from: lip, to: [to[0] + (Math.random() - 0.5) * 0.02, to[1], to[2] + (Math.random() - 0.5) * 0.02],
+        shred: true, color: '#e6e0cc', delay: 0.15 + (i / n) * dur * 0.75 });
+    }
+  },
+  after: onDone,
+})();
 const crackEggs = (first, n, separate) => () => {
   let arrivedRes;
   const arrived = new Promise((r) => { arrivedRes = r; });
@@ -406,11 +424,12 @@ const TOOL_PATHS = {
     T_AT(PAN_C, 'dip', { before: () => { w.tongsPasta = false; Sim.addPasta(s); } })),
   // Lift-and-turn tosses: the strands jump and fall back, glossing with the oil (VISUALS).
   'A-7.1-04': tool('T-TONGS', T_AT(PAN_C, 'toss', { dur: 1.6 })),
-  'A-7.2-01': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 1.2 }),
-  'A-7.2-02': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
-  'A-7.2-04': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 0.6 }),
+  'A-7.2-01': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 1.4, () => { w.bowlStage = 'watered'; w.mugLevel = 0.6; }),
+  'A-7.2-02': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4, after: () => { w.bowlStage = 'tempered'; } }),
+  'A-7.2-04': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 0.8, () => { w.bowlStage = 'tempered'; w.mugLevel = 0.1; }),
   'A-7.4-01': tool('T-BOWL', { at: [0.17, 0.12, 0.03], work: 'pour', toward: PAN_C, dur: 1.3 }),
-  'A-7.4-05': tool('T-MUG', { at: [0.14, 0.13, 0.04], work: 'pour', toward: PAN_C, dur: 0.8 }),
+  'A-7.4-05': pourMug([0.14, 0.13, 0.04], [PAN_C[0] + 0.03, 0.09, PAN_C[2] + 0.02], 0.8,
+    () => { Sim.splashWater(s); w.mugLevel = Math.max(0.15, w.mugLevel - 0.15); }),
   // Same as 4.4 in reverse: the slotted spoon scoops the tofu off the resting plate and tips it into the pasta.
   'A-8.2-01': tool('T-SLOTTED',
     { at: [SPOTS.plate.x, 0.06, SPOTS.plate.z], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },

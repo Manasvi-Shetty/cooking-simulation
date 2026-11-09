@@ -290,6 +290,11 @@ export class Props {
     this.cheese = this._add(new THREE.Mesh(new THREE.SphereGeometry(0.03, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), std('#f4ecd2', 0.9)));
     this.cheese.scale.y = 0.45;
     this.cheese.position.set(b.x + 0.01, 0.022, b.z);
+    // Pasta water poured over the paste, before it's whisked in: a cloudy pool on top.
+    this.bowlWater = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.05, 40).rotateX(-Math.PI / 2),
+      std('#e4dcc4', 0.05, 0, { transparent: true, opacity: 0.7, clearcoat: 1 })), false);
+    this.bowlWater.position.set(b.x, 0.026, b.z);
+    this.bowlWater.visible = false;
     // Cracked pepper speckled over the eggs and cheese.
     this.bowlPepper = this._add(Props.pepperSpecks(90, 0.04, 0.026, 0.008));
     this.bowlPepper.position.set(b.x, 0, b.z);
@@ -395,7 +400,9 @@ export class Props {
     this.tongsPasta.visible = false;
     tongs.add(this.tongsPasta);
     this.mugWater = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.029, 32).rotateX(-Math.PI / 2), std('#d9d2bd', 0.05, 0, { clearcoat: 1 })), false);
-    this.mugWater.position.set(m.x, 0.06, m.z);
+    // The water rides inside the mug (a child of it), its surface dropping as the mug is poured out.
+    mugBody.add(this.mugWater);
+    this.mugWater.position.set(0, 0.06, 0);
 
     const bell = SPOTS.bell;
     const base = this.bellBase = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.038, 0.01, 32), std('#2a2522', 0.4)));
@@ -655,8 +662,8 @@ export class Props {
   // ---------- tools in use ----------
   // What travels when a tool is used: the tool and anything riding in it. The first entry is the pivot.
   _toolSet(id) {
-    if (id === 'T-MUG') return [...this.items['T-MUG'], this.mugWater];
-    if (id === 'T-BOWL') return [this.bowlModel, this.bowlFill, ...this.yolks, this.cheese, this.bowlPepper].filter(Boolean);
+    if (id === 'T-MUG') return [...this.items['T-MUG']];
+    if (id === 'T-BOWL') return [this.bowlModel, this.bowlFill, ...this.yolks, this.cheese, this.bowlPepper, this.bowlWater].filter(Boolean);
     if (id === 'WHISK') return [this.whisk];
     if (id === 'I-PECORINO') return [this.pecModel].filter(Boolean);
     if (/^EGG\d$/.test(id)) return [this.eggs?.[+id[3]]].filter(Boolean);
@@ -881,17 +888,19 @@ export class Props {
     // Egg bowl contents.
     const stage = w.bowlStage;
     this.yolks.forEach((y, i) => { y.visible = stage === 'eggs' && i < w.wholeEggs + w.yolks; });
-    this.bowlFill.visible = ['eggs', 'paste', 'tempered'].includes(stage) && (w.wholeEggs > 0 || stage !== 'eggs');
-    const fillColor = stage === 'paste' ? '#e9b24a' : stage === 'tempered' ? '#f0c56a' : '#f2e3b8';
+    this.bowlFill.visible = ['eggs', 'paste', 'watered', 'tempered'].includes(stage) && (w.wholeEggs > 0 || stage !== 'eggs');
+    const fillColor = stage === 'paste' || stage === 'watered' ? '#e9b24a' : stage === 'tempered' ? '#f0c56a' : '#f2e3b8';
     this.bowlFill.material.color.set(fillColor);
     this.bowlFill.position.y = stage === 'tempered' ? 0.028 : 0.02;
     this.cheese.visible = stage === 'eggs' && w.cheeseIn;
-    this.bowlPepper.visible = !!w.pepperIn && ['eggs', 'paste', 'tempered'].includes(stage);
+    this.bowlPepper.visible = !!w.pepperIn && ['eggs', 'paste', 'watered', 'tempered'].includes(stage);
     this.bowlPepper.position.y = stage === 'eggs' ? 0 : stage === 'tempered' ? -0.002 : -0.006;
     this.whites.visible = (w.whitesN || 0) > 0;
     this.whites.scale.y = 0.008 * Math.max(1, w.whitesN || 0);   // about 8 mm per white
 
-    this.mugWater.visible = w.mugFull;
+    this.mugWater.visible = w.mugFull && (w.mugLevel ?? 1) > 0.05;
+    this.mugWater.position.y = 0.008 + 0.06 * (w.mugLevel ?? 1);
+    this.bowlWater.visible = stage === 'watered';
     this.tongsPasta.visible = !!w.tongsPasta;
     this.nests.forEach((n, i) => {
       n.visible = w.plated > i;
