@@ -682,11 +682,11 @@ export class Props {
     stops.forEach((s, i) => {
       const at = V(s.at);
       const dir = s.toward ? V(s.toward).sub(at).setY(0).normalize() : null;
-      go(above(at), 0.55, { dir, up: s.upright ? 1 : cur.up });
-      go(at, 0.25, { dir });
+      go(above(at), 0.55, { dir, up: s.upright ? 1 : cur.up, tilt: s.tilt });   // tilt: held at an angle (tongs)
+      go(at, 0.25, { dir, tilt: s.tilt });
       segs.push({ from: cur, to: cur, dur: s.dur ?? 0.9, work: s.work, dir, first: i === 0, before: s.before, after: s.after });
       if (s.hold) { go(above(at, 0.07), 0.3, { dir }); return; }
-      go(above(at), 0.25, { dir });
+      go(above(at), 0.25, { dir, tilt: s.tilt });
     });
     if (!stops.at(-1)?.hold) {
       go(above(home), 0.55, { up: 0 });
@@ -725,6 +725,7 @@ export class Props {
       if (sg.work === 'twist') twist = ph * 2;
       if (sg.work === 'pour') tilt = 1.25 * w;
       if (sg.work === 'tip') tilt = 0.6 * w;
+      if (sg.work === 'toss') { p.y += 0.035 * Math.abs(Math.sin(ph * 2)); p.z += 0.015 * Math.sin(ph * 2); }   // lift and turn
       if (sg.work === 'crack') p.y -= 0.014 * Math.max(0, Math.sin(ph * 2));   // two taps on the rim
       const dir = sg.dir || sg.to.dir || sg.from.dir;
       if (dir && tilt) qa.setFromAxisAngle(new THREE.Vector3(dir.z, 0, -dir.x).normalize(), tilt); else qa.identity();

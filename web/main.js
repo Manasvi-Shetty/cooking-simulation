@@ -215,7 +215,7 @@ function freshState() {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
     potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
     oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, whitesN: 0, eggsUsed: 0, cheeseIn: false, mugFull: false,
-    plated: 0, tongsPasta: false, peppered: false, pepperIn: false, served: false, bellT: 0,
+    plated: 0, tongsPasta: false, oiled: false, peppered: false, pepperIn: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
     onCounter: new Set(),   // committed + whatever is ticked right now
   };
@@ -306,7 +306,7 @@ const VISUALS = {
   'A-7.1-02': () => { s.heat = 1; },
   // The tongs grip the pasta in the pot and carry it to the pan (TOOL_PATHS); on a step jump it's just there.
   'A-7.1-03': () => { if (jumping) { w.pastaInPot = false; Sim.addPasta(s); } },
-  'A-7.1-04': () => { w.tossT = 0.6; },
+  'A-7.1-04': () => { w.tossT = jumping ? 0 : 1.6; w.oiled = true; },
   'A-7.1-05': () => { w.waterLevel = 0.01; },
   'A-7.2-03': () => { w.bowlStage = 'tempered'; },
   'A-7.4-01': () => { w.bowlStage = 'empty'; Sim.addEggs(s); live = true; },
@@ -320,8 +320,10 @@ const VISUALS = {
 // Tools travel to where they're used, do their job and go home (props.useTool). The effect in
 // VISUALS plays once the tool arrives.
 const B = SPOTS.eggBowl;
-const PAN_C = [0, 0.075, -0.03], POT_C = [-0.56, 0.17, -0.08], BOWL_L = [-0.14, 0.09, 0.5], BOWL_R = [0.14, 0.09, 0.5];
+const PAN_C = [0, 0.075, -0.03], POT_C = [-0.56, 0.17, -0.08], POT_IN = [-0.56, 0.1, -0.06], BOWL_L = [-0.14, 0.09, 0.5], BOWL_R = [0.14, 0.09, 0.5];
 const tool = (id, ...stops) => () => props.useTool(id, stops);
+// Tongs work tips-down at an angle, the hinge end raised over the rim, so they never cut through a pan or pot.
+const T_AT = (c, work, extra = {}) => ({ at: c, work, tilt: 0.9, toward: [c[0], c[1], c[2] + 1], ...extra });
 // Eggs go one at a time to the vessel, tap twice on the rim and break open: the shell is gone and the
 // contents fall in. Whole eggs drop into the bowl; for separated ones the white falls into the cup and
 // the yolk is passed across to the bowl.
@@ -385,8 +387,8 @@ const crackEggs = (first, n, separate) => () => {
   return { arrived, done };
 };
 const TOOL_PATHS = {
-  'A-4.3-05': tool('T-TONGS', { at: PAN_C, work: 'dip' }),
-  'A-4.3-06': tool('T-TONGS', { at: PAN_C, work: 'stir' }),
+  'A-4.3-05': tool('T-TONGS', T_AT(PAN_C, 'dip')),
+  'A-4.3-06': tool('T-TONGS', T_AT(PAN_C, 'toss')),
   // Scoop: the tofu rides in the spoon; tip: it slides onto the resting plate.
   'A-4.4-02': tool('T-SLOTTED',
     { at: [0, 0.075, -0.03], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
@@ -396,13 +398,14 @@ const TOOL_PATHS = {
   'A-5.4-01': grate([[B.x, 0.026, B.z]], { onEnd: () => { w.cheeseIn = true; } }),
   'A-5.4-02': crackPepper([[B.x, 0.03, B.z]], () => { w.pepperIn = true; }),
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
-  'A-6.2-03': tool('T-TONGS', { at: POT_C, work: 'stir', dur: 1.2 }),
+  'A-6.2-03': tool('T-TONGS', T_AT(POT_IN, 'stir', { dur: 1.2 })),
   'A-7.1-01': tool('T-MUG', { at: [POT_C[0], 0.12, POT_C[2]], work: 'dip' }),
   // Grip a bunch of pasta in the pot (it hangs from the tips), carry it over and let it go in the pan.
   'A-7.1-03': tool('T-TONGS',
-    { at: POT_C, work: 'dip', after: () => { w.pastaInPot = false; w.tongsPasta = true; } },
-    { at: PAN_C, work: 'dip', before: () => { w.tongsPasta = false; Sim.addPasta(s); } }),
-  'A-7.1-04': tool('T-TONGS', { at: PAN_C, work: 'stir', dur: 1.2 }),
+    T_AT(POT_IN, 'dip', { after: () => { w.pastaInPot = false; w.tongsPasta = true; } }),
+    T_AT(PAN_C, 'dip', { before: () => { w.tongsPasta = false; Sim.addPasta(s); } })),
+  // Lift-and-turn tosses: the strands jump and fall back, glossing with the oil (VISUALS).
+  'A-7.1-04': tool('T-TONGS', T_AT(PAN_C, 'toss', { dur: 1.6 })),
   'A-7.2-01': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 1.2 }),
   'A-7.2-02': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
   'A-7.2-04': tool('T-MUG', { at: [B.x + 0.08, 0.1, B.z + 0.03], work: 'pour', toward: [B.x, 0, B.z], dur: 0.6 }),
@@ -414,10 +417,10 @@ const TOOL_PATHS = {
     { at: [PAN_C[0], 0.11, PAN_C[2]], work: 'tip', toward: [PAN_C[0] - 0.1, 0, PAN_C[2]], before: () => { w.tofuStage = 'pile'; } }),
   // Twice: grip pasta in the pan, carry it to a bowl and twirl it into a nest there.
   'A-8.2-02': tool('T-TONGS',
-    { at: PAN_C, work: 'dip', after: () => { w.tongsPasta = true; } },
-    { at: BOWL_L, work: 'twist', before: () => { w.tongsPasta = false; w.plated = 1; } },
-    { at: PAN_C, work: 'dip', after: () => { w.tongsPasta = true; } },
-    { at: BOWL_R, work: 'twist', before: () => { w.tongsPasta = false; w.plated = 2; Object.assign(w, { served: true, tofuStage: 'served' }); } }),
+    T_AT(PAN_C, 'dip', { after: () => { w.tongsPasta = true; } }),
+    T_AT(BOWL_L, 'twist', { before: () => { w.tongsPasta = false; w.plated = 1; } }),
+    T_AT(PAN_C, 'dip', { after: () => { w.tongsPasta = true; } }),
+    T_AT(BOWL_R, 'twist', { before: () => { w.tongsPasta = false; w.plated = 2; Object.assign(w, { served: true, tofuStage: 'served' }); } })),
   'A-8.2-03': crackPepper([[BOWL_L[0], 0.06, BOWL_L[2]], [BOWL_R[0], 0.06, BOWL_R[2]]], () => { w.peppered = true; }),
   'A-8.2-04': grate([[BOWL_L[0], 0.05, BOWL_L[2]], [BOWL_R[0], 0.05, BOWL_R[2]]], { keep: true }),
 };

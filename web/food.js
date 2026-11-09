@@ -439,14 +439,19 @@ export class Food {
 
     // Pasta drops in from above, and leaves the pan once it's plated.
     this.pasta.visible = s.pastaIn && !w.served;
-    this.pasta.position.y = (1 - k) * 0.12;
+    // Tossing: the strands jump and turn in the pan.
+    const toss = s.pastaIn && w.tossT > 0 ? Math.abs(Math.sin(w.tossT * Math.PI * 2.5)) : 0;
+    this.pasta.position.y = (1 - k) * 0.12 + toss * 0.02;
+    this.pasta.rotation.y = s.pastaIn && w.tossT > 0 ? Math.sin(w.tossT * Math.PI * 1.25) * 0.35 : this.pasta.rotation.y * 0.9;
+    this.oilT = (this.oilT ?? 0) + ((w.oiled ? 1 : 0) - (this.oilT ?? 0)) * Math.min(1, dt * 1.5);
 
     // Pasta and sauce colour: fat-glossed, then raw yolk, silky, or scrambled.
     const mat = this.pastaMat, pool = this.saucePool.material;
     if (!s.eggsIn) {
-      mat.color.copy(COLORS.pasta).lerp(COLORS.pastaFat, s.pastaIn ? 0.5 : 0);
-      mat.roughness = 0.42;
-      mat.clearcoat = 0.35;
+      // Plain from the pot; tossing coats every strand in the golden, flavoured oil.
+      mat.color.copy(COLORS.pasta).lerp(COLORS.pastaFat, s.pastaIn ? 0.15 + 0.6 * this.oilT : 0);
+      mat.roughness = 0.5 - 0.3 * this.oilT;
+      mat.clearcoat = 0.15 + 0.6 * this.oilT;
       pool.opacity = 0;
     } else {
       const silk = smooth(0.05, 0.7, s.thicken);
