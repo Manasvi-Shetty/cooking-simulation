@@ -557,6 +557,9 @@ export class Props {
     pec.scale.setScalar(0.6);
     pec.position.set(0.86, 0, -0.16);
     pec.rotation.y = -0.5;
+    // One piece of pecorino: the model's loose shard is dropped so only the wedge goes to the grater.
+    const shard = pec.getObjectByName('Shard');
+    if (shard) shard.parent.remove(shard);
     this.root.add(pec);
     hide([cheese]);
     this.followers = [[pec, cheese], [knife, this.items['T-KNIFE'][0]]];
