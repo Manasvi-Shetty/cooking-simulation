@@ -468,8 +468,6 @@ def act(sub, order, inter, src, srcloc, tgt, param, correct, outcome, ok_fb, bad
 S = "Scene"; RP = "Right panel"
 act("S2.1", 1, "Click", "I-TOFU", S, "", "Open the pack", "Correct", "Perfect",
     "", "Open the pack and drain it before anything else.", "NEXT", 0)
-act("S2.1", "-", "Click", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
-    "", "Gently! You've cracked it. We'll still get cubes, but some will crumble.", "NEXT", -5, "tofu_cracked = true")
 
 act("S2.2", 1, "Drag", "T-TOWELS", RP, "E-BOARD", "First towel under the tofu", "Correct", "Perfect",
     "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
