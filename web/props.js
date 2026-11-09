@@ -214,11 +214,11 @@ export class Props {
     // Spaghetti in the pot: a loose bundle of curved strands under the water line.
     const strands = [];
     for (let i = 0; i < 40; i++) {
-      const a = (i / 40) * Math.PI * 2, r = 0.02 + (i % 5) * 0.012;
+      const a = (i / 40) * Math.PI * 2, r = 0.015 + (i % 5) * 0.01;   // all inside the pot wall (r < 0.09)
       const pts = [];
       for (let k = 0; k < 10; k++) {
         const t = k / 9, ang = a + t * 2.4;
-        pts.push(new THREE.Vector3(Math.cos(ang) * (r + t * 0.05), 0.02 + t * 0.07, Math.sin(ang) * (r + t * 0.05)));
+        pts.push(new THREE.Vector3(Math.cos(ang) * (r + t * 0.033), 0.02 + t * 0.07, Math.sin(ang) * (r + t * 0.033)));
       }
       strands.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.0011, 5, false));
     }
