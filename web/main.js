@@ -801,7 +801,8 @@ function checkLines(sub, wrong, missing) {
   const extra = missing && wrong.length ? sub.mixedMissing : '';
   if (wrong.length > 1 && sub.multiWrong) return [[sub.multiWrong.replace('{items}', list), extra].filter(Boolean).join(' ')];
   const lines = wrong.map((o) => ({ b: o.label, t: o.feedback }));
-  if (extra && lines.length === 1) lines[0].t += ` ${extra}`;
+  // A mixedMissing starting with "=" is the whole line for one wrong pick plus a gap (storyboard 2.4).
+  if (extra && lines.length === 1) lines[0].t = extra.startsWith('=') ? extra.slice(1) : `${lines[0].t} ${extra}`;
   else if (missing) lines.push(sub.incomplete || 'Something is missing.');
   return lines;
 }

@@ -107,7 +107,7 @@
    "type": "Procedure",
    "required": "Yes",
    "left": "Open the tofu pack to drain the packing water.",
-   "right": "2 Kitchen Towels, Heavy Skillet (not usable yet)",
+   "right": "2 Kitchen Towels, Cast-iron Skillet (not usable yet)",
    "tip": "T-2.1",
    "camera": "Cutting board",
    "passRule": "Action A-2.1-01.",
@@ -141,7 +141,7 @@
    "type": "Procedure",
    "required": "Yes",
    "left": "Draw out moisture from the tofu.",
-   "right": "2 Kitchen Towels, Heavy Skillet",
+   "right": "2 Kitchen Towels, Cast-iron Skillet",
    "tip": "",
    "camera": "Cutting board",
    "passRule": "Actions A-2.2-01 to 03 in order.",
@@ -156,7 +156,7 @@
    "tooEarly": null,
    "wrongSpot": {
     "T-TOWELS": "One towel under the tofu, one on top. Try again.",
-    "E-WEIGHT": "The Heavy Skillet goes on top of the tofu to press it."
+    "E-WEIGHT": "The Cast-iron Skillet goes on top of the tofu to press it."
    },
    "shortHold": null,
    "wrongDecoys": null
@@ -205,7 +205,7 @@
    "sceneState": "Pressed tofu block on the board.",
    "notes": "Cutting pattern: slabs, then strips, then cubes.",
    "multiWrong": "",
-   "mixedMissing": "And you'll need more cuts to get to even 1 cm cubes.",
+   "mixedMissing": "=Too big. 3 cm chunks crisp outside but stay soft inside. And you'll need more cuts to get to even 1 cm cubes.",
    "tooEarly": null,
    "wrongSpot": null,
    "shortHold": null,
@@ -1045,7 +1045,7 @@
   {
    "id": "O-1.2-b",
    "sub": "S1.2",
-   "label": "Heavy Skillet",
+   "label": "Cast-iron Skillet",
    "item": "T-SKILLET",
    "correctness": "Correct",
    "outcome": "Perfect",
@@ -1712,7 +1712,7 @@
    "source": "E-WEIGHT",
    "srcLoc": "Right panel",
    "target": "I-TOFU",
-   "param": "Heavy skillet on top as a weight",
+   "param": "Cast-iron Skillet on top as a weight",
    "correctness": "Correct",
    "outcome": "Perfect",
    "okFb": "",
@@ -3039,7 +3039,7 @@
   "T-6.1": {
    "id": "T-6.1",
    "sub": "S6.1",
-   "title": "Season the water, gently",
+   "title": "Seasoning the Water",
    "text": "Pasta water should taste seasoned, not like the sea. In carbonara, go lighter: the water ends up in a sauce full of salty pecorino.",
    "button": "OK"
   },
@@ -3285,7 +3285,7 @@
   },
   "E-WEIGHT": {
    "id": "E-WEIGHT",
-   "name": "Heavy Skillet",
+   "name": "Cast-iron Skillet",
    "location": "Right panel",
    "description": "Spare cast-iron pan used as a press",
    "interactions": "Drag on top of tofu"

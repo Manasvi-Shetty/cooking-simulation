@@ -132,7 +132,9 @@
   #side {
     position: absolute; top: var(--gutter); bottom: var(--gutter); left: max(var(--gutter), env(safe-area-inset-left, 0px));
     width: var(--panel-w); display: flex; flex-direction: column; gap: 10px;
+    pointer-events: none;   /* the empty column below the cards must not block the kitchen */
   }
+  #side > .panel { pointer-events: auto; }
   .panel {
     box-sizing: border-box; padding: 18px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; min-height: 0;
     background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(14px);

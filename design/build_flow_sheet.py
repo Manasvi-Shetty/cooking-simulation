@@ -121,13 +121,13 @@ FLOW = [
      "Tools on the counter; the chosen ingredients appear together when the picks pass the check.", "Decoys teach the classic mistakes (cream, garlic, meat)."),
     (2, "Press and Cube the Tofu", "S2.1", "Open the tofu pack", "Procedure", "Yes",
      "Open the tofu pack to drain the packing water.",
-     "2 Kitchen Towels, Heavy Skillet (not usable yet)", "T-2.1", "Cutting board",
+     "2 Kitchen Towels, Cast-iron Skillet (not usable yet)", "T-2.1", "Cutting board",
      "Action A-2.1-01.", "", 3, "S2.2",
      "Packing water has to go before pressing can draw out the water inside.",
      "Tofu package on the board.", ""),
     (2, "Press and Cube the Tofu", "S2.2", "Press the tofu", "Procedure", "Yes",
      "Draw out moisture from the tofu.",
-     "2 Kitchen Towels, Heavy Skillet", "", "Cutting board",
+     "2 Kitchen Towels, Cast-iron Skillet", "", "Cutting board",
      "Actions A-2.2-01 to 03 in order.", "", 3, "S2.3",
      "Water on the surface turns to steam and stops browning. Dry tofu crisps; wet tofu steams.",
      "Drained tofu block on the board.", ""),
@@ -282,7 +282,8 @@ MULTI_FEEDBACK = {
              "And something's still missing. Think through each stage again."),
     "S1.3": ("Some of these don't belong in this carbonara: {items}. Read the order again: no meat, no cream, and keep it Roman.",
              "And you're short of something. Check the order again."),
-    "S2.4": ("", "And you'll need more cuts to get to even 1 cm cubes."),
+    # A leading "=" replaces the single wrong pick's line instead of being added to it.
+    "S2.4": ("", "=Too big. 3 cm chunks crisp outside but stay soft inside. And you'll need more cuts to get to even 1 cm cubes."),
     "S8.1": ("{items} would cover up the flavours this dish is built on. A Roman carbonara is finished simply, with things already on your counter.",
              "And the classic finish is still missing something."),
 }
@@ -298,7 +299,7 @@ TOO_EARLY = {
 }
 WRONG_SPOT = {
     "S3.1": "T-POT [E-BURNER-BACK E-COUNTER]: The pot needs to go under the tap. Put it in the sink.",
-    "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The Heavy Skillet goes on top of the tofu to press it.",
+    "S2.2": "T-TOWELS: One towel under the tofu, one on top. Try again. | E-WEIGHT: The Cast-iron Skillet goes on top of the tofu to press it.",
     "S4.2": "I-OIL [T-POT]: The oil goes into the skillet.",
     "S4.3": "I-TOFU [T-POT]: The tofu goes into the hot skillet.",
     "S4.4": "T-SKILLET [E-COUNTER]: Put the tofu on the resting plate so it stays crisp.",
@@ -357,7 +358,7 @@ for label, item, cor, out, fb in [
 
 for label, item, cor, out, fb in [
     ("Large Pot with Lid", "T-POT", "Correct", "Perfect", "Big pot, lots of room for the spaghetti to move."),
-    ("Heavy Skillet", "T-SKILLET", "Correct", "Perfect", "Heavy pans hold heat evenly. Great for crisping tofu."),
+    ("Cast-iron Skillet", "T-SKILLET", "Correct", "Perfect", "Heavy pans hold heat evenly. Great for crisping tofu."),
     ("Chef's Knife and Board", "T-KNIFE", "Correct", "Perfect", "For neat 1 cm cubes."),
     ("2 Kitchen Towels", "T-TOWELS", "Correct", "Perfect", "To press the water out of the tofu."),
     ("Box Grater", "T-GRATER", "Correct", "Perfect", "We'll use its finest side."),
@@ -474,7 +475,7 @@ act("S2.2", 1, "Drag", "T-TOWELS", RP, "E-BOARD", "First towel under the tofu", 
     "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
 act("S2.2", 2, "Drag", "T-TOWELS", RP, "I-TOFU", "Second towel on top", "Correct", "Perfect",
     "", "The first towel goes on the board, underneath the tofu, to catch the water.", "NEXT", 0)
-act("S2.2", 3, "Drag", "E-WEIGHT", RP, "I-TOFU", "Heavy skillet on top as a weight", "Correct", "Perfect",
+act("S2.2", 3, "Drag", "E-WEIGHT", RP, "I-TOFU", "Cast-iron Skillet on top as a weight", "Correct", "Perfect",
     "", "The weight goes on last, on top of the towels.", "NEXT", 0, "tofu_pressing = true")
 act("S2.2", "-", "Click", "I-TOFU", S, "", "Squeeze the block hard by hand", "Incorrect", "Degraded",
     "", "Gently! You've cracked it. We'll still get cubes, but some will crumble.", "NEXT", -5, "tofu_cracked = true")
@@ -640,7 +641,7 @@ TIPS = [
     ("T-4.4", "S4.4", "Reusing the Oil", "The oil in the pan now tastes of crispy, smoky tofu. It becomes the fat in your sauce, so don't pour it away.", "OK"),
     ("T-5.2", "S5.2", "Yolks for richness", "Extra yolks make the sauce golden, rich and more forgiving, because yolks set at a higher temperature than whites.", "OK"),
     ("T-5.3", "S5.3", "Finer is better", "The finer the cheese, the faster and more evenly it melts into the egg. Coarse shreds go stringy and clump.", "OK"),
-    ("T-6.1", "S6.1", "Season the water, gently", "Pasta water should taste seasoned, not like the sea. In carbonara, go lighter: the water ends up in a sauce full of salty pecorino.", "OK"),
+    ("T-6.1", "S6.1", "Seasoning the Water", "Pasta water should taste seasoned, not like the sea. In carbonara, go lighter: the water ends up in a sauce full of salty pecorino.", "OK"),
     ("T-6.3", "S6.3", "One minute early", "Pull the pasta a minute before al dente. It finishes cooking in the pan while the sauce comes together.", "OK"),
     ("T-7.1", "S7.1", "Never drain carbonara pasta", "Save a mug of pasta water first, then lift the pasta straight into the pan with tongs. The starchy water binds the sauce.", "OK"),
     ("T-7.2", "S7.2", "Temper the eggs", "Whisk a little hot pasta water into the eggs before they go near the pan. It warms them gently, so they thicken instead of scrambling.", "OK"),
@@ -679,7 +680,7 @@ ITEMS = [
     ("T-TRAY", "Baking tray (decoy)", "Right panel", "Sheet pan", "Select (incorrect)"),
     ("E-BOARD", "Cutting board", "Scene", "Wooden board on the counter", "Drop target"),
     ("E-CUT-GUIDES", "Cutting guides", "Scene", "Dashed lines projected on the tofu; sets A, B, C (correct) and X (decoy)", "Click a line set to cut"),
-    ("E-WEIGHT", "Heavy Skillet", "Right panel", "Spare cast-iron pan used as a press", "Drag on top of tofu"),
+    ("E-WEIGHT", "Cast-iron Skillet", "Right panel", "Spare cast-iron pan used as a press", "Drag on top of tofu"),
     ("E-SINK", "Sink", "Scene", "Sink to the left of the stove", "Drop target"),
     ("E-TAP", "Tap", "Scene", "Mixer tap", "Hold to fill"),
     ("T-LID", "Pot lid", "Scene", "The large pot's lid, resting on the counter", "Drag onto the pot"),
