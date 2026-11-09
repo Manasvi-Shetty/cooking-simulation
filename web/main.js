@@ -418,17 +418,17 @@ const TOOL_PATHS = {
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
   'A-6.2-03': tool('T-TONGS', T_AT(POT_IN, 'stir', { dur: 1.2, jaw: [0.35, 0.35] })),
   'A-7.1-01': tool('T-MUG', { at: [POT_C[0], 0.12, POT_C[2]], work: 'dip' }),
-  // Pot to pan, framed so both are in view: three times the tongs open into the pot, close on a big
-  // handful of pasta (it hangs from the tips), lift it high over the pot's rim, carry it across, lower it
-  // into the pan and open to leave it there. The pot is empty after the third handful.
+  // Pot to pan, framed so both are in view: twice the tongs open into the pot, close on a big load of
+  // pasta (it hangs from the tips), lift it high over the pot's rim, carry it across, lower it into the
+  // pan and open to leave it there. The pot is empty after the second load.
   'A-7.1-03': () => {
     setView('Stove wide');
     w.panPastaFill = 0;
-    return props.useTool('T-TONGS', [[0, 0], [0.025, 0.02], [-0.025, -0.015]].flatMap(([dx, dz], k) => [
+    return props.useTool('T-TONGS', [[0.025, 0.02], [-0.025, -0.015]].flatMap(([dx, dz], k) => [
       T_AT([POT_IN[0] + dx, POT_IN[1], POT_IN[2] + dz], 'dip', { dur: 0.8, clear: 0.24, jaw: [1, 0.08, 0, 0.6],
-        after: () => { w.tongsPasta = 'load'; w.potPastaLeft = (2 - k) / 3; if (k === 2) w.pastaInPot = false; } }),
+        after: () => { w.tongsPasta = 'load'; w.potPastaLeft = (1 - k) / 2; if (k === 1) w.pastaInPot = false; } }),
       T_AT([PAN_C[0] - dx, PAN_C[1] + 0.01, PAN_C[2] + dz], 'place', { dur: 0.7, clear: 0.2, jaw: [0.08, 1, 0.1, 0.5],
-        before: () => { w.panPastaFill = (k + 1) / 3; if (k === 0) Sim.addPasta(s); }, after: () => { w.tongsPasta = false; } }),
+        before: () => { w.panPastaFill = (k + 1) / 2; if (k === 0) Sim.addPasta(s); }, after: () => { w.tongsPasta = false; } }),
     ]));
   },
   // Tossing with tongs: three times the tongs grip a bunch of pasta, lift it high above the pan, shake it
