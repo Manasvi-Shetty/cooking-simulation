@@ -331,10 +331,10 @@ const grate = (spots, { keep = false, onEnd } = {}) => () => {
   const r = () => Math.random() - 0.5;
   const g = props.useTool('T-GRATER', spots.map(([x, y, z]) => ({ at: [x, y + 0.11, z], dur: 1.5 })));
   const c = props.useTool('I-PECORINO', spots.map(([x, y, z], k) => ({
-    at: [x + 0.05, y + 0.07, z], work: 'grate', dur: 1.4,
+    at: [x + 0.052, y + 0.15, z], work: 'grate', dur: 1.4,   // pressed against the grater's face, mid-height
     before: () => {
       for (let n = 0; n < 18; n++) {
-        props.drop({ from: [x + 0.01 + r() * 0.02, y + 0.05, z + r() * 0.03], to: [x + r() * 0.05, y, z + r() * 0.05],
+        props.drop({ from: [x + r() * 0.04, y + 0.11, z + r() * 0.03], to: [x + r() * 0.05, y, z + r() * 0.05],
           shred: true, keep, delay: 0.1 + n * 0.07 });
       }
     },
