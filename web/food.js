@@ -405,10 +405,14 @@ export class Food {
     const follow = 1 - Math.exp(-dt * (stage === 'spoon' ? 40 : 6));
     w.tossT = Math.max(0, w.tossT - dt);
     this.guanciale.forEach((g, i) => {
-      g.mesh.visible = !!key;
-      if (!key) return;
-      let target = g[key];
-      if (stage === 'spoon' && w.spoonAt) {
+      // Most of the tofu is folded into the pasta; every fourth cube stays on the resting plate, kept back
+      // to go on top of the bowls (it leaves the plate once they're served).
+      const kept = i % 4 === 3 && (stage === 'spoon' || stage === 'pile');
+      const myKey = kept ? 'platePos' : key;
+      g.mesh.visible = !!myKey;
+      if (!myKey) return;
+      let target = g[myKey];
+      if (stage === 'spoon' && w.spoonAt && !kept) {
         const o = g.floorPos.clone().sub(this._panMid).multiplyScalar(0.3);
         target = new THREE.Vector3(w.spoonAt.x + o.x, w.spoonAt.y + 0.014 + (i % 3) * 0.007, w.spoonAt.z + o.z);
       }
@@ -416,8 +420,8 @@ export class Food {
       g.mesh.position.x += (target.x - g.mesh.position.x) * follow;
       g.mesh.position.z += (target.z - g.mesh.position.z) * follow;
       g.mesh.position.y += (target.y + jump - g.mesh.position.y) * follow;
-      if (stage === 'pile') g.mesh.rotation.set(g.tilt.x, g.tilt.y, g.tilt.z);
-      else g.mesh.rotation.set(0, stage === 'cubes' ? 0 : g.spin + (w.flips || 0) * 1.57, 0);
+      if (stage === 'pile' && !kept) g.mesh.rotation.set(g.tilt.x, g.tilt.y, g.tilt.z);
+      else g.mesh.rotation.set(0, stage === 'cubes' || kept ? 0 : g.spin + (w.flips || 0) * 1.57, 0);
     });
 
     // Oil: a thin clear film on the pan floor once it's poured, mostly soaked up by the pasta.
