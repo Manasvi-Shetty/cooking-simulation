@@ -23,7 +23,7 @@ export const SPOTS = {
   plate: new THREE.Vector3(-0.3, 0, 0.36),
   mug: new THREE.Vector3(0.42, 0, 0.3),
   slotted: new THREE.Vector3(-0.12, 0.012, 0.175),   // on the cooktop, in front of the burner grate
-  tongs: new THREE.Vector3(-0.2, 0.012, 0.2),          // tips at the front; lies front-to-back on the cooktop's left edge (Stove and Pot views)
+  tongs: new THREE.Vector3(-0.2, 0.022, 0.2),          // tips at the front; lies front-to-back on the cooktop's left edge (Stove and Pot views)
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
   bell: new THREE.Vector3(0.62, 0, 0.45),
   // Five eggs (2 whole + 3 separated): a front row of three, two staggered behind.
@@ -368,18 +368,46 @@ export class Props {
     this.root.add(spoon);
     this.items['T-SLOTTED'] = [spoon];
 
+    // Spring kitchen tongs: two flat steel bands joined at a hinge (with a pull-ring lock), black silicone
+    // grips, and cupped, scalloped silicone heads at the tips. Tips at the group's origin, hinge along +x;
+    // the arms open in the group's x-y plane (one above the other), so held from the side they open as a V.
     const tongs = new THREE.Group();
-    for (const s of [-1, 1]) {
-      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.004, 0.012), this.steel);
-      arm.position.set(0.11, 0.004 + (s > 0 ? 0.005 : 0), s * 0.012);
-      arm.rotation.y = -s * 0.07;
-      const tip = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.006, 0.016), std('#2d2d2d', 0.7));
-      tip.position.set(0.012, 0.004 + (s > 0 ? 0.005 : 0), s * 0.004);
-      tongs.add(arm, tip);
+    const TL = 0.24, sil = std('#1d1d1f', 0.75);
+    this.tongsArms = [];
+    for (const s of [1, -1]) {
+      const pivot = new THREE.Group();
+      pivot.position.set(TL, s * 0.006, 0);
+      const band = new THREE.Mesh(new THREE.BoxGeometry(TL - 0.035, 0.0016, 0.014), this.steel);
+      band.position.set(-(TL + 0.035) / 2, 0, 0);
+      const grip = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.0035, 0.016), sil);
+      grip.position.set(-0.065, s * 0.0016, 0);
+      // The head: a slightly wider cupped pad turned in at the tip, with scalloped teeth on its inner face.
+      const head = new THREE.Group();
+      head.position.set(-TL, 0, 0);
+      const pad = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.003, 0.022), sil);
+      pad.position.set(0.021, 0, 0);
+      const lip = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.022, 10), sil);
+      lip.rotation.x = Math.PI / 2;
+      lip.position.set(0.001, -s * 0.0025, 0);
+      head.add(pad, lip);
+      for (let k = 0; k < 4; k++) {
+        const tooth = new THREE.Mesh(new THREE.CylinderGeometry(0.0022, 0.0022, 0.02, 8, 1, false, 0, Math.PI), sil);
+        tooth.rotation.set(Math.PI / 2, 0, s > 0 ? Math.PI : 0);
+        tooth.position.set(0.008 + k * 0.009, -s * 0.0015, 0);
+        head.add(tooth);
+      }
+      pivot.add(band, grip, head);
+      tongs.add(pivot);
+      this.tongsArms.push([pivot, s]);
     }
-    const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.016, 16), this.darkSteel);
-    hinge.position.set(0.215, 0.008, 0);
-    tongs.add(hinge);
+    const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 0.018, 16), this.darkSteel);
+    hinge.rotation.x = Math.PI / 2;
+    hinge.position.set(TL, 0, 0);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.009, 0.0015, 8, 20), this.steel);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.set(TL + 0.013, 0, 0);
+    tongs.add(hinge, ring);
+    this.tongsJaw = 0;
     tongs.position.copy(tg);
     tongs.rotation.y = Math.PI / 2;
     tongs.traverse((m) => { m.castShadow = m.receiveShadow = true; });
@@ -644,7 +672,7 @@ export class Props {
       'E-BOWLS': v(0, 0.07, SPOTS.bowls[0].z),
       'E-BELL': v(SPOTS.bell.x, 0.07, SPOTS.bell.z),
       'T-SLOTTED': v(SPOTS.slotted.x, 0.027, SPOTS.slotted.z),
-      'T-TONGS': v(SPOTS.tongs.x, 0.027, SPOTS.tongs.z - 0.11),
+      'T-TONGS': v(SPOTS.tongs.x, 0.03, SPOTS.tongs.z - 0.12),
       'I-PECORINO': v(0.86, 0.045, -0.16),
       'I-PEPPER': v(0.4, 0.14, -0.33),
       'I-EGGS': v(0.71, 0.045, -0.28),   // middle of the five eggs
@@ -683,21 +711,27 @@ export class Props {
     const V = (a) => (a.isVector3 ? a.clone() : new THREE.Vector3(...a));
     const segs = [];
     let cur = { ...prev, p: prev.p.clone() };
-    const go = (p, dur, extra = {}) => { const n = { p: V(p), tilt: extra.tilt ?? 0, up: extra.up ?? cur.up, dir: extra.dir || cur.dir }; segs.push({ from: cur, to: n, dur, ...extra }); cur = n; };
+    const go = (p, dur, extra = {}) => {
+      const n = { p: V(p), tilt: extra.tilt ?? 0, yaw: extra.yaw ?? 0, jaw: extra.jaw ?? cur.jaw ?? 0, up: extra.up ?? cur.up, dir: extra.dir || cur.dir };
+      segs.push({ from: cur, to: n, dur, ...extra, jaw: undefined }); cur = n;
+    };
     const above = (p, h = 0.09) => V(p).setY(Math.max(V(p).y, home.y) + h);
     go(above(cur.p, 0.08), 0.25, { up: stops.some((s) => s.upright) ? 1 : 0 });
     stops.forEach((s, i) => {
       const at = V(s.at);
       const dir = s.toward ? V(s.toward).sub(at).setY(0).normalize() : null;
-      go(above(at), 0.55, { dir, up: s.upright ? 1 : cur.up, tilt: s.tilt });   // tilt: held at an angle (tongs)
-      go(at, 0.25, { dir, tilt: s.tilt });
-      segs.push({ from: cur, to: cur, dur: s.dur ?? 0.9, work: s.work, dir, first: i === 0, before: s.before, after: s.after });
+      // tilt/yaw: held at an angle (tongs); jaw: [open at the start of the work, at its end, (from, to) fractions]
+      const jaw = s.jaw || [cur.jaw ?? 0, cur.jaw ?? 0];
+      go(above(at), 0.55, { dir, up: s.upright ? 1 : cur.up, tilt: s.tilt, yaw: s.yaw, jaw: jaw[0] });
+      go(at, 0.25, { dir, tilt: s.tilt, yaw: s.yaw, jaw: jaw[0] });
+      segs.push({ from: cur, to: cur, dur: s.dur ?? 0.9, work: s.work, dir, first: i === 0, before: s.before, after: s.after, jawW: jaw });
+      cur = { ...cur, jaw: jaw[1] };
       if (s.hold) { go(above(at, 0.07), 0.3, { dir }); return; }
-      go(above(at), 0.25, { dir, tilt: s.tilt });
+      go(above(at), 0.25, { dir, tilt: s.tilt, yaw: s.yaw });
     });
     if (!stops.at(-1)?.hold) {
-      go(above(home), 0.55, { up: 0 });
-      go(home, 0.25, { up: 0 });
+      go(above(home), 0.55, { up: 0, jaw: 0 });
+      go(home, 0.25, { up: 0, jaw: 0 });
     }
     let arrivedRes, doneRes;
     const arrived = new Promise((r) => { arrivedRes = r; }), done = new Promise((r) => { doneRes = r; });
@@ -723,6 +757,13 @@ export class Props {
       const k = ease(clamp(an.t / sg.dur));
       const p = sg.from.p.clone().lerp(sg.to.p, k);
       let tilt = sg.from.tilt + (sg.to.tilt - sg.from.tilt) * k, twist = 0;
+      const yaw = (sg.from.yaw ?? 0) + ((sg.to.yaw ?? 0) - (sg.from.yaw ?? 0)) * k;
+      if (id === 'T-TONGS') {   // how far the jaws are open: 0 shut, 1 wide
+        if (sg.jawW) {
+          const [a, b, f0 = 0, f1 = 0.5] = sg.jawW;
+          this.tongsJaw = a + (b - a) * ease(clamp((an.t / sg.dur - f0) / (f1 - f0)));
+        } else this.tongsJaw = (sg.from.jaw ?? 0) + ((sg.to.jaw ?? 0) - (sg.from.jaw ?? 0)) * k;
+      }
       const u = sg.from.up + (sg.to.up - sg.from.up) * k;
       const w = Math.sin(Math.PI * clamp(an.t / sg.dur));   // work envelope
       const ph = (an.t / sg.dur) * Math.PI * 2;
@@ -736,6 +777,7 @@ export class Props {
       if (sg.work === 'crack') p.y -= 0.014 * Math.max(0, Math.sin(ph * 2));   // two taps on the rim
       const dir = sg.dir || sg.to.dir || sg.from.dir;
       if (dir && tilt) qa.setFromAxisAngle(new THREE.Vector3(dir.z, 0, -dir.x).normalize(), tilt); else qa.identity();
+      qa.multiply(qb.setFromAxisAngle(Y, yaw));
       qb.setFromAxisAngle(Y, twist);
       qa.multiply(qb);
       an.set.forEach((o, n) => {
@@ -829,6 +871,7 @@ export class Props {
     for (const id of Object.keys(this.toolAnims || {})) { this.toolAnims[id].arrivedRes(); this.toolAnims[id].doneRes(); }
     this.toolAnims = {};
     this.toolPose = {};
+    this.tongsJaw = 0;
     (this.drops || []).forEach((d) => { this.root.remove(d.g); d.res(); });
     this.drops = [];
     (this.streams || []).forEach((s) => this.root.remove(s.m));
@@ -936,6 +979,8 @@ export class Props {
     this.mugWater.visible = w.mugFull && (w.mugLevel ?? 1) > 0.05;
     this.mugWater.position.y = 0.008 + 0.06 * (w.mugLevel ?? 1);
     this.bowlWater.visible = stage === 'watered';
+    // Tongs' jaws: shut (tips touching) at 0, about 7 cm apart at 1.
+    this.tongsArms.forEach(([pivot, s]) => { pivot.rotation.z = s * (0.0125 - this.tongsJaw * 0.135); });
     this.tongsPasta.visible = !!w.tongsPasta;
     this.tongsPasta.scale.setScalar(w.tongsPasta === 'toss' ? 1.9 : 1);   // a big handful when tossing
     // The strands always hang straight down from the tips, however the tongs are tilted.

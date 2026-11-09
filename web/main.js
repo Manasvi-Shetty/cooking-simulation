@@ -326,8 +326,10 @@ const VISUALS = {
 const B = SPOTS.eggBowl;
 const PAN_C = [0, 0.075, -0.03], POT_C = [-0.56, 0.17, -0.08], POT_IN = [-0.56, 0.1, -0.06], BOWL_L = [-0.14, 0.09, 0.5], BOWL_R = [0.14, 0.09, 0.5];
 const tool = (id, ...stops) => () => props.useTool(id, stops);
-// Tongs work tips-down at an angle, the hinge end raised over the rim, so they never cut through a pan or pot.
-const T_AT = (c, work, extra = {}) => ({ at: c, work, tilt: 0.9, toward: [c[0], c[1], c[2] + 1], ...extra });
+// Tongs are held from the right like a cook holds them: hinge up and to the right over the rim, tips down
+// in the pan or pot, jaws opening as a V. GRAB: open as they go in, close on the food. RELEASE: open to let go.
+const T_AT = (c, work, extra = {}) => ({ at: c, work, tilt: 0.95, yaw: -Math.PI / 2, toward: [c[0] - 1, c[1], c[2]], ...extra });
+const GRAB = [1, 0.08], RELEASE = [0.08, 1];
 // Eggs go one at a time to the vessel, tap twice on the rim and break open: the shell is gone and the
 // contents fall in. Whole eggs drop into the bowl; for separated ones the white falls into the cup and
 // the yolk is passed across to the bowl.
@@ -401,8 +403,8 @@ const crackEggs = (first, n, separate) => () => {
   return { arrived, done };
 };
 const TOOL_PATHS = {
-  'A-4.3-05': tool('T-TONGS', T_AT(PAN_C, 'dip')),
-  'A-4.3-06': tool('T-TONGS', T_AT(PAN_C, 'toss')),
+  'A-4.3-05': tool('T-TONGS', T_AT(PAN_C, 'dip', { jaw: [0.7, 0.15] })),
+  'A-4.3-06': tool('T-TONGS', T_AT(PAN_C, 'toss', { jaw: [0.4, 0.4] })),
   // Scoop: the tofu rides in the spoon; tip: it slides onto the resting plate.
   'A-4.4-02': tool('T-SLOTTED',
     { at: [0, 0.075, -0.03], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
@@ -412,19 +414,19 @@ const TOOL_PATHS = {
   'A-5.4-01': grate([[B.x, 0.026, B.z]], { onEnd: () => { w.cheeseIn = true; } }),
   'A-5.4-02': crackPepper([[B.x, 0.03, B.z]], () => { w.pepperIn = true; }),
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
-  'A-6.2-03': tool('T-TONGS', T_AT(POT_IN, 'stir', { dur: 1.2 })),
+  'A-6.2-03': tool('T-TONGS', T_AT(POT_IN, 'stir', { dur: 1.2, jaw: [0.35, 0.35] })),
   'A-7.1-01': tool('T-MUG', { at: [POT_C[0], 0.12, POT_C[2]], work: 'dip' }),
   // Grip a bunch of pasta in the pot (it hangs from the tips), carry it over and let it go in the pan.
   'A-7.1-03': tool('T-TONGS',
-    T_AT(POT_IN, 'dip', { after: () => { w.pastaInPot = false; w.tongsPasta = true; } }),
-    T_AT(PAN_C, 'dip', { before: () => { w.tongsPasta = false; Sim.addPasta(s); } })),
+    T_AT(POT_IN, 'dip', { jaw: GRAB, after: () => { w.pastaInPot = false; w.tongsPasta = true; } }),
+    T_AT(PAN_C, 'dip', { jaw: RELEASE, before: () => { w.tongsPasta = false; Sim.addPasta(s); } })),
   // Tossing with tongs: three times the tongs grip a bunch of pasta, lift it high above the pan, shake it
   // and let it fall back; the pasta in the pan jumps as it lands and turns glossy with the oil.
   'A-7.1-04': tool('T-TONGS', ...[[-0.03, 0.02], [0.03, -0.02], [0, 0.01]].flatMap(([dx, dz], k) => {
     const c = [PAN_C[0] + dx, PAN_C[1], PAN_C[2] + dz];
     return [
-      T_AT(c, 'dip', { dur: 0.6, after: () => { w.tongsPasta = 'toss'; w.tossT = 0.3; } }),
-      T_AT([c[0], c[1] + 0.09, c[2] + 0.08], 'toss', { dur: 0.7, after: () => { w.tongsPasta = false; w.tossT = 0.8; if (k === 0) w.oiled = true; } }),
+      T_AT(c, 'dip', { dur: 0.6, jaw: [1, 0.08, 0, 0.6], after: () => { w.tongsPasta = 'toss'; w.tossT = 0.3; } }),
+      T_AT([c[0], c[1] + 0.09, c[2] + 0.08], 'toss', { dur: 0.7, jaw: [0.08, 1, 0.7, 1], after: () => { w.tongsPasta = false; w.tossT = 0.8; if (k === 0) w.oiled = true; } }),
     ];
   })),
   'A-7.2-01': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 2, () => { w.bowlStage = 'watered'; w.mugLevel = 0.6; }),
@@ -439,10 +441,10 @@ const TOOL_PATHS = {
     { at: [PAN_C[0], 0.11, PAN_C[2]], work: 'tip', toward: [PAN_C[0] - 0.1, 0, PAN_C[2]], before: () => { w.tofuStage = 'pile'; } }),
   // Twice: grip pasta in the pan, carry it to a bowl and twirl it into a nest there.
   'A-8.2-02': tool('T-TONGS',
-    T_AT(PAN_C, 'dip', { after: () => { w.tongsPasta = true; } }),
-    T_AT(BOWL_L, 'twist', { before: () => { w.tongsPasta = false; w.plated = 1; } }),
-    T_AT(PAN_C, 'dip', { after: () => { w.tongsPasta = true; } }),
-    T_AT(BOWL_R, 'twist', { before: () => { w.tongsPasta = false; w.plated = 2; Object.assign(w, { served: true, tofuStage: 'served' }); } })),
+    T_AT(PAN_C, 'dip', { jaw: GRAB, after: () => { w.tongsPasta = true; } }),
+    T_AT(BOWL_L, 'dip', { jaw: RELEASE, before: () => { w.tongsPasta = false; w.plated = 1; } }),
+    T_AT(PAN_C, 'dip', { jaw: GRAB, after: () => { w.tongsPasta = true; } }),
+    T_AT(BOWL_R, 'dip', { jaw: RELEASE, before: () => { w.tongsPasta = false; w.plated = 2; Object.assign(w, { served: true, tofuStage: 'served' }); } })),
   'A-8.2-03': crackPepper([[BOWL_L[0], 0.06, BOWL_L[2]], [BOWL_R[0], 0.06, BOWL_R[2]]], () => { w.peppered = true; }),
   'A-8.2-04': grate([[BOWL_L[0], 0.05, BOWL_L[2]], [BOWL_R[0], 0.05, BOWL_R[2]]], { keep: true }),
 };
