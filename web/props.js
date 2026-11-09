@@ -317,9 +317,11 @@ export class Props {
     this.root.add(whisk);
     this.whisk = whisk;
     this.items['T-BOWL'].push(whisk);
-    this.whites = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.029, 32).rotateX(-Math.PI / 2),
-      std('#f3f0e2', 0.1, 0, { transparent: true, opacity: 0.6 })), false);
-    this.whites.position.copy(SPOTS.whitesCup).setY(0.012);
+    // Egg whites in the glass cup: a pale, glossy layer that rises with each egg separated.
+    this.whites = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.024, 1, 32).translate(0, 0.5, 0),
+      std('#f3efd9', 0.06, 0, { transparent: true, opacity: 0.6 })), false);
+    this.whites.position.copy(SPOTS.whitesCup).setY(0.004);
+    this.whites.renderOrder = 1;
   }
 
   _smallThings() {
@@ -547,7 +549,14 @@ export class Props {
     }
     onto(this.items['T-GRATER'][0], 'grater');
     onto(this.items['I-PEPPER'][0], 'mill', { fit: false });
-    onto(this.items['T-BOWL'][0], 'cup', { fit: false });
+    // Clear glass, drawn after the whites so you can see them inside (the model's transmissive glass
+    // hides other see-through things and reads as a dark fill).
+    onto(this.items['T-BOWL'][0], 'cup', { fit: false }).traverse((o) => {
+      if (!o.isMesh) return;
+      o.material = std('#eef4f6', 0.04, 0, { transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide, clearcoat: 1 });
+      o.renderOrder = 2;
+      o.castShadow = false;
+    });
     onto(this.items['T-MUG'][0], 'mug', { fit: false, extra: this.items['T-MUG'].slice(1) });
     onto(this.bellBase, 'bell', { fit: false, extra: [this.bellDome, ...this.bellDome.children] });
     onto(this.block, 'tofu', { fit: false });
@@ -865,6 +874,7 @@ export class Props {
     this.bowlPepper.visible = !!w.pepperIn && ['eggs', 'paste', 'tempered'].includes(stage);
     this.bowlPepper.position.y = stage === 'eggs' ? 0 : stage === 'tempered' ? -0.002 : -0.006;
     this.whites.visible = (w.whitesN || 0) > 0;
+    this.whites.scale.y = 0.008 * Math.max(1, w.whitesN || 0);   // about 8 mm per white
 
     this.mugWater.visible = w.mugFull;
     this.nests.forEach((n, i) => {
