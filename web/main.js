@@ -306,7 +306,7 @@ const VISUALS = {
   'A-7.1-02': () => { s.heat = 1; },
   // The tongs grip the pasta in the pot and carry it to the pan (TOOL_PATHS); on a step jump it's just there.
   'A-7.1-03': () => { if (jumping) { w.pastaInPot = false; Sim.addPasta(s); } },
-  'A-7.1-04': () => { w.tossT = jumping ? 0 : 1.6; w.oiled = true; },
+  'A-7.1-04': () => { if (jumping) w.oiled = true; },   // otherwise as the tongs lift and drop the pasta (TOOL_PATHS)
   'A-7.1-05': () => { w.waterLevel = 0.01; },
   // Pouring and whisking show in the bowl (TOOL_PATHS); on a step jump they're simply done.
   'A-7.2-01': () => { if (jumping) Object.assign(w, { bowlStage: 'watered', mugLevel: 0.6 }); },
@@ -422,8 +422,15 @@ const TOOL_PATHS = {
   'A-7.1-03': tool('T-TONGS',
     T_AT(POT_IN, 'dip', { after: () => { w.pastaInPot = false; w.tongsPasta = true; } }),
     T_AT(PAN_C, 'dip', { before: () => { w.tongsPasta = false; Sim.addPasta(s); } })),
-  // Lift-and-turn tosses: the strands jump and fall back, glossing with the oil (VISUALS).
-  'A-7.1-04': tool('T-TONGS', T_AT(PAN_C, 'toss', { dur: 1.6 })),
+  // Tossing with tongs: three times the tongs grip a bunch of pasta, lift it high above the pan, shake it
+  // and let it fall back; the pasta in the pan jumps as it lands and turns glossy with the oil.
+  'A-7.1-04': tool('T-TONGS', ...[[-0.03, 0.02], [0.03, -0.02], [0, 0.01]].flatMap(([dx, dz], k) => {
+    const c = [PAN_C[0] + dx, PAN_C[1], PAN_C[2] + dz];
+    return [
+      T_AT(c, 'dip', { dur: 0.6, after: () => { w.tongsPasta = 'toss'; w.tossT = 0.3; } }),
+      T_AT([c[0], c[1] + 0.09, c[2] + 0.08], 'toss', { dur: 0.7, after: () => { w.tongsPasta = false; w.tossT = 0.8; if (k === 0) w.oiled = true; } }),
+    ];
+  })),
   'A-7.2-01': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 1.4, () => { w.bowlStage = 'watered'; w.mugLevel = 0.6; }),
   'A-7.2-02': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4, after: () => { w.bowlStage = 'tempered'; } }),
   'A-7.2-04': pourMug([B.x + 0.08, 0.1, B.z + 0.03], [B.x, 0.026, B.z], 0.8, () => { w.bowlStage = 'tempered'; w.mugLevel = 0.1; }),

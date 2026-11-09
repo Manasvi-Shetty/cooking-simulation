@@ -902,6 +902,9 @@ export class Props {
     this.mugWater.position.y = 0.008 + 0.06 * (w.mugLevel ?? 1);
     this.bowlWater.visible = stage === 'watered';
     this.tongsPasta.visible = !!w.tongsPasta;
+    this.tongsPasta.scale.setScalar(w.tongsPasta === 'toss' ? 1.9 : 1);   // a big handful when tossing
+    // The strands always hang straight down from the tips, however the tongs are tilted.
+    if (w.tongsPasta) this.tongsPasta.quaternion.copy(this.tongsPasta.parent.quaternion).invert();
     this.nests.forEach((n, i) => {
       n.visible = w.plated > i;
       n.userData.dust.visible = w.peppered;
