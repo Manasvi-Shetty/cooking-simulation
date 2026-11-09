@@ -269,15 +269,17 @@ export class Props {
     const a = i * 2.399 + Math.random() * 0.5, side = i % 2 ? 1 : -1;
     const f1 = 7 + Math.random() * 6, f2 = 5 + Math.random() * 6, p1 = Math.random() * 6.28, p2 = Math.random() * 6.28;
     const amp = 0.006 + Math.random() * 0.007, curl = (Math.random() - 0.5) * 0.06;
+    // Small squiggles (tight coils) running down the strand, on top of the slow waves.
+    const hf = 22 + Math.random() * 16, hr = 0.0018 + Math.random() * 0.0025, hp = Math.random() * 6.28;
     const pts = drape ? [new THREE.Vector3(-side * 0.005, 0.007, Math.sin(a) * 0.006), new THREE.Vector3(0, 0.004, Math.sin(a) * 0.004)] : [];
-    for (let k = 0; k <= 16; k++) {
-      const f = k / 16, spread = r * (1 + f * 1.8), loose = 0.25 + f;
+    for (let k = 0; k <= 40; k++) {
+      const f = k / 40, spread = r * (1 + f * 1.8), loose = 0.25 + f, sq = hr * (0.3 + f);
       pts.push(new THREE.Vector3(
-        (drape ? side * 0.002 : 0) + Math.cos(a) * spread + Math.sin(f * f1 + p1) * amp * loose + curl * f * f * f,
+        (drape ? side * 0.002 : 0) + Math.cos(a) * spread + Math.sin(f * f1 + p1) * amp * loose + curl * f * f * f + Math.cos(f * hf + hp) * sq,
         -f * len * (1 - 0.08 * Math.sin(f * 5 + p2)),
-        Math.sin(a) * spread + Math.cos(f * f2 + p2) * amp * loose + curl * 0.6 * f * f));
+        Math.sin(a) * spread + Math.cos(f * f2 + p2) * amp * loose + curl * 0.6 * f * f + Math.sin(f * hf + hp) * sq));
     }
-    return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, thick, 5, false), this.pastaMaterial);
+    return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 90, thick, 6, false), this.silkyPasta);
   }
 
   // n flecks of cracked black pepper scattered over a disc of radius r, at height y (+ up to dy).
@@ -432,6 +434,10 @@ export class Props {
     this.root.add(tongs);
     this.items['T-TONGS'] = [tongs];
     // A bunch of spaghetti gripped in the tongs' tips, hanging down (shown while the tongs carry pasta).
+    // Cooked spaghetti lifted out of the water: wet, silky and glossy.
+    this.silkyPasta = this.pastaMaterial.clone();
+    Object.assign(this.silkyPasta, { roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.12, sheen: 0.6, sheenRoughness: 0.3 });
+    this.silkyPasta.sheenColor = new THREE.Color('#fff6dc');
     this.tongsPasta = new THREE.Group();
     for (let i = 0; i < 24; i++) this.tongsPasta.add(this._limpStrand(i, 0.004 + (i % 3) * 0.003, 0.06 + Math.random() * 0.03, 0.0012));
     this.tongsPasta.position.set(0.014, 0.006, 0);
@@ -1006,11 +1012,14 @@ export class Props {
     this.tongsArms.forEach(([pivot, s]) => { pivot.rotation.z = s * (0.0125 - this.tongsJaw * 0.135); });
     // 'load': the big bundle carried from pot to pan; otherwise a smaller bunch. Falls away once the jaws open.
     this.tongsLoad.visible = w.tongsPasta === 'load' && this.tongsJaw < 0.4;
-    if (this.tongsLoad.visible) this.tongsLoad.quaternion.copy(this.tongsLoad.parent.quaternion).invert();
+    // Hanging straight down, swaying a little as the tongs move, like soft wet strands.
+    const sway = (this._swayQ ||= new THREE.Quaternion()).setFromEuler((this._swayE ||= new THREE.Euler()).set(Math.sin(t * 4.3) * 0.09, 0, Math.cos(t * 3.7) * 0.09));
+    this.silkyPasta.color.copy(this.pastaMaterial.color);
+    if (this.tongsLoad.visible) this.tongsLoad.quaternion.copy(this.tongsLoad.parent.quaternion).invert().multiply(sway);
     this.tongsPasta.visible = !!w.tongsPasta && w.tongsPasta !== 'load' && this.tongsJaw < 0.4;
     this.tongsPasta.scale.setScalar(w.tongsPasta === 'toss' ? 1.9 : 1);   // a big handful when tossing
     // The strands always hang straight down from the tips, however the tongs are tilted.
-    if (w.tongsPasta) this.tongsPasta.quaternion.copy(this.tongsPasta.parent.quaternion).invert();
+    if (w.tongsPasta) this.tongsPasta.quaternion.copy(this.tongsPasta.parent.quaternion).invert().multiply(sway);
     this.nests.forEach((n, i) => {
       n.visible = w.plated > i;
       n.userData.dust.visible = w.peppered;
