@@ -531,7 +531,11 @@ function renderPop(fb) {
   const sub = engine.sub;
   const ready = engine.ready;
   const lines = fb ? (Array.isArray(fb.text) ? fb.text : [fb.text]).filter(Boolean) : [];
-  if (!lines.length && ready) lines.push(sub.type === 'Procedure' ? 'All done here. Nicely worked.' : 'That’s it. On to the next one.');
+  // A finished step with no line of its own still gets the correct-answer popup: "That's right!" heading.
+  if (!lines.length && ready) {
+    lines.push(sub.type === 'Procedure' ? 'All done here. Nicely worked.' : 'That’s it. On to the next one.');
+    fb = { ...fb, outcome: 'Perfect', head: HEAD.right };
+  }
   if (ui.hint) lines.push(`Hint: ${engine.item(ui.hint.source).name} → ${ui.hint.param}`);
   if (!lines.length || ui.locked) { pop.hidden = true; return; }
   const key = JSON.stringify([lines, fb?.outcome, fb?.head, ready]);
