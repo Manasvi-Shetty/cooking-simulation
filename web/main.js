@@ -371,8 +371,10 @@ const pourMug = (at, to, dur, onDone) => () => tool('T-MUG', {
   at, work: 'pour', toward: to, dur,
   before: () => {
     const d = [to[0] - at[0], 0, to[2] - at[2]], l = Math.hypot(d[0], d[2]) || 1;
-    const lip = [at[0] + (d[0] / l) * 0.045, at[1] + 0.05, at[2] + (d[2] / l) * 0.045];
-    props.pourStream({ from: lip, to, delay: dur * 0.2, dur: dur * 0.6 });
+    // The mug's front rim once it is tipped right over (about 60-70 degrees): 8 cm out from its base
+    // towards the target and level with the base. The water runs only while it is tipped that far.
+    const lip = [at[0] + (d[0] / l) * 0.081, at[1] + 0.002, at[2] + (d[2] / l) * 0.081];
+    props.pourStream({ from: lip, to, delay: dur * 0.3, dur: dur * 0.4 });
   },
   after: onDone,
 })();
