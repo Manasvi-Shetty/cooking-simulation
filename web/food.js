@@ -442,6 +442,10 @@ export class Food {
     // Tossing: the strands jump and turn in the pan.
     const toss = s.pastaIn && w.tossT > 0 ? Math.abs(Math.sin(w.tossT * Math.PI * 2.5)) : 0;
     this.pasta.position.y = (1 - k) * 0.12 + toss * 0.02;
+    // The pile grows with each load the tongs bring from the pot.
+    if (!s.pastaIn) this.panFill = w.panPastaFill ?? 1;
+    this.panFill = (this.panFill ?? 1) + ((w.panPastaFill ?? 1) - (this.panFill ?? 1)) * Math.min(1, dt * 4);
+    this.pasta.scale.set(0.5 + 0.5 * this.panFill, 0.35 + 0.65 * this.panFill, 0.5 + 0.5 * this.panFill);
     this.pasta.rotation.y = s.pastaIn && w.tossT > 0 ? Math.sin(w.tossT * Math.PI * 1.25) * 0.35 : this.pasta.rotation.y * 0.9;
     this.oilT = (this.oilT ?? 0) + ((w.oiled ? 1 : 0) - (this.oilT ?? 0)) * Math.min(1, dt * 1.5);
 

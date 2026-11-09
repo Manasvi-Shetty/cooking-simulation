@@ -427,6 +427,23 @@ export class Props {
     this.tongsPasta.position.set(0.014, 0.006, 0);
     this.tongsPasta.visible = false;
     tongs.add(this.tongsPasta);
+    // A big load of spaghetti for moving it from the pot to the pan: a thick bundle pinched in the tips,
+    // draped over them and hanging down long on both sides, fanning out towards the ends.
+    this.tongsLoad = new THREE.Group();
+    const N = 90;
+    for (let i = 0; i < N; i++) {
+      const a = i * 2.399, r = 0.003 + Math.sqrt((i % 11) / 10) * 0.011, len = 0.1 + ((i * 7) % 13) * 0.005;
+      const side = i % 2 ? 1 : -1, pts = [new THREE.Vector3(-side * 0.004, 0.006, Math.sin(a) * 0.006)];
+      for (let k = 0; k < 7; k++) {
+        const f = k / 6;
+        pts.push(new THREE.Vector3(side * 0.002 + Math.cos(a) * r * (1 + f * 1.8), -f * len,
+          Math.sin(a) * r * (1 + f * 1.8) + Math.sin(f * 4 + i) * 0.006));
+      }
+      this.tongsLoad.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.0013, 5, false), this.pastaMaterial));
+    }
+    this.tongsLoad.position.set(0.014, 0.006, 0);
+    this.tongsLoad.visible = false;
+    tongs.add(this.tongsLoad);
     this.mugWater = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.029, 32).rotateX(-Math.PI / 2), std('#d9d2bd', 0.05, 0, { clearcoat: 1 })), false);
     // The water rides inside the mug (a child of it), its surface dropping as the mug is poured out.
     mugBody.add(this.mugWater);
@@ -951,6 +968,9 @@ export class Props {
     this.lid.rotation.x = w.lidOn ? 0 : 0;
     this.anchors['T-LID'].set(this.lid.position.x, this.lid.position.y + 0.03, this.lid.position.z);
     this.potPasta.visible = w.pastaInPot;
+    // Less pasta left in the pot after each load the tongs take out.
+    const left = w.potPastaLeft ?? 1;
+    this.potPasta.children.forEach((c, i, all) => { c.visible = i < Math.ceil(all.length * left); });
     this.backKnob.rotation.y = -w.backHeat * 0.85;
     this.hobRing.material.color.set(w.backHeat > 0 ? '#ff5a2a' : '#5a5a5a');
     const boil = w.lidOn ? 0 : w.boil;
@@ -982,7 +1002,10 @@ export class Props {
     this.bowlWater.visible = stage === 'watered';
     // Tongs' jaws: shut (tips touching) at 0, about 7 cm apart at 1.
     this.tongsArms.forEach(([pivot, s]) => { pivot.rotation.z = s * (0.0125 - this.tongsJaw * 0.135); });
-    this.tongsPasta.visible = !!w.tongsPasta && this.tongsJaw < 0.4;   // falls away once the jaws open
+    // 'load': the big bundle carried from pot to pan; otherwise a smaller bunch. Falls away once the jaws open.
+    this.tongsLoad.visible = w.tongsPasta === 'load' && this.tongsJaw < 0.4;
+    if (this.tongsLoad.visible) this.tongsLoad.quaternion.copy(this.tongsLoad.parent.quaternion).invert();
+    this.tongsPasta.visible = !!w.tongsPasta && w.tongsPasta !== 'load' && this.tongsJaw < 0.4;
     this.tongsPasta.scale.setScalar(w.tongsPasta === 'toss' ? 1.9 : 1);   // a big handful when tossing
     // The strands always hang straight down from the tips, however the tongs are tilted.
     if (w.tongsPasta) this.tongsPasta.quaternion.copy(this.tongsPasta.parent.quaternion).invert();

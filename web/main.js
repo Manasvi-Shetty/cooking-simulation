@@ -213,7 +213,7 @@ function freshState() {
   s.tofuInPan = false;
   w = {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
-    potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
+    potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false, potPastaLeft: 1, panPastaFill: 1,
     oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, whitesN: 0, eggsUsed: 0, cheeseIn: false, mugFull: false, mugLevel: 1,
     plated: 0, tongsPasta: false, oiled: false, peppered: false, pepperIn: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
@@ -421,11 +421,12 @@ const TOOL_PATHS = {
   // into the pan and open to leave it there. The pot is empty after the third handful.
   'A-7.1-03': () => {
     setView('Stove wide');
+    w.panPastaFill = 0;
     return props.useTool('T-TONGS', [[0, 0], [0.025, 0.02], [-0.025, -0.015]].flatMap(([dx, dz], k) => [
       T_AT([POT_IN[0] + dx, POT_IN[1], POT_IN[2] + dz], 'dip', { dur: 0.8, clear: 0.24, jaw: [1, 0.08, 0, 0.6],
-        after: () => { w.tongsPasta = 'toss'; if (k === 2) w.pastaInPot = false; } }),
+        after: () => { w.tongsPasta = 'load'; w.potPastaLeft = (2 - k) / 3; if (k === 2) w.pastaInPot = false; } }),
       T_AT([PAN_C[0] - dx, PAN_C[1] + 0.01, PAN_C[2] + dz], 'place', { dur: 0.7, clear: 0.2, jaw: [0.08, 1, 0.1, 0.5],
-        before: () => { if (k === 0) Sim.addPasta(s); }, after: () => { w.tongsPasta = false; } }),
+        before: () => { w.panPastaFill = (k + 1) / 3; if (k === 0) Sim.addPasta(s); }, after: () => { w.tongsPasta = false; } }),
     ]));
   },
   // Tossing with tongs: three times the tongs grip a bunch of pasta, lift it high above the pan, shake it
