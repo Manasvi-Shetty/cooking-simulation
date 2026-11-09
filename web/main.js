@@ -215,7 +215,7 @@ function freshState() {
     tofuStage: 'none', towelBottom: false, towelTop: false, weight: false, weightLift: 0, pressDone: false, cutLevel: 0, cutAnim: null,
     potInSink: false, potOnHob: false, potFilled: false, tapOn: false, waterLevel: 0, lidOn: false, backHeat: 0, boil: 0, pastaInPot: false,
     oil: false, tossT: 0, flips: 0, season: 0, bowlStage: 'empty', wholeEggs: 0, yolks: 0, whitesN: 0, eggsUsed: 0, cheeseIn: false, mugFull: false,
-    plated: 0, peppered: false, served: false, bellT: 0,
+    plated: 0, peppered: false, pepperIn: false, served: false, bellT: 0,
     committed: new Set(),   // items brought to the counter in step 1 (flow item IDs)
     onCounter: new Set(),   // committed + whatever is ticked right now
   };
@@ -291,6 +291,7 @@ const VISUALS = {
   'A-5.2-01': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', wholeEggs: 2, eggsUsed: 2 }); },
   'A-5.2-02': () => { if (jumping) Object.assign(w, { bowlStage: 'eggs', yolks: 3, whitesN: 3, eggsUsed: 5 }); },
   'A-5.4-01': () => { if (jumping) w.cheeseIn = true; },   // otherwise once the grating is done (grate)
+  'A-5.4-02': () => { if (jumping) w.pepperIn = true; },   // otherwise once the grains land (crackPepper)
   'A-5.4-03': () => { w.bowlStage = 'paste'; },
   // Salt: a shower of coarse grains falls into the boiling water.
   'A-6.2-01': () => {
@@ -312,7 +313,7 @@ const VISUALS = {
   'A-7.4-05': () => { Sim.splashWater(s); },
   'A-8.2-01': () => { if (jumping) w.tofuStage = 'pile'; },   // otherwise the slotted spoon carries it (TOOL_PATHS)
   'A-8.2-02': () => { s.heat = 0; w.plated = 2; w.served = true; w.tofuStage = 'served'; },
-  'A-8.2-03': () => { w.peppered = true; },
+  'A-8.2-03': () => { if (jumping) w.peppered = true; },
   'A-8.3-01': () => { w.bellT = 1.2; },
 };
 // Tools travel to where they're used, do their job and go home (props.useTool). The effect in
@@ -340,6 +341,21 @@ const grate = (spots, { keep = false, onEnd } = {}) => () => {
     after: k === spots.length - 1 ? onEnd : undefined,
   })));
   return { arrived: c.arrived, done: Promise.all([g.done, c.done]) };
+};
+// Cracking pepper: the mill twists over each spot and dark flecks fall from it; when the last spot is
+// done the pepper shows on the food (onEnd).
+const crackPepper = (spots, onEnd) => () => {
+  const r = () => Math.random() - 0.5;
+  return props.useTool('I-PEPPER', spots.map(([x, y, z], k) => ({
+    at: [x, y + 0.14, z], work: 'twist', dur: 1.2,
+    before: () => {
+      for (let n = 0; n < 22; n++) {
+        props.drop({ from: [x + r() * 0.01, y + 0.1, z + r() * 0.01], to: [x + r() * 0.06, y, z + r() * 0.06],
+          shred: true, color: '#16100b', delay: 0.15 + n * 0.04 });
+      }
+    },
+    after: k === spots.length - 1 ? onEnd : undefined,
+  })));
 };
 const crackEggs = (first, n, separate) => () => {
   let arrivedRes;
@@ -377,7 +393,7 @@ const TOOL_PATHS = {
   'A-5.2-01': crackEggs(0, 2, false),
   'A-5.2-02': crackEggs(2, 3, true),
   'A-5.4-01': grate([[B.x, 0.026, B.z]], { onEnd: () => { w.cheeseIn = true; } }),
-  'A-5.4-02': tool('I-PEPPER', { at: [B.x, 0.17, B.z], work: 'twist', dur: 1.2 }),
+  'A-5.4-02': crackPepper([[B.x, 0.03, B.z]], () => { w.pepperIn = true; }),
   'A-5.4-03': tool('WHISK', { at: [B.x, 0.02, B.z], work: 'stir', upright: true, dur: 1.4 }),
   'A-6.2-03': tool('T-TONGS', { at: POT_C, work: 'stir', dur: 1.2 }),
   'A-7.1-01': tool('T-MUG', { at: [POT_C[0], 0.12, POT_C[2]], work: 'dip' }),
@@ -393,7 +409,7 @@ const TOOL_PATHS = {
     { at: [SPOTS.plate.x, 0.06, SPOTS.plate.z], work: 'dip', after: () => { w.spoonAt = props.items['T-SLOTTED'][0].position; w.tofuStage = 'spoon'; } },
     { at: [PAN_C[0], 0.11, PAN_C[2]], work: 'tip', toward: [PAN_C[0] - 0.1, 0, PAN_C[2]], before: () => { w.tofuStage = 'pile'; } }),
   'A-8.2-02': tool('T-TONGS', { at: PAN_C, work: 'dip' }, { at: BOWL_L, work: 'twist' }, { at: PAN_C, work: 'dip' }, { at: BOWL_R, work: 'twist' }),
-  'A-8.2-03': tool('I-PEPPER', { at: [BOWL_L[0], 0.2, BOWL_L[2]], work: 'twist' }, { at: [BOWL_R[0], 0.2, BOWL_R[2]], work: 'twist' }),
+  'A-8.2-03': crackPepper([[BOWL_L[0], 0.06, BOWL_L[2]], [BOWL_R[0], 0.06, BOWL_R[2]]], () => { w.peppered = true; }),
   'A-8.2-04': grate([[BOWL_L[0], 0.05, BOWL_L[2]], [BOWL_R[0], 0.05, BOWL_R[2]]], { keep: true }),
 };
 

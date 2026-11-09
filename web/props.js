@@ -261,6 +261,18 @@ export class Props {
     this.stream.position.set(s.x, 0.15, s.z - 0.04);
   }
 
+  // n flecks of cracked black pepper scattered over a disc of radius r, at height y (+ up to dy).
+  static pepperSpecks(n, r, y, dy) {
+    const m = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std('#16100b', 0.7), n);
+    const mtx = new THREE.Matrix4();
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * 6.28, d = Math.sqrt(Math.random()) * r, s = 0.0011 + Math.random() * 0.0011;
+      mtx.makeScale(s, s * 0.6, s).setPosition(Math.cos(a) * d, y + Math.random() * dy, Math.sin(a) * d);
+      m.setMatrixAt(i, mtx);
+    }
+    return m;
+  }
+
   _eggBowl() {
     const b = SPOTS.eggBowl;
     this.bowlFill = this._add(new THREE.Mesh(new THREE.CircleGeometry(0.052, 40).rotateX(-Math.PI / 2),
@@ -277,6 +289,9 @@ export class Props {
     this.cheese = this._add(new THREE.Mesh(new THREE.SphereGeometry(0.03, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), std('#f4ecd2', 0.9)));
     this.cheese.scale.y = 0.45;
     this.cheese.position.set(b.x + 0.01, 0.022, b.z);
+    // Cracked pepper speckled over the eggs and cheese.
+    this.bowlPepper = this._add(Props.pepperSpecks(90, 0.04, 0.026, 0.008));
+    this.bowlPepper.position.set(b.x, 0, b.z);
     const cup = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.028, 0.05, 32, 1, true),
       std('#e8f1f4', 0.05, 0, { transmission: 0.9, transparent: true, opacity: 0.5, side: THREE.DoubleSide })), false);
     cup.position.copy(SPOTS.whitesCup).setY(0.025);
@@ -413,13 +428,7 @@ export class Props {
         cube.rotation.set(i, i * 2, 0);
         nest.add(cube);
       }
-      const dust = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std('#1c140e', 0.6), 60);
-      const mtx = new THREE.Matrix4();
-      for (let i = 0; i < 60; i++) {
-        const a = Math.random() * 6.28, r = Math.random() * 0.04, s = 0.0008 + Math.random() * 0.0008;
-        mtx.makeScale(s, s, s).setPosition(Math.cos(a) * r, 0.044 + Math.random() * 0.006, Math.sin(a) * r);
-        dust.setMatrixAt(i, mtx);
-      }
+      const dust = Props.pepperSpecks(110, 0.042, 0.046, 0.008);
       nest.add(dust);
       nest.userData.dust = dust;
       nest.position.copy(p);
@@ -618,7 +627,7 @@ export class Props {
   // What travels when a tool is used: the tool and anything riding in it. The first entry is the pivot.
   _toolSet(id) {
     if (id === 'T-MUG') return [...this.items['T-MUG'], this.mugWater];
-    if (id === 'T-BOWL') return [this.bowlModel, this.bowlFill, ...this.yolks, this.cheese].filter(Boolean);
+    if (id === 'T-BOWL') return [this.bowlModel, this.bowlFill, ...this.yolks, this.cheese, this.bowlPepper].filter(Boolean);
     if (id === 'WHISK') return [this.whisk];
     if (id === 'I-PECORINO') return [this.pecModel].filter(Boolean);
     if (/^EGG\d$/.test(id)) return [this.eggs?.[+id[3]]].filter(Boolean);
@@ -711,7 +720,7 @@ export class Props {
     if (shred) {
       yolk = white = false;
       const s = new THREE.Mesh(color ? (Props.grainGeo ||= new THREE.BoxGeometry(0.0025, 0.0025, 0.0025)) : (Props.shredGeo ||= new THREE.BoxGeometry(0.007, 0.0016, 0.0016)),
-        color ? (Props.grainMat ||= std(color, 0.4)) : (Props.shredMat ||= std('#f4ecd2', 0.8)));
+        color ? ((Props.grainMats ||= {})[color] ||= std(color, 0.4)) : (Props.shredMat ||= std('#f4ecd2', 0.8)));
       s.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
       g.add(s);
     }
@@ -847,6 +856,8 @@ export class Props {
     this.bowlFill.material.color.set(fillColor);
     this.bowlFill.position.y = stage === 'tempered' ? 0.028 : 0.02;
     this.cheese.visible = stage === 'eggs' && w.cheeseIn;
+    this.bowlPepper.visible = !!w.pepperIn && ['eggs', 'paste', 'tempered'].includes(stage);
+    this.bowlPepper.position.y = stage === 'eggs' ? 0 : stage === 'tempered' ? -0.002 : -0.006;
     this.whites.visible = (w.whitesN || 0) > 0;
 
     this.mugWater.visible = w.mugFull;
