@@ -64,7 +64,7 @@ const VIEWS = {
   'Counter': V([0.58, 0.5, 0.44], [0.64, 0.02, -0.06]),
   'Cutting board': V([0.66, 0.42, 0.42], [0.66, 0.02, 0.09]),
   'Stove': V([0.1, 0.5, 0.5], [0.07, 0.05, 0.05]),        // front knob in frame and clear of the Continue button at 1280 px
-  'Pot': V([-0.6, 0.5, 0.42], [-0.62, 0.07, -0.08]),
+  'Pot': V([-0.54, 0.5, 0.42], [-0.56, 0.07, -0.08]),
   'Stove wide': V([-0.3, 0.62, 0.62], [-0.3, 0.05, -0.04]),
   'Peek in the pan': V([0.06, 0.34, 0.19], [0, 0.06, 0.005]),
   'Sink': V([-0.84, 0.55, 0.52], [-0.84, 0.04, -0.06]),
@@ -319,7 +319,7 @@ const VISUALS = {
 // Tools travel to where they're used, do their job and go home (props.useTool). The effect in
 // VISUALS plays once the tool arrives.
 const B = SPOTS.eggBowl;
-const PAN_C = [0, 0.075, -0.03], POT_C = [-0.62, 0.17, -0.08], BOWL_L = [-0.14, 0.09, 0.5], BOWL_R = [0.14, 0.09, 0.5];
+const PAN_C = [0, 0.075, -0.03], POT_C = [-0.56, 0.17, -0.08], BOWL_L = [-0.14, 0.09, 0.5], BOWL_R = [0.14, 0.09, 0.5];
 const tool = (id, ...stops) => () => props.useTool(id, stops);
 // Eggs go one at a time to the vessel, tap twice on the rim and break open: the shell is gone and the
 // contents fall in. Whole eggs drop into the bowl; for separated ones the white falls into the cup and

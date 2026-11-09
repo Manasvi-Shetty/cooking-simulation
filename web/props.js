@@ -16,7 +16,7 @@ export const SPOTS = {
   tofuBlock: new THREE.Vector3(0.66, 0.02, 0.12),       // centred on the board
   eggBowl: new THREE.Vector3(0.5, 0, -0.18),
   whitesCup: new THREE.Vector3(0.64, 0, -0.1),
-  hob: new THREE.Vector3(-0.62, 0, -0.08),
+  hob: new THREE.Vector3(-0.56, 0, -0.08),            // a hand's width clear of the sink
   sink: new THREE.Vector3(-0.98, 0, 0.02),
   potCounter: new THREE.Vector3(-0.15, 0, 0.27),       // where the pasta pot waits before it's filled
   plate: new THREE.Vector3(-0.42, 0, 0.3),
@@ -189,7 +189,7 @@ export class Props {
     this.hobRing.rotation.x = -Math.PI / 2;
     this.hobRing.position.set(h.x, 0.0125, h.z);
     this.backKnob = this._add(new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.018, 32), this.steel));
-    this.backKnob.position.set(h.x, 0.021, h.z + 0.18);
+    this.backKnob.position.set(h.x + 0.115, 0.021, h.z + 0.115);   // on the hob's glass, front-right corner
     const grip = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.008, 0.007), this.steel);
     grip.position.y = 0.012;
     this.backKnob.add(grip);
@@ -597,7 +597,7 @@ export class Props {
       'E-SINK': v(s.x, 0.02, s.z + 0.08),
       'E-TAP': v(s.x, 0.3, s.z - 0.14),
       'E-BURNER-BACK': v(h.x, 0.03, h.z),
-      'E-KNOB-BACK': v(h.x, 0.04, h.z + 0.18),
+      'E-KNOB-BACK': v(h.x + 0.115, 0.04, h.z + 0.115),
       'E-KNOB-FRONT': v(0.24, 0.045, 0.19),   // top of the HeatKnob
       'E-PAN-OIL': v(-0.04, 0.07, 0.04),
       'T-SKILLET': v(0, 0.11, -0.03),
