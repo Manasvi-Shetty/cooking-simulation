@@ -21,7 +21,7 @@ export const SPOTS = {
   potCounter: new THREE.Vector3(-0.62, 0, 0.27),        // where the pasta pot waits before it's filled: in front of its hob
   lid: new THREE.Vector3(-0.88, 0, 0.42),              // the pot's lid, beside the pot (in front of the sink)
   plate: new THREE.Vector3(-0.3, 0, 0.36),
-  mug: new THREE.Vector3(0.42, 0, 0.3),
+  mug: new THREE.Vector3(-0.38, 0, 0.17),          // ladle and mug: beside the pasta pot's hob, in the Pot view
   slotted: new THREE.Vector3(-0.12, 0.012, 0.175),   // on the cooktop, in front of the burner grate
   tongs: new THREE.Vector3(-0.2, 0.022, 0.2),          // tips at the front; lies front-to-back on the cooktop's left edge (Stove and Pot views)
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
