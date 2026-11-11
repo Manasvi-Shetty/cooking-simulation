@@ -888,6 +888,28 @@ export class Props {
   }
 
   // Put every tool straight back (used when jumping between steps).
+  // Step 8 tops the bowls, so the pepper mill, pecorino and grater wait beside the serving bowls (in the
+  // Serving view) instead of back at the prep area. Call before resetTools(), which snaps tools home.
+  setToppingsByBowls(out) {
+    const SPOT = { 'I-PEPPER': [0.27, 0.34], 'I-PECORINO': [0.38, 0.35], 'T-GRATER': [0.31, 0.5] };
+    for (const [id, [x, z]] of Object.entries(SPOT)) {
+      const set = this._toolSet(id);
+      if (!set.length) continue;
+      set.forEach((o) => {
+        o.userData.toolHome ||= { p: o.position.clone(), q: o.quaternion.clone() };
+        o.userData.baseHome ||= o.userData.toolHome.p.clone();
+      });
+      const base = set[0].userData.baseHome;
+      const dx = out ? x - base.x : 0, dz = out ? z - base.z : 0;
+      set.forEach((o) => o.userData.toolHome.p.set(o.userData.baseHome.x + dx, o.userData.baseHome.y, o.userData.baseHome.z + dz));
+      if (this.anchors[id]) {
+        this._baseAnchor ||= {};
+        this._baseAnchor[id] ||= this.anchors[id].clone();
+        this.anchors[id].set(this._baseAnchor[id].x + dx, this._baseAnchor[id].y, this._baseAnchor[id].z + dz);
+      }
+    }
+  }
+
   resetTools() {
     for (const id of Object.keys(this.toolAnims || {})) { this.toolAnims[id].arrivedRes(); this.toolAnims[id].doneRes(); }
     this.toolAnims = {};

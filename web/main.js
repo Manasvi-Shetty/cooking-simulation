@@ -66,7 +66,7 @@ const VIEWS = {
   'Pot': V([-0.5, 0.82, 0.98], [-0.52, 0.04, 0.1]),       // hob, pot, its lid and the tongs
   'Stove wide': V([-0.24, 0.86, 0.92], [-0.24, 0.1, -0.06]),   // pot and pan both in frame, with room above for the tongs
   'Peek in the pan': V([0.06, 0.34, 0.19], [0, 0.06, 0.005]),
-  'Serving': V([-0.05, 0.55, 0.95], [-0.05, 0.04, 0.4]),   // resting plate on the left, both bowls
+  'Serving': V([0.06, 0.68, 1.14], [0.06, 0.04, 0.4]),   // resting plate on the left, both bowls, pepper mill and pecorino on the right
 };
 // Pasta-pot substeps use the Stove view in the sheet; the pot sits on its own burner, so frame that.
 const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.2': 'Pot', 'S6.3': 'Pot', 'S7.1': 'Stove wide' };
@@ -1155,6 +1155,7 @@ function updateTop() {
 // ---------- substep lifecycle ----------
 function enter(id) {
   const sub = engine.enter(id);
+  props.setToppingsByBowls(id.startsWith('S8.'));   // Step 8: pepper and pecorino wait beside the serving bowls
   props.resetTools();   // every tool starts a substep at home
   ui = { mode: 'items', source: null, pending: null, selected: new Set(), feedback: null, hint: null, locked: false, optState: {} };
   $('#fb-pop').hidden = true;
