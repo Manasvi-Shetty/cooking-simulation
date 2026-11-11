@@ -8,7 +8,7 @@ import { SimplexNoise } from 'three/addons/math/SimplexNoise.js';
 import { SPOTS } from './props.js';
 
 // Kitchen GLB is Y-up; the skillet's cooking surface sits on the grate.
-export const PAN = { floorY: 0.053, pileR: 0.108, strandR: 0.0011 };
+export const PAN = { floorY: 0.053, pileR: 0.094, strandR: 0.0011 };   // pile stays inside the pan's floor
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };

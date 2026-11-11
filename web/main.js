@@ -193,7 +193,7 @@ const knob = gltf.scene.getObjectByName('HeatKnob');
 const grip = gltf.scene.getObjectByName('HeatKnobGrip');
 if (knob && grip) knob.attach(grip);
 
-const food = new Food(scene, { bundles: small ? 60 : 95 });
+const food = new Food(scene, { bundles: small ? 44 : 66 });
 const props = new Props(scene, { pastaMaterial: food.pastaMat, tofuMaterial: food.tofuMaterial });
 if (propsGltf) props.useModels(propsGltf.scene);
 ['Bowl', 'Cooktop'].forEach((n) => { const o = gltf.scene.getObjectByName(n); if (o) props.addContact(o, { opacity: 0.5 }); });
