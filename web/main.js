@@ -534,7 +534,6 @@ function renderLeft() {
     <div class="stepbar">
       <span class="eyebrow">Step ${stepNo} of ${engine.steps.length}</span>
       <div id="progress" aria-hidden="true"></div>
-      <span class="score">Score <b id="score">${engine.score}</b></span>
     </div>
     <h2>${esc(sub.stepTitle)}</h2>
     ${sub.required === 'No' ? `<div class="meta">${chip('Optional', 'type')}</div>` : ''}
@@ -1148,7 +1147,6 @@ function plateSauce(forcedFatal = false) {
 function refresh() { renderLeft(); renderRight(); updateTop(); renderAction(); }
 
 function updateTop() {
-  $('#score').textContent = engine.score;
   const n = engine.sub ? engine.stepIndex() : 0;
   $('#progress').innerHTML = engine.steps.map((_, i) => `<i class="${i + 1 < n ? 'done' : i + 1 === n ? 'now' : ''}"></i>`).join('');
 }
@@ -1201,7 +1199,7 @@ function finish() {
   const end = engine.ending();
   $('#end-eyebrow').textContent = end.fatal ? 'Dish ruined' : 'Table 6 has been served';
   $('#end-title').textContent = end.title;
-  $('#end-score').textContent = end.fatal ? '' : `Score ${engine.score} · ${engine.mistakes} mistake${engine.mistakes === 1 ? '' : 's'} caught along the way`;
+  $('#end-score').textContent = end.fatal ? '' : `${engine.mistakes} mistake${engine.mistakes === 1 ? '' : 's'} caught along the way`;
   $('#end-reaction').textContent = end.reaction;
   $('#end-nonna').textContent = end.nonna;
   $('#end-notes').innerHTML = engine.notes.length
