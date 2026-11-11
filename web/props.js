@@ -25,7 +25,7 @@ export const SPOTS = {
   slotted: new THREE.Vector3(-0.12, 0.012, 0.175),   // on the cooktop, in front of the burner grate
   tongs: new THREE.Vector3(-0.2, 0.022, 0.2),          // tips at the front; lies front-to-back on the cooktop's left edge (Stove and Pot views)
   bowls: [new THREE.Vector3(-0.14, 0, 0.5), new THREE.Vector3(0.14, 0, 0.5)],
-  bell: new THREE.Vector3(0.62, 0, 0.45),
+  bell: new THREE.Vector3(0, 0, 0.64),           // at the front, between the serving bowls (Serving view)
   // Five eggs (2 whole + 3 separated): a front row of three, two staggered behind.
   eggs: [new THREE.Vector3(0.64, 0, -0.25), new THREE.Vector3(0.71, 0, -0.26), new THREE.Vector3(0.78, 0, -0.25),
     new THREE.Vector3(0.675, 0, -0.325), new THREE.Vector3(0.745, 0, -0.33)],
