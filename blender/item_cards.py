@@ -5,7 +5,7 @@ backdrop under the same three lights, and framed automatically from its bounding
   blender --background --factory-startup --python item_cards.py -- <out_dir> [ID ID ...]
 """
 import bpy, bmesh, os, sys, random
-from math import pi, cos, sin, radians, tan
+from math import pi, cos, sin, radians, tan, atan2
 from mathutils import Vector, Matrix
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -632,12 +632,18 @@ def t_grater():
 def t_bowl():
     lathe("Bowl", [(0, 0.007), (0.035, 0.008), (0.054, 0.018), (0.066, 0.036), (0.07, 0.052), (0.0725, 0.0545), (0.0745, 0.053),
                    (0.072, 0.034), (0.059, 0.012), (0.042, 0.002), (0.038, 0), (0, 0)], CERAMIC, sub=1)
+    # The whisk leans in the bowl: wire loops inside, clear of the bowl's floor and wall, and the handle
+    # resting on the rim (touching it, not passing through it). Axis from the loops' tip A up to the rim.
+    ax, az = -0.03, 0.028
+    th = atan2(0.0632 - az, 0.0725 - ax)
+    def onaxis(s, y, zp):
+        return (ax + s * cos(th) - zp * sin(th), y, az + s * sin(th) + zp * cos(th))
     for k in range(6):
         a = k / 6 * pi
-        pts = [(0.09 + 0.07 * (1 - cos(t)) / 2, 0.022 * sin(t) * cos(a), 0.022 * sin(t) * sin(a) + 0.025)
+        pts = [onaxis(0.07 * (1 - cos(t)) / 2, 0.022 * sin(t) * cos(a), 0.022 * sin(t) * sin(a))
                for t in [i / 12 * pi for i in range(13)]]
         tube(f"Wire{k}", pts, 0.0008, STEEL)
-    cyl("WhiskHandle", 0.008, 0.11, (0.04, 0, 0.025), STEEL, rot=(0, pi / 2, 0))
+    cyl("WhiskHandle", 0.008, 0.11, onaxis(0.125, 0, 0), STEEL, rot=(0, pi / 2 - th, 0))
 
 
 def t_slotted():
