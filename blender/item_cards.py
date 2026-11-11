@@ -586,9 +586,15 @@ def t_knife():
     for v in [e for e in r["geom"] if isinstance(e, bmesh.types.BMVert)]:
         v.co.z = 0.002
     blade = from_bm("Blade", bm, STEEL, smooth=False)
+    rz = 0.25
     blade.location = (-0.11, -0.05, 0.021)
-    blade.rotation_euler.z = 0.25
-    box("KnifeHandle", (0.11, 0.024, 0.018), (-0.17, -0.075, 0.03), BLACK, bevel=0.006, rot=(0, 0, 0.25))
+    blade.rotation_euler.z = rz
+    # The handle runs straight on from the blade's heel (the middle of its back edge), joined by a steel
+    # bolster, so knife and handle read as one piece.
+    c, s = cos(rz), sin(rz)
+    hx, hy = -0.11 - 0.02 * s, -0.05 + 0.02 * c          # heel midpoint
+    box("Bolster", (0.012, 0.03, 0.014), (hx - 0.004 * c, hy - 0.004 * s, 0.028), STEEL, bevel=0.003, rot=(0, 0, rz))
+    box("KnifeHandle", (0.11, 0.024, 0.018), (hx - 0.064 * c, hy - 0.064 * s, 0.029), BLACK, bevel=0.006, rot=(0, 0, rz))
 
 
 def t_towels():
