@@ -70,13 +70,13 @@ const VIEWS = {
 };
 // Pasta-pot substeps use the Stove view in the sheet; the pot sits on its own burner, so frame that.
 const CAMERA_OVERRIDE = { 'S1.1': 'Kitchen', 'S1.2': 'Kitchen', 'S1.3': 'Kitchen', 'S6.1': 'Pot', 'S6.2': 'Pot', 'S6.3': 'Pot', 'S7.1': 'Stove wide' };
-const VIEW_BUTTONS = ['Kitchen', 'Counter', 'Pot', 'Stove', 'Peek in the pan', 'Serving'];
-// The Board and Sink views were folded into Counter and Pot, which already show everything clickable there.
-const VIEW_ALIAS = { 'Cutting board': 'Counter', 'Sink': 'Pot' };
+const VIEW_BUTTONS = ['Kitchen', 'Counter', 'Pot', 'Stove', 'Serving'];
+// The Board, Sink and Pan views were folded into Counter, Pot and Stove, which already show everything clickable there.
+const VIEW_ALIAS = { 'Cutting board': 'Counter', 'Sink': 'Pot', 'Peek in the pan': 'Stove' };
 let view = 'Overview';
 const camPos = VIEWS.Overview.pos.clone(), camLook = VIEWS.Overview.look.clone(), goal = new THREE.Vector3();
 const lastShift = { x: -1, y: -1, w: 0, h: 0 };
-$('#views').innerHTML = VIEW_BUTTONS.map((v) => `<button data-view="${esc(v)}" aria-pressed="false">${esc(v.replace('Peek in the pan', 'Pan'))}</button>`).join('');
+$('#views').innerHTML = VIEW_BUTTONS.map((v) => `<button data-view="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join('');
 function setView(v) {
   v = VIEW_ALIAS[v] || v;
   if (!VIEWS[v]) return;
