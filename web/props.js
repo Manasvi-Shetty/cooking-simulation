@@ -1005,8 +1005,12 @@ export class Props {
     this.whites.visible = (w.whitesN || 0) > 0;
     this.whites.scale.y = 0.008 * Math.max(1, w.whitesN || 0);   // about 8 mm per white
 
-    this.mugWater.visible = w.mugFull && (w.mugLevel ?? 1) > 0.05;
-    this.mugWater.position.y = 0.008 + 0.06 * (w.mugLevel ?? 1);
+    // The water sits well below the mug's rim (about 1.7 cm at full). Once the mug is tipped past about
+    // 20 degrees the flat surface would stand at a slant (and seem to spill), so it's hidden: the water
+    // is then the pouring stream.
+    const mugUp = (this._mugUp ||= new THREE.Vector3()).set(0, 1, 0).applyQuaternion(this.mugWater.parent.getWorldQuaternion(this._mugQ ||= new THREE.Quaternion()));
+    this.mugWater.visible = w.mugFull && (w.mugLevel ?? 1) > 0.05 && mugUp.y > 0.94;
+    this.mugWater.position.y = 0.008 + 0.05 * (w.mugLevel ?? 1);
     this.bowlWater.visible = stage === 'watered';
     // Tongs' jaws: shut (tips touching) at 0, about 7 cm apart at 1.
     this.tongsArms.forEach(([pivot, s]) => { pivot.rotation.z = s * (0.0125 - this.tongsJaw * 0.135); });
