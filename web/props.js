@@ -501,12 +501,7 @@ export class Props {
         }
         nest.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 80, 0.0013, 5, false), this.pastaMaterial));
       }
-      for (let i = 0; i < 8; i++) {
-        const cube = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.01), this.tofuMaterial);
-        cube.position.set(Math.cos(i * 0.8) * 0.02, 0.05, Math.sin(i * 1.7) * 0.02);
-        cube.rotation.set(i, i * 2, 0);
-        nest.add(cube);
-      }
+      // (The crispy tofu on top is the kept-back cubes from the resting plate, moved here by food.js.)
       const dust = Props.pepperSpecks(110, 0.042, 0.046, 0.008);
       nest.add(dust);
       nest.userData.dust = dust;

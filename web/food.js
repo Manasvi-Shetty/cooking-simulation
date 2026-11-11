@@ -251,7 +251,10 @@ export class Food {
       const px = pr * Math.cos(pa), pz = pr * Math.sin(pa);
       const pilePos = new THREE.Vector3(px, this.top(px, pz) - (i < 50 ? rnd() * 0.003 : 0.004 + rnd() * 0.01), pz);   // most fold in under the strands
       const spin = rnd() * Math.PI;
-      this.guanciale.push({ mesh, boardPos, floorPos, platePos, pilePos, spin,
+      // Every fourth cube is kept back on the resting plate; once a bowl is plated, its share sits on top of that nest.
+      const j = Math.floor(i / 4), bowl = SPOTS.bowls[j % 2], na = j * 2.4, nr = 0.006 + (j % 5) * 0.0045;
+      const nestPos = new THREE.Vector3(bowl.x + Math.cos(na) * nr, bowl.y + 0.05 + sz / 2 - nr * 0.25, bowl.z + Math.sin(na) * nr);
+      this.guanciale.push({ mesh, boardPos, floorPos, platePos, pilePos, nestPos, nestBowl: j % 2, spin,
         tilt: new THREE.Euler((rnd() - 0.5) * 1.4, spin, (rnd() - 0.5) * 1.4) });
       this.root.add(mesh);
     }
@@ -407,8 +410,8 @@ export class Food {
     this.guanciale.forEach((g, i) => {
       // Most of the tofu is folded into the pasta; every fourth cube stays on the resting plate, kept back
       // to go on top of the bowls (it leaves the plate once they're served).
-      const kept = i % 4 === 3 && (stage === 'spoon' || stage === 'pile');
-      const myKey = kept ? 'platePos' : key;
+      const kept = i % 4 === 3 && (stage === 'spoon' || stage === 'pile' || stage === 'served');
+      const myKey = kept ? ((w.plated || 0) > g.nestBowl ? 'nestPos' : 'platePos') : key;
       g.mesh.visible = !!myKey;
       if (!myKey) return;
       let target = g[myKey];
@@ -420,7 +423,7 @@ export class Food {
       g.mesh.position.x += (target.x - g.mesh.position.x) * follow;
       g.mesh.position.z += (target.z - g.mesh.position.z) * follow;
       g.mesh.position.y += (target.y + jump - g.mesh.position.y) * follow;
-      if (stage === 'pile' && !kept) g.mesh.rotation.set(g.tilt.x, g.tilt.y, g.tilt.z);
+      if ((stage === 'pile' && !kept) || myKey === 'nestPos') g.mesh.rotation.set(g.tilt.x, g.tilt.y, g.tilt.z);
       else g.mesh.rotation.set(0, stage === 'cubes' || kept ? 0 : g.spin + (w.flips || 0) * 1.57, 0);
     });
 
