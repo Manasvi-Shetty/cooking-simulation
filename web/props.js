@@ -1015,10 +1015,14 @@ export class Props {
     this.bowlFill.visible = ['eggs', 'paste', 'watered', 'tempered'].includes(stage) && (w.wholeEggs > 0 || stage !== 'eggs');
     const fillColor = stage === 'paste' || stage === 'watered' ? '#e9b24a' : stage === 'tempered' ? '#f0c56a' : '#f2e3b8';
     this.bowlFill.material.color.set(fillColor);
-    this.bowlFill.position.y = stage === 'tempered' ? 0.028 : 0.02;
+    // Contents' resting heights. While the bowl itself is moving (the pour in 7.4) they ride with it, so
+    // leave them alone then; at rest, set both the height and the home the animation starts from.
+    const bowlStill = !this.toolAnims?.['T-BOWL'];
+    const restY = (o, y) => { if (!bowlStill) return; o.position.y = y; if (o.userData.toolHome) o.userData.toolHome.p.y = y; };
+    restY(this.bowlFill, stage === 'tempered' ? 0.028 : 0.02);
     this.cheese.visible = stage === 'eggs' && w.cheeseIn;
     this.bowlPepper.visible = !!w.pepperIn && ['eggs', 'paste', 'watered', 'tempered'].includes(stage);
-    this.bowlPepper.position.y = stage === 'eggs' ? 0 : stage === 'tempered' ? -0.002 : -0.006;
+    restY(this.bowlPepper, stage === 'eggs' ? 0 : stage === 'tempered' ? -0.002 : -0.006);
     this.whites.visible = (w.whitesN || 0) > 0;
     this.whites.scale.y = 0.008 * Math.max(1, w.whitesN || 0);   // about 8 mm per white
 
