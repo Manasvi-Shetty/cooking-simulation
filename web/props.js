@@ -1021,9 +1021,23 @@ export class Props {
     this.silkyPasta.color.copy(this.pastaMaterial.color);
     if (this.tongsLoad.visible) this.tongsLoad.quaternion.copy(this.tongsLoad.parent.quaternion).invert().multiply(sway);
     this.tongsPasta.visible = !!w.tongsPasta && w.tongsPasta !== 'load' && this.tongsJaw < 0.4;
-    this.tongsPasta.scale.setScalar(w.tongsPasta === 'toss' ? 1.9 : 1);   // a big handful when tossing
     // The strands always hang straight down from the tips, however the tongs are tilted.
     if (w.tongsPasta) this.tongsPasta.quaternion.copy(this.tongsPasta.parent.quaternion).invert().multiply(sway);
+    // Strands never pass through the pan or a bowl: as the tongs come down, the hanging length shortens and
+    // the bundle draws in a little, so it settles into the pan instead of poking through it or swelling.
+    const settle = (g, len, base) => {
+      if (!g.visible) return;
+      const tip = g.getWorldPosition(this._tipW ||= new THREE.Vector3());
+      const nearPan = Math.hypot(tip.x, tip.z + 0.03) < 0.14;
+      const nearBowl = Math.abs(Math.abs(tip.x) - 0.14) < 0.1 && Math.abs(tip.z - 0.5) < 0.1;
+      const floor = nearPan ? 0.055 : nearBowl ? 0.07 : -1;
+      const ps = g.parent.getWorldScale(this._tipS ||= new THREE.Vector3()).y || 1;
+      const k = THREE.MathUtils.clamp((tip.y - floor) / (len * base * ps), 0.12, 1);
+      const n = base * (1 - (1 - k) * 0.35);
+      g.scale.set(n, base * k, n);
+    };
+    settle(this.tongsLoad, 0.17, 1);
+    settle(this.tongsPasta, 0.09, w.tongsPasta === 'toss' ? 1.9 : 1);   // a big handful when tossing
     this.nests.forEach((n, i) => {
       n.visible = w.plated > i;
       n.userData.dust.visible = w.peppered;
