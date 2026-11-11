@@ -306,7 +306,7 @@ const VISUALS = {
   'A-7.1-01': () => { w.mugFull = true; w.mugLevel = 1; s.savedWater = true; },
   'A-7.1-02': () => { s.heat = 1; },
   // The tongs grip the pasta in the pot and carry it to the pan (TOOL_PATHS); on a step jump it's just there.
-  'A-7.1-03': () => { if (jumping) { w.pastaInPot = false; Sim.addPasta(s); } },
+  'A-7.1-03': () => { if (jumping) { w.pastaInPot = false; w.backHeat = 0; Sim.addPasta(s); } },
   'A-7.1-04': () => { if (jumping) w.oiled = true; },   // otherwise as the tongs lift and drop the pasta (TOOL_PATHS)
   'A-7.1-05': () => { w.waterLevel = 0.01; },
   // Pouring and whisking show in the bowl (TOOL_PATHS); on a step jump they're simply done.
@@ -427,7 +427,7 @@ const TOOL_PATHS = {
     w.panPastaFill = 0;
     return props.useTool('T-TONGS', [[0.025, 0.02], [-0.025, -0.015]].flatMap(([dx, dz], k) => [
       T_AT([POT_IN[0] + dx, POT_IN[1], POT_IN[2] + dz], 'dip', { dur: 0.8, clear: 0.24, jaw: [1, 0.08, 0, 0.6],
-        after: () => { w.tongsPasta = 'load'; w.potPastaLeft = (1 - k) / 2; if (k === 1) w.pastaInPot = false; } }),
+        after: () => { w.tongsPasta = 'load'; w.potPastaLeft = (1 - k) / 2; if (k === 1) { w.pastaInPot = false; w.backHeat = 0; } } }),   // pot empty: its burner goes off and the water settles
       T_AT([PAN_C[0] - dx, PAN_C[1] + 0.01, PAN_C[2] + dz], 'place', { dur: 0.7, clear: 0.2, jaw: [0.08, 1, 0.1, 0.5],
         before: () => { w.panPastaFill = (k + 1) / 2; if (k === 0) Sim.addPasta(s); }, after: () => { w.tongsPasta = false; } }),
     ]));
@@ -1402,7 +1402,7 @@ renderer.setAnimationLoop(() => {
   } else if (engine.sub) {
     Sim.stepModel(s, dt);
   }
-  w.boil = w.backHeat > 0 && w.potFilled && w.potOnHob ? Math.min(1, w.boil + dt * 0.02) : Math.max(0, w.boil - dt * 0.1);
+  w.boil = w.backHeat > 0 && w.potFilled && w.potOnHob ? Math.min(1, w.boil + dt * 0.02) : Math.max(0, w.boil - dt * 0.35);
 
   // Picks only reach the counter once the list passes the check, all at once.
   w.onCounter = new Set(w.committed);
