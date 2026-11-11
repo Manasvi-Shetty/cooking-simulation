@@ -588,7 +588,7 @@ export class Props {
     // The board model comes with its knife lying across it: move the knife beside the board so it
     // stays clear of the tofu and towels.
     board.updateWorldMatrix(true, true);
-    const knifeParts = ['Blade', 'KnifeHandle'].map((n) => board.getObjectByName(n)).filter(Boolean);
+    const knifeParts = ['Blade', 'KnifeHandle', 'Bolster'].map((n) => board.getObjectByName(n)).filter(Boolean);
     const knife = this.knife = new THREE.Group();
     knife.rotation.order = 'YXZ';                          // yaw, then tip the blade up about its own length
     if (knifeParts.length) {
