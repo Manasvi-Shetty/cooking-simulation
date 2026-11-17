@@ -3389,7 +3389,7 @@
   {
    "id": "END-PERFECT",
    "trigger": "Score \u2265 90 and no Fatal outcome",
-   "title": "Nonna-approved",
+   "title": "Chef-approved",
    "reaction": "Saumya: \"This is incredible. Crispy tofu, silky sauce, and not a drop of cream. Can I get the recipe?\"",
    "nonna": "Perfetto. That's a real carbonara, tofu and all.",
    "notes": "Recap all steps; unlock 'Carbonara master' badge."

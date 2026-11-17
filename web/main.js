@@ -1391,6 +1391,8 @@ async function jumpTo(target) {
   }
   enter(engine.sub.id);
 }
+// The step jumper is a dev tool: shown only with ?dev in the URL.
+$('[data-jump]').hidden = !/[?&]dev/.test(location.search);
 $('#menu').addEventListener('click', (e) => { if (e.target.closest('[data-jump]')) openJump(); });
 $('#jump-list').addEventListener('click', (e) => { const b = e.target.closest('[data-jump-to]'); if (b) jumpTo(b.dataset.jumpTo); });
 $('#jump-close').addEventListener('click', () => { $('#jump').hidden = true; });
