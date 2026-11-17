@@ -147,6 +147,7 @@ gltf.scene.traverse((o) => {
   const nm = NORMALS[o.material?.name];
   if (nm && !o.material.normalMap) {
     const t = texLoader.load(nm[0]);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;   // the counter and tiles run on past the original set
     t.flipY = false;                         // glTF texture convention, same as the colour map
     t.anisotropy = renderer.capabilities.getMaxAnisotropy();
     o.material.normalMap = t;
@@ -174,12 +175,40 @@ scene.add(gltf.scene);
     const [x0, x1, z0, z1] = [Math.min(...xs), Math.max(...xs), Math.min(...zs), Math.max(...zs)];
     const a = pts.find((q) => q.p.x === x0 && q.p.z === z0), b = pts.find((q) => q.p.x === x1 && q.p.z === z1);
     const uvOf = (x, z) => [a.u + (b.u - a.u) * (x - x0) / (x1 - x0), a.v + (b.v - a.v) * (z - z0) / (z1 - z0)];
-    const g = slab(x0, x1, z0, z1, SINK_HOLE, uvOf).translate(0, pts[0].p.y, 0);
+    // The wood runs the full width of the kitchen (and back to the wall), its grain carrying on past the set.
+    const g = slab(Math.min(x0, -2.3), Math.max(x1, 2.3), Math.min(z0, -0.56), z1, SINK_HOLE, uvOf).translate(0, pts[0].p.y, 0);
+    if (counter.material.map) counter.material.map.wrapS = counter.material.map.wrapT = THREE.RepeatWrapping;
     counter.geometry.dispose();
     counter.geometry = g;
     counter.position.set(0, 0, 0); counter.quaternion.identity(); counter.scale.set(1, 1, 1);   // geometry is in world space (its parent is the untransformed glTF root)
   }
 }
+// The tiled wall runs the full width too: rebuild the backsplash as a wider plane, its tiles continuing.
+const tileWalls = [];
+gltf.scene.traverse((o) => { if (o.isMesh && o.material?.name === 'SubwayTile') tileWalls.push(o); });
+tileWalls.forEach((o) => {
+  o.updateWorldMatrix(true, false);
+  const pos = o.geometry.attributes.position, uv = o.geometry.attributes.uv;
+  if (!uv) return;
+  const pts = Array.from({ length: pos.count }, (_, i) => ({
+    p: new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld), u: uv.getX(i), v: uv.getY(i) }));
+  const xs = pts.map((q) => q.p.x), ys = pts.map((q) => q.p.y), zs = pts.map((q) => q.p.z);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  if (Math.max(...zs) - Math.min(...zs) > 0.02 || x1 - x0 < 0.1) return;   // only a flat wall facing the room
+  const near = (x, y) => pts.reduce((m, q) => (Math.hypot(q.p.x - x, q.p.y - y) < Math.hypot(m.p.x - x, m.p.y - y) ? q : m));
+  const a = near(x0, y0), b = near(x1, y1);
+  const W0 = Math.min(x0, -2.3), W1 = Math.max(x1, 2.3);
+  const uAt = (x) => a.u + (b.u - a.u) * (x - a.p.x) / (b.p.x - a.p.x);
+  const g = new THREE.PlaneGeometry(W1 - W0, y1 - y0).translate((W0 + W1) / 2, (y0 + y1) / 2, zs[0]);
+  const gp = g.attributes.position, gu = g.attributes.uv;
+  for (let i = 0; i < gp.count; i++) gu.setXY(i, uAt(gp.getX(i)), a.v + (b.v - a.v) * (gp.getY(i) - a.p.y) / (b.p.y - a.p.y));
+  o.geometry.dispose();
+  o.geometry = g;
+  o.removeFromParent();
+  o.position.set(0, 0, 0); o.quaternion.identity(); o.scale.set(1, 1, 1);
+  scene.add(o);
+  if (o.material.map) o.material.map.wrapS = o.material.map.wrapT = THREE.RepeatWrapping;
+});
 // Rearrange the Blender set for the flow: egg bowl on the prep side, eggs by the board.
 const bowlObj = gltf.scene.getObjectByName('Bowl');
 if (bowlObj) bowlObj.position.set(SPOTS.eggBowl.x, bowlObj.position.y, SPOTS.eggBowl.z);
