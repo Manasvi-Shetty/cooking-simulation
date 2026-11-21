@@ -680,7 +680,7 @@ function renderRight() {
   const sub = engine.sub;
   let html = '';
   if (ui.locked) {
-    html = `<span class="eyebrow">Cooking</span><p class="muted">Time is passing in the kitchen…</p>`;
+    html = '';                              // the kitchen is busy: no panel, just the animation
   } else if (sub.type === 'MCQ - Single select' || sub.type === 'MCQ - Multi select') {
     const multi = sub.type === 'MCQ - Multi select';
     // Multi-select lists of things you bring (ingredients, tools) show as photo tiles.
@@ -712,11 +712,7 @@ function renderRight() {
       </div>
       <button class="cta" data-live="plate">Plate it</button>`;
   } else if (ui.mode === 'target') {
-    const one = ui.pending.length === 1 ? ui.pending[0] : null;
-    html = `<span class="eyebrow">Where does it go?</span>
-      <p><b>${esc(engine.item(ui.pending[0].source).name)}</b>${one ? `: ${esc(one.param)}` : ''}</p>
-      <p class="muted">Click the spot in the kitchen.</p>
-      <button class="link" data-back>Cancel</button>`;
+    html = '';                              // holding an item: the cursor shows it; Esc puts it down
   } else if (ui.mode === 'multi') {
     const acts = engine.actions().filter((a) => a.source === ui.source && a.interaction === 'Click');
     const solo = soloMulti(sub);
@@ -1396,7 +1392,11 @@ $('[data-jump]').hidden = !/[?&]dev/.test(location.search);
 $('#menu').addEventListener('click', (e) => { if (e.target.closest('[data-jump]')) openJump(); });
 $('#jump-list').addEventListener('click', (e) => { const b = e.target.closest('[data-jump-to]'); if (b) jumpTo(b.dataset.jumpTo); });
 $('#jump-close').addEventListener('click', () => { $('#jump').hidden = true; });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  closeMenu();
+  if (ui.mode === 'target' && !ui.locked) { ui.mode = 'items'; ui.pending = null; ui.selected = new Set(); renderAction(); renderRight(); }
+});
 
 // ---------- loop ----------
 $('#loading').hidden = true;
